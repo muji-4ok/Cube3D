@@ -17,7 +17,10 @@ public:
     MeshParser();
     ~MeshParser();
 
+    std::vector<float>&& parse();
+
 private:
-    std::vector<Point> points;
+    std::vector<Point> vertices;
+    std::vector<Point> normals;
 };
 
