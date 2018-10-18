@@ -1,11 +1,6 @@
 #include "Buffers.h"
 
 
-void VBO::setData(const std::vector<float> &vertices)
-{
-    setDataSuper(vertices);
-}
-
 void VBO::unbind()
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -26,11 +21,15 @@ void VAO::unbind()
     glBindVertexArray(0);
 }
 
-void VAO::setAttribPointer(unsigned int index, unsigned int components, GLenum type, GLboolean normalize,
-                           unsigned int stride, const void *offset)
+void VAO::enableAttribute(unsigned int index)
 {
-    glVertexAttribPointer(index, components, type, normalize, stride, offset);
     glEnableVertexAttribArray(index);
+}
+
+void VAO::setAttribPointer(unsigned int index, unsigned int val_per_vertex, bool normalize,
+                           unsigned int increment, unsigned int first_index)
+{
+    glVertexAttribPointer(index, val_per_vertex, GL_FLOAT, normalize, sizeof(float) * increment, (void*)first_index);
 }
 
 VAO::VAO(VAO && vao)
@@ -50,68 +49,17 @@ VAO & VAO::operator=(VAO && vao)
     return *this;
 }
 
+
 VAO::~VAO()
 {
+    std::cout << "VAO destroyed, ID = " << ID << '\n';
     glDeleteVertexArrays(1, &ID);
 }
+
 
 void VAO::generate()
 {
     glGenVertexArrays(1, &ID);
-}
-
-BufferObject::BufferObject(BufferObject && bo)
-{
-    ID = bo.ID;
-    bo.ID = 0;
-}
-
-BufferObject & BufferObject::operator=(BufferObject && bo)
-{
-    if (this == &bo)
-        return *this;
-
-    ID = bo.ID;
-    bo.ID = 0;
-
-    return *this;
-}
-
-void BufferObject::generate()
-{
-    glGenBuffers(1, &ID);
-}
-
-void BufferObject::bind()
-{
-    glBindBuffer(getTarget(), ID);
-}
-
-unsigned int BufferObject::getID() const
-{
-    return ID;
-}
-
-BufferObject::~BufferObject()
-{
-    glDeleteBuffers(1, &ID);
-}
-
-template<typename T>
-void BufferObject::setStaticData(std::vector<T> data)
-{
-    glBufferData(GL_ARRAY_BUFFER, sizeof(T) * data.size(), data.data(), GL_STATIC_DRAW);
-}
-
-template<typename T>
-void BufferObject::setDataSuper(const std::vector<T> &data)
-{
-    //glBufferData(target, data.size() * sizeof(T), data.data(), GL_STATIC_DRAW);
-}
-
-void EBO::setData(const std::vector<unsigned int> &indices)
-{
-    setDataSuper(indices);
 }
 
 void EBO::unbind()

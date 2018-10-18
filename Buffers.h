@@ -1,59 +1,86 @@
-#ifndef OPENGL_LEARNING_VBO_H
-#define OPENGL_LEARNING_VBO_H
-
+#pragma once
 #include <glad/glad.h>
 #include <vector>
+#include <iostream>
 
 
+template <typename T>
 class BufferObject
 {
 public:
     BufferObject() : ID(0) {};
 
-    BufferObject(BufferObject&& bo);
-    BufferObject& operator= (BufferObject&& bo);
+    BufferObject(BufferObject<T>&& bo)
+    {
+        ID = bo.ID;
+        bo.ID = 0;
+    }
 
-    BufferObject& operator= (const BufferObject&) = delete;
-    BufferObject(const BufferObject&) = delete;
+    BufferObject<T>& operator= (BufferObject<T>&& bo)
+    {
+        if (this == &bo)
+            return *this;
 
-    void generate();
-    void bind();
-    template <typename T>
-    void setStaticData(std::vector<T> data);
+        ID = bo.ID;
+        bo.ID = 0;
 
-    unsigned int getID() const;
+        return *this;
+    }
 
-    ~BufferObject();
+    BufferObject(const BufferObject<T>&) = delete;
+    BufferObject<T>& operator= (const BufferObject<T>&) = delete;
+
+    void generate()
+    {
+        glGenBuffers(1, &ID);
+    }
+
+    void bind()
+    {
+        glBindBuffer(getTarget(), ID);
+    }
+
+    void setStaticData(const std::vector<T> &data)
+    {
+        glBufferData(getTarget(), sizeof(T) * data.size(), data.data(), GL_STATIC_DRAW);
+    }
+
+    unsigned int getID() const
+    {
+        return ID;
+    }
+
+    ~BufferObject()
+    {
+        std::cout << "BufferObject destroyed, ID = " << ID << '\n';
+        glDeleteBuffers(1, &ID);
+    }
 
 protected:
-    template <typename T>
-    void setDataSuper(const std::vector<T> &data);
-
     virtual GLenum getTarget() const = 0;
     unsigned int ID;
 };
 
 
-class VBO : public BufferObject
+class VBO : public BufferObject<float>
 {
-    using BufferObject::BufferObject;
-    using BufferObject::operator=;
+    using BufferObject<float>::BufferObject;
+    using BufferObject<float>::operator=;
 
 public:
-    void setData(const std::vector<float> &vertices);
     static void unbind();
 
 protected:
     GLenum getTarget() const override;
 };
 
-class EBO : public BufferObject
+
+class EBO : public BufferObject<unsigned int>
 {
-    using BufferObject::BufferObject;
-    using BufferObject::operator=;
+    using BufferObject<unsigned int>::BufferObject;
+    using BufferObject<unsigned int>::operator=;
 
 public:
-    void setData(const std::vector<unsigned int> &indices);
     static void unbind();
 
 protected:
@@ -76,12 +103,11 @@ public:
     void generate();
     void bind();
     static void unbind();
-    void setAttribPointer(unsigned int index, unsigned int components, GLenum type, GLboolean normalize,
-                          unsigned int stride, const void *offset);
+    void enableAttribute(unsigned int index);
+
+    void setAttribPointer(unsigned int index, unsigned int val_per_vertex, bool normalize,
+                          unsigned int increment, unsigned int first_index);
 
 private:
     unsigned int ID;
 };
-
-
-#endif //OPENGL_LEARNING_VBO_H

@@ -1,7 +1,9 @@
 #pragma once
-#include "pch.h"
 #include "Shader.h"
 #include "Buffers.h"
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
+#include <vector>
 
 class App
 {
@@ -20,4 +22,3 @@ private:
 void error_callback(int, const char *);
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void frame_buffer_change_callback(GLFWwindow *window, int width, int height);
-

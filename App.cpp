@@ -60,27 +60,45 @@ void App::run()
     Shader fragment(GL_FRAGMENT_SHADER, R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)");
     ShaderProgram shdProgram(vertex, fragment);
 
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
+    std::vector<float> vertices{
+        0.5f, 0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f
+        -0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f
+    };
+
+    //std::vector<float> vertices{
+    //    -0.5f, -0.5f, 0.0f,
+    //    0.5f, -0.5f, 0.0f,
+    //    0.0f,  0.5f, 0.0f
+    //};
+
+    std::vector<unsigned int> indices{
+        0, 1, 3,
+        1, 2, 3
     };
 
     VBO triVBO;
     VAO triVAO;
+    EBO triEBO;
 
     triVBO.generate();
     triVAO.generate();
+    triEBO.generate();
 
     triVBO.bind();
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    triVBO.setStaticData(vertices);
+
+    triEBO.bind();
+    triEBO.setStaticData(indices);
 
     triVAO.bind();
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    triVAO.setAttribPointer(0, 3, false, 3, 0);
+    triVAO.enableAttribute(0);
 
     triVAO.bind();
     triVBO.bind();
+    triEBO.bind();
 
     shdProgram.use();
 
@@ -88,7 +106,8 @@ void App::run()
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

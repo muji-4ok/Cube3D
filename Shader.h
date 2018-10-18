@@ -1,8 +1,6 @@
-#ifndef OPENGL_LEARNING_SHADER_H
-#define OPENGL_LEARNING_SHADER_H
-
-#include <string>
+#pragma once
 #include <glad/glad.h>
+#include <iostream>
 
 
 class Shader
@@ -50,6 +48,3 @@ private:
 
     int getUniformLocation(const std::string &name) const;
 };
-
-
-#endif //OPENGL_LEARNING_SHADER_H

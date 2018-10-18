@@ -106,7 +106,7 @@ void GLApp::initGL()
     triangleIndices.bind();
     triangleIndices.setData(indices);
 
-    triangleState.setAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    //triangleState.setAttribPointer<float>(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
     VBO::unbind();
     VAO::unbind();
     EBO::unbind();
