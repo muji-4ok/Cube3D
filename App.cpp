@@ -87,7 +87,7 @@ void App::run()
     //triEBO.setStaticData(indices);
 
     triVAO.bind();
-    triVAO.setAttribPointer(0, 3, false, 3, 0);
+    triVAO.setAttribPointer(0, 4, false, 4, 0);
     triVAO.enableAttribute(0);
 
     triVAO.bind();
@@ -97,26 +97,36 @@ void App::run()
     shdProgram.use();
 
     glm::mat3 colors_i{
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f
+        0.0f, 1.0f, 0.0f, // green
+        0.0f, 0.0f, 0.0f, // black
+        0.0f, 0.0f, 1.0f  // blue
     };
 
     glm::mat3 colors_j{
-        1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        1.0f, 0.5f, 0.0f
+        1.0f, 0.0f, 0.0f, // red
+        0.0f, 0.0f, 0.0f, // black
+        1.0f, 0.5f, 0.0f  // orange
     };
 
     glm::mat3 colors_k{
-        1.0f, 1.0f, 1.0f,
-        0.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 0.0f
+        1.0f, 1.0f, 1.0f, // white
+        0.0f, 0.0f, 0.0f, // black
+        1.0f, 1.0f, 0.0f  // yellow
+    };
+
+    std::vector<float> colors{
+        1.0f, 1.0f, 0.0f, // yellow
+        1.0f, 1.0f, 1.0f, // white
+        1.0f, 0.0f, 0.0f, // red
+        1.0f, 0.5f, 0.0f, // orange
+        0.0f, 0.0f, 1.0f, // blue
+        0.0f, 1.0f, 0.0f  // green
     };
 
     shdProgram.setUniformMatrix3fv("colors_i", colors_i);
     shdProgram.setUniformMatrix3fv("colors_j", colors_j);
     shdProgram.setUniformMatrix3fv("colors_k", colors_k);
+    shdProgram.setUniformVector3fv("colors", colors);
 
     glm::mat4 view(1.0f);
     glm::mat4 projection(1.0f);

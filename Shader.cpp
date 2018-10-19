@@ -116,6 +116,16 @@ void ShaderProgram::disable()
     glUseProgram(0);
 }
 
+void ShaderProgram::setUniformVector3fv(const std::string & name, const std::vector<float>& vecs)
+{
+    glUniform3fv(getUniformLocation(name), vecs.size() / 3, vecs.data());
+}
+
+void ShaderProgram::setUniform1fv(const std::string & name, const std::vector<float>& vals)
+{
+    glUniform1fv(getUniformLocation(name), vals.size(), vals.data());
+}
+
 void ShaderProgram::setUniform1f(const std::string &name, const float &value)
 {
     glUniform1f(getUniformLocation(name), value);

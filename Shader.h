@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 #include <iostream>
+#include <vector>
 
 
 class Shader
@@ -44,6 +45,8 @@ public:
 
     void use();
     static void disable();
+    void setUniformVector3fv(const std::string &name, const std::vector<float> &vecs);
+    void setUniform1fv(const std::string &name, const std::vector<float> &vals);
     void setUniform1f(const std::string &name, const float &value);
     void setUniform1i(const std::string &name, const int &value);
     void setUniformMatrix4fv(const std::string &name, const glm::mat4 &mat4);
