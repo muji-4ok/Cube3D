@@ -7,8 +7,56 @@ void error_callback(int error, const char *description)
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (action != GLFW_PRESS)
+        return;
+
+    switch (key)
+    {
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, true);
+            break;
+        case GLFW_KEY_F:
+            if (mods & GLFW_MOD_SHIFT)
+                ;
+            else
+                ;
+            break;
+        case GLFW_KEY_B:
+            if (mods & GLFW_MOD_SHIFT)
+                ;
+            else
+                ;
+            break;
+        case GLFW_KEY_R:
+            if (mods & GLFW_MOD_SHIFT)
+                ;
+            else
+                ;
+            break;
+        case GLFW_KEY_L:
+            if (mods & GLFW_MOD_SHIFT)
+                ;
+            else
+                ;
+            break;
+        case GLFW_KEY_U:
+            if (mods & GLFW_MOD_SHIFT)
+                ;
+            else
+                ;
+            break;
+        case GLFW_KEY_D:
+            if (mods & GLFW_MOD_SHIFT)
+                ;
+            else
+                ;
+            break;
+    }
+
+    if (key == GLFW_KEY_ESCAPE)
         glfwSetWindowShouldClose(window, true);
+    else if (key == GLFW_KEY_F)
+        ;
 }
 
 void frame_buffer_change_callback(GLFWwindow *window, int width, int height)
@@ -139,6 +187,11 @@ void App::run()
     shdProgram.setUniformMatrix4fv("projection", projection);
 
     float angle = 0.0f;
+    float angle2 = 0.0f;
+
+    auto cube = Cube();
+
+    cube.rotate('U', false);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -152,15 +205,32 @@ void App::run()
                     shdProgram.setUniform1i("j", j);
                     shdProgram.setUniform1i("k", k);
 
-                    model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0, 0.3f, 0.5f));
-                    model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
-                    model = glm::scale(model, glm::vec3(1.0f / 3.0f));
+                    if (j == 2)
+                    {
+                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+                        model = glm::rotate(model, glm::radians(angle2), glm::vec3(0.0f, 1.0f, 0.0f));
+                        //auto rotation = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+                        //model = rotation;
+                        //model = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f),
+                        //                    glm::cross(glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) * rotation),
+                        //                               glm::vec3(1.0f, 0.0f, 0.0f)));
+                        model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
+                        model = glm::scale(model, glm::vec3(1.0f / 3.0f));
+                    }
+                    else
+                    {
+                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+                        model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
+                        model = glm::scale(model, glm::vec3(1.0f / 3.0f));
+                    }
                     shdProgram.setUniformMatrix4fv("model", model);
+                    shdProgram.setUniformVector3fv("colors", cube.cubes[i][j][k]);
 
                     glDrawArrays(GL_TRIANGLES, 0, 36);
                 }
 
         angle += 1.0f;
+        angle2 += 1.0f;
 
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
