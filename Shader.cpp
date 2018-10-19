@@ -118,8 +118,22 @@ void ShaderProgram::disable()
 
 void ShaderProgram::setUniform1f(const std::string &name, const float &value)
 {
-    int uniformLocation = getUniformLocation(name);
-    glUniform1f(uniformLocation, value);
+    glUniform1f(getUniformLocation(name), value);
+}
+
+void ShaderProgram::setUniform1i(const std::string & name, const int & value)
+{
+    glUniform1i(getUniformLocation(name), value);
+}
+
+void ShaderProgram::setUniformMatrix4fv(const std::string & name, const glm::mat4 & mat4)
+{
+    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &mat4[0][0]);
+}
+
+void ShaderProgram::setUniformMatrix3fv(const std::string & name, const glm::mat3 & mat3)
+{
+    glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, &mat3[0][0]);
 }
 
 int ShaderProgram::getUniformLocation(const std::string &name) const

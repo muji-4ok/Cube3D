@@ -1,4 +1,7 @@
 #pragma once
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 #include <iostream>
 
@@ -42,6 +45,9 @@ public:
     void use();
     static void disable();
     void setUniform1f(const std::string &name, const float &value);
+    void setUniform1i(const std::string &name, const int &value);
+    void setUniformMatrix4fv(const std::string &name, const glm::mat4 &mat4);
+    void setUniformMatrix3fv(const std::string &name, const glm::mat3 &mat3);
 
 private:
     unsigned int ID;
