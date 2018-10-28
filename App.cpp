@@ -109,30 +109,14 @@ void App::run()
     Shader fragment(GL_FRAGMENT_SHADER, R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)");
     ShaderProgram shdProgram(vertex, fragment);
 
-    //std::vector<float> vertices{
-    //    -0.5f, -0.5f, 0.0f,
-    //    0.5f, -0.5f, 0.0f,
-    //    0.0f,  0.5f, 0.0f
-    //};
-
-    //std::vector<unsigned int> indices{
-    //    0, 1, 3,
-    //    1, 2, 3
-    //};
-
     VBO triVBO;
     VAO triVAO;
-    //EBO triEBO;
 
     triVBO.generate();
     triVAO.generate();
-    //triEBO.generate();
 
     triVBO.bind();
     triVBO.setStaticData(vertices);
-
-    //triEBO.bind();
-    //triEBO.setStaticData(indices);
 
     triVAO.bind();
     triVAO.setAttribPointer(0, 4, false, 4, 0);
@@ -140,7 +124,6 @@ void App::run()
 
     triVAO.bind();
     triVBO.bind();
-    //triEBO.bind();
 
     shdProgram.use();
 
@@ -182,6 +165,7 @@ void App::run()
     
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
+    //projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 50.0f);
 
     shdProgram.setUniformMatrix4fv("view", view);
     shdProgram.setUniformMatrix4fv("projection", projection);
@@ -205,24 +189,19 @@ void App::run()
                     shdProgram.setUniform1i("j", j);
                     shdProgram.setUniform1i("k", k);
 
-                    if (j == 2)
+                    if (false)
                     {
-                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 1.0f, 0.0f));
                         model = glm::rotate(model, glm::radians(angle2), glm::vec3(0.0f, 1.0f, 0.0f));
-                        //auto rotation = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-                        //model = rotation;
-                        //model = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f),
-                        //                    glm::cross(glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) * rotation),
-                        //                               glm::vec3(1.0f, 0.0f, 0.0f)));
-                        model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
-                        model = glm::scale(model, glm::vec3(1.0f / 3.0f));
                     }
                     else
                     {
-                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
-                        model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
-                        model = glm::scale(model, glm::vec3(1.0f / 3.0f));
+                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 1.0f, 0.0f));
                     }
+
+                    model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
+                    model = glm::scale(model, glm::vec3(1.0f / 3.0f));
+
                     shdProgram.setUniformMatrix4fv("model", model);
                     shdProgram.setUniformVector3fv("colors", cube.cubes[i][j][k]);
 

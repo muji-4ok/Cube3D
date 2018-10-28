@@ -4,7 +4,7 @@
 
 Cube::Cube()
 {
-    std::vector<float> colors{
+    std::vector<float> c{
         1.0f, 1.0f, 0.0f, // yellow
         1.0f, 1.0f, 1.0f, // white
         1.0f, 0.0f, 0.0f, // red
@@ -15,8 +15,19 @@ Cube::Cube()
 
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
+        {
+            faces['U'][i * 3 + j] = 'g';
+            faces['D'][i * 3 + j] = 'b';
+            faces['R'][i * 3 + j] = 'o';
+            faces['L'][i * 3 + j] = 'r';
+            faces['F'][i * 3 + j] = 'w';
+            faces['B'][i * 3 + j] = 'y';
+        }
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
             for (int k = 0; k < 3; ++k)
-                cubes[i][j][k] = colors;
+                cubes[i][j][k] = c;
 }
 
 
@@ -28,24 +39,15 @@ void Cube::rotate(char dir, bool clockwise)
 {
     if (dir == 'U')
     {
-        for (int i = 0; i < 3; ++i)
-            for (int k = 0; k < 3; ++k)
-                for (int coord = 0; coord < 6; ++coord)
-                {
-                    std::swap(cubes[i][2][k][2 * 3 + coord], cubes[i][2][k][1 * 3 + coord]);
-                    std::swap(cubes[i][2][k][1 * 3 + coord], cubes[i][2][k][3 * 3 + coord]);
-                    std::swap(cubes[i][2][k][3 * 3 + coord], cubes[i][2][k][0 * 3 + coord]);
-                }
+        swap_3(&faces['L'][0], &faces['F'][0]);
+        swap_3(&faces['F'][0], &faces['R'][0]);
+        swap_3(&faces['R'][0], &faces['B'][0]);
+
+        //swap_3(&faces['U'][0], &faces['U'][0]);
     }
     else if (dir == 'D')
     {
-        for (int i = 0; i < 3; ++i)
-            for (int k = 0; k < 3; ++k)
-            {
-                std::swap(cubes[i][0][k][2], cubes[i][0][k][1]);
-                std::swap(cubes[i][0][k][1], cubes[i][0][k][3]);
-                std::swap(cubes[i][0][k][3], cubes[i][0][k][0]);
-            }
+
     }
     else if (dir == 'L')
     {
@@ -63,4 +65,11 @@ void Cube::rotate(char dir, bool clockwise)
     {
 
     }
+}
+
+template <typename T>
+void swap_3(T* first, T* second, int inc)
+{
+    for (int i = 0; i < 3; i += inc)
+        std::swap(first[i], second[i]);
 }
