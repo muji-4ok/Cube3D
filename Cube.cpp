@@ -13,6 +13,14 @@ Cube::Cube()
         0.0f, 1.0f, 0.0f  // green
     };
 
+    std::vector<float> y{ 1.0f, 1.0f, 0.0f };
+    std::vector<float> w{ 1.0f, 1.0f, 1.0f };
+    std::vector<float> r{ 1.0f, 0.0f, 0.0f };
+    std::vector<float> o{ 1.0f, 0.5f, 0.0f };
+    std::vector<float> b{ 0.0f, 0.0f, 1.0f };
+    std::vector<float> g{ 0.0f, 1.0f, 0.0f };
+    std::vector<float> n{ 0.0f, 0.0f, 0.0f };
+
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
         {
@@ -27,7 +35,14 @@ Cube::Cube()
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             for (int k = 0; k < 3; ++k)
-                cubes[i][j][k] = c;
+            {
+                append(cubes[i][j][k], k == 0 ? y : n);
+                append(cubes[i][j][k], k == 2 ? w : n);
+                append(cubes[i][j][k], i == 0 ? r : n);
+                append(cubes[i][j][k], i == 2 ? o : n);
+                append(cubes[i][j][k], j == 0 ? b : n);
+                append(cubes[i][j][k], j == 2 ? g : n);
+            }
 }
 
 
@@ -72,4 +87,10 @@ void swap_3(T* first, T* second, int inc)
 {
     for (int i = 0; i < 3; i += inc)
         std::swap(first[i], second[i]);
+}
+
+template<typename T>
+void append(std::vector<T>& v1, const std::vector<T>& v2)
+{
+    v1.insert(v1.end(), v2.begin(), v2.end());
 }

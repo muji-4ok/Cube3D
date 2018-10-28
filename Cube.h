@@ -14,6 +14,9 @@
 template <typename T>
 void swap_3(T* first, T* second, int inc = 1);
 
+template <typename T>
+void append(std::vector<T> &v1, const std::vector<T> &v2);
+
 class Cube
 {
 public:

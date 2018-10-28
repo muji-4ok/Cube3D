@@ -59,6 +59,13 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         ;
 }
 
+void mouse_callback(GLFWwindow *window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+    }
+}
+
 void frame_buffer_change_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -94,6 +101,7 @@ App::App(int width, int height) : width(width), height(height)
     }
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_callback);
     glfwSetFramebufferSizeCallback(window, frame_buffer_change_callback);
 
     run();
@@ -179,6 +187,28 @@ void App::run()
 
     while (!glfwWindowShouldClose(window))
     {
+        int mouse_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+
+        if (mouse_state == GLFW_PRESS)
+        {
+            double x_pos, y_pos;
+            glfwGetCursorPos(window, &x_pos, &y_pos);
+
+            float x = 2.0 * x_pos / width - 1.0;
+            float y = 2.0 * y_pos / height - 1.0;
+
+            auto eye_ray = glm::inverse(projection) * glm::vec4(x, y, -1.0f, 1.0f);
+            eye_ray.z = -1.0f;
+            eye_ray.w = 0.0f;
+
+            auto world_ray = glm::normalize(glm::vec3(glm::inverse(view) * eye_ray));
+
+            std::cout << "LMB pressed"
+                << " ; x = " << world_ray.x
+                << " ; y = " << world_ray.y
+                << " ; z = " << world_ray.z << '\n';
+        }
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (int i = 0; i < 3; ++i)
