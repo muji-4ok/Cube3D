@@ -21,6 +21,10 @@ class Cube
 {
 public:
     Cube();
+
+    Cube& operator= (const Cube &c);
+    Cube& operator= (Cube&& c);
+
     ~Cube();
 
     void rotate(char dir, bool clockwise);
@@ -29,6 +33,7 @@ public:
     std::array<std::array<std::array<std::vector<float>, 3>, 3>, 3 > cubes;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_full_size;
+    std::array<std::array<std::array<float, 3>, 3>, 3 > dists;
 
     const std::vector<float> vertices{
         // back

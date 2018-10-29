@@ -1,77 +1,50 @@
 #include "App.h"
 
-void error_callback(int error, const char *description)
+App * CallbackCaller::app = nullptr;
+
+void App::error_callback(int error, const char *description)
 {
     std::cerr << "GLFW Error (" << error << ") message: " << description << '\n';
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void App::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    if (action != GLFW_PRESS)
-        return;
-
-    switch (key)
-    {
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, true);
-            break;
-        case GLFW_KEY_F:
-            if (mods & GLFW_MOD_SHIFT)
-                ;
-            else
-                ;
-            break;
-        case GLFW_KEY_B:
-            if (mods & GLFW_MOD_SHIFT)
-                ;
-            else
-                ;
-            break;
-        case GLFW_KEY_R:
-            if (mods & GLFW_MOD_SHIFT)
-                ;
-            else
-                ;
-            break;
-        case GLFW_KEY_L:
-            if (mods & GLFW_MOD_SHIFT)
-                ;
-            else
-                ;
-            break;
-        case GLFW_KEY_U:
-            if (mods & GLFW_MOD_SHIFT)
-                ;
-            else
-                ;
-            break;
-        case GLFW_KEY_D:
-            if (mods & GLFW_MOD_SHIFT)
-                ;
-            else
-                ;
-            break;
-    }
-
-    if (key == GLFW_KEY_ESCAPE)
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    else if (key == GLFW_KEY_F)
-        ;
 }
 
-void mouse_callback(GLFWwindow *window, int button, int action, int mods)
+void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    if (button == GLFW_MOUSE_BUTTON_LEFT)
     {
+        mouse_pressed = (action == GLFW_PRESS);
+
+        if (action != GLFW_PRESS)
+            return;
+
+        int index;
+        int hit_i, hit_j, hit_k;
+
+        double x_pos, y_pos;
+        glfwGetCursorPos(window, &x_pos, &y_pos);
+
+        auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
+        auto world_ray = get_eye_ray(x_pos, y_pos, width, height, projection, view);
+
+        if (!hit_side(mouse_origin, world_ray, index, hit_i, hit_j, hit_k))
+            return;
     }
 }
 
-void frame_buffer_change_callback(GLFWwindow *window, int width, int height)
+void App::frame_buffer_change_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
+    shdProgram.setUniformMatrix4fv("projection", projection);
 }
 
-float dist_from_ray_to_triangle(const glm::vec3 & origin, const glm::vec3 & dir, const glm::vec3 & v0, const glm::vec3 & v1, const glm::vec3 & v2)
+float dist_from_ray_to_triangle(const glm::vec3 & origin, const glm::vec3 & dir,
+                                const glm::vec3 & v0, const glm::vec3 & v1, const glm::vec3 & v2)
 {
     auto e1 = v1 - v0;
     auto e2 = v2 - v0;
@@ -100,6 +73,60 @@ float dist_from_ray_to_triangle(const glm::vec3 & origin, const glm::vec3 & dir,
     return glm::dot(e2, q_vec) * inv_det;
 }
 
+glm::vec3 get_eye_ray(double x_pos, double y_pos, int width, int height,
+                      const glm::mat4 & projection, const glm::mat4 & view)
+{
+    float x = 2.0 * x_pos / width - 1.0;
+    float y = 2.0 * y_pos / height - 1.0;
+    y = -y;
+
+    auto eye_ray = glm::inverse(projection) * glm::vec4(x, y, -1.0f, 1.0f);
+    eye_ray.z = -1.0f;
+    eye_ray.w = 0.0f;
+
+    return glm::normalize(glm::vec3(glm::inverse(view) * eye_ray));
+}
+
+bool needs_rotation(int index, int i, int j, int k, int hit_i, int hit_j, int hit_k)
+{
+    if (index == 0)
+    {
+        if (k != 0)
+            return false;
+
+    }
+    else if (index == 1)
+    {
+        if (k != 2)
+            return false;
+
+    }
+    else if (index == 2)
+    {
+        if (i != 0)
+            return false;
+
+    }
+    else if (index == 3)
+    {
+        if (i != 2)
+            return false;
+
+    }
+    else if (index == 4)
+    {
+        if (j != 0)
+            return false;
+
+    }
+    else
+    {
+        if (j != 2)
+            return false;
+
+    }
+}
+
 App::App(int width, int height) : width(width), height(height)
 {
     if (!glfwInit())
@@ -108,7 +135,9 @@ App::App(int width, int height) : width(width), height(height)
         exit(1);
     }
 
-    glfwSetErrorCallback(error_callback);
+    CallbackCaller::app = this;
+
+    glfwSetErrorCallback(CallbackCaller::error_callback_caller);
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -129,244 +158,307 @@ App::App(int width, int height) : width(width), height(height)
         exit(1);
     }
 
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetMouseButtonCallback(window, mouse_callback);
-    glfwSetFramebufferSizeCallback(window, frame_buffer_change_callback);
+
+    glfwSetKeyCallback(window, CallbackCaller::key_callback_caller);
+    glfwSetMouseButtonCallback(window, CallbackCaller::mouse_callback_caller);
+    glfwSetFramebufferSizeCallback(window, CallbackCaller::frame_buffer_change_callback_caller);
 
     run();
 }
 
 void App::run()
 {
+    prepare();
+
+    while (!glfwWindowShouldClose(window))
+    {
+        calculate();
+        draw();
+        glfwSwapBuffers(window);
+        update_fps();
+        glfwPollEvents();
+    }
+}
+
+void App::prepare()
+{
     glClearColor(0.1f, 0.2f, 0.4f, 1.0f);
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
 
-    Shader vertex(GL_VERTEX_SHADER, R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)");
-    Shader fragment(GL_FRAGMENT_SHADER, R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)");
-    ShaderProgram shdProgram(vertex, fragment);
-    auto cube = Cube();
+    std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
+    std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
 
-    VBO triVBO;
-    VAO triVAO;
+    vertex = std::move(Shader(GL_VERTEX_SHADER, vertex_path));
+    fragment = std::move(Shader(GL_FRAGMENT_SHADER, fragment_path));
+    shdProgram = std::move(ShaderProgram(vertex, fragment));
 
-    triVBO.generate();
-    triVAO.generate();
+    cubeVBO.generate();
+    cubeVAO.generate();
 
-    triVBO.bind();
-    triVBO.setStaticData(cube.vertices);
+    cubeVBO.bind();
+    cubeVBO.setStaticData(cube.vertices);
 
-    triVAO.bind();
-    triVAO.setAttribPointer(0, 4, false, 4, 0);
-    triVAO.enableAttribute(0);
+    cubeVAO.bind();
+    cubeVAO.setAttribPointer(0, 4, false, 4, 0);
+    cubeVAO.enableAttribute(0);
 
-    triVAO.bind();
-    triVBO.bind();
+    cubeVAO.bind();
+    cubeVBO.bind();
 
     shdProgram.use();
-
-    glm::mat3 colors_i{
-        0.0f, 1.0f, 0.0f, // green
-        0.0f, 0.0f, 0.0f, // black
-        0.0f, 0.0f, 1.0f  // blue
-    };
-
-    glm::mat3 colors_j{
-        1.0f, 0.0f, 0.0f, // red
-        0.0f, 0.0f, 0.0f, // black
-        1.0f, 0.5f, 0.0f  // orange
-    };
-
-    glm::mat3 colors_k{
-        1.0f, 1.0f, 1.0f, // white
-        0.0f, 0.0f, 0.0f, // black
-        1.0f, 1.0f, 0.0f  // yellow
-    };
-
-    std::vector<float> colors{
-        1.0f, 1.0f, 0.0f, // yellow
-        1.0f, 1.0f, 1.0f, // white
-        1.0f, 0.0f, 0.0f, // red
-        1.0f, 0.5f, 0.0f, // orange
-        0.0f, 0.0f, 1.0f, // blue
-        0.0f, 1.0f, 0.0f  // green
-    };
-
-    shdProgram.setUniformMatrix3fv("colors_i", colors_i);
-    shdProgram.setUniformMatrix3fv("colors_j", colors_j);
-    shdProgram.setUniformMatrix3fv("colors_k", colors_k);
-    shdProgram.setUniformVector3fv("colors", colors);
-
-    glm::mat4 view(1.0f);
-    glm::mat4 projection(1.0f);
-    glm::mat4 model(1.0f);
     
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
     projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
-    //projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 50.0f);
 
     shdProgram.setUniformMatrix4fv("view", view);
     shdProgram.setUniformMatrix4fv("projection", projection);
+}
 
-    float angle = 0.0f;
-    float angle2 = 0.0f;
+void App::calculate()
+{
+    int mouse_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 
-    cube.rotate('U', false);
+    auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 world_ray;
+    bool pressed = false;
 
-    float time_before = 0.0f;
-    unsigned long long time_counter = 0;
-
-    while (!glfwWindowShouldClose(window))
+    if (mouse_state == GLFW_PRESS)
     {
-        int mouse_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+        pressed = true;
 
-        glm::vec3 world_ray, mouse_origin;
-        bool pressed = false;
+        double x_pos, y_pos;
+        glfwGetCursorPos(window, &x_pos, &y_pos);
 
-        if (mouse_state == GLFW_PRESS)
-        {
-            pressed = true;
+        world_ray = get_eye_ray(x_pos, y_pos, width, height, projection, view);
 
-            double x_pos, y_pos;
-            glfwGetCursorPos(window, &x_pos, &y_pos);
+        // std::cout << "LMB pressed"
+            // << " ; x = " << world_ray.x
+            // << " ; y = " << world_ray.y
+            // << " ; z = " << world_ray.z << '\n';
+    }
 
-            float x = 2.0 * x_pos / width - 1.0;
-            float y = 2.0 * y_pos / height - 1.0;
-            y = -y;
+    is_anything_hit = false;
+    min_hit_dist = std::numeric_limits<float>::max();
 
-            mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            for (int k = 0; k < 3; ++k)
+            {
+                auto model = glm::translate(glm::mat4(1.0f),
+                                            glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
-            auto eye_ray = glm::inverse(projection) * glm::vec4(x, y, -1.0f, 1.0f);
-            eye_ray.z = -1.0f;
-            eye_ray.w = 0.0f;
+                auto model_full_size = glm::scale(model, glm::vec3(0.35f));
+                model = glm::scale(model, glm::vec3(1.0f / 3.0f));
 
-            world_ray = std::move(glm::normalize(glm::vec3(glm::inverse(view) * eye_ray)));
+                auto transform_matrix = view * model_full_size;
 
-            // std::cout << "LMB pressed"
-                // << " ; x = " << world_ray.x
-                // << " ; y = " << world_ray.y
-                // << " ; z = " << world_ray.z << '\n';
-        }
+                cube.models[i][j][k] = std::move(model);
+                cube.models_full_size[i][j][k] = std::move(model_full_size);
 
-        bool is_anything_hit = false;
-        float min_hit_dist = std::numeric_limits<float>::max();
-        int min_hit_index;
-        int min_hit_i, min_hit_j, min_hit_k;
+                if (pressed)
+                {
+                    constexpr float epsilon = 1e-8;
 
+                    float min_dist = std::numeric_limits<float>::max();
+                    int min_index;
+                    bool is_hit = false;
+
+                    for (int v = 0; v < cube.vec3s.size(); v += 3)
+                    {
+                        auto vertex1 = transform_matrix * glm::vec4(cube.vec3s[v], 1.0f);
+                        auto vertex2 = transform_matrix * glm::vec4(cube.vec3s[v + 1], 1.0f);
+                        auto vertex3 = transform_matrix * glm::vec4(cube.vec3s[v + 2], 1.0f);
+
+                        float dist = dist_from_ray_to_triangle(mouse_origin, world_ray, vertex1, vertex2, vertex3);
+                        bool non_zero = dist > epsilon;
+                        int index = cube.vertices[v * 4 + 3];
+
+                        if (non_zero && dist < min_dist)
+                        {
+                            is_hit = true;
+                            min_dist = dist;
+                            min_index = index;
+                        }
+                    }
+
+                    cube.dists[i][j][k] = is_hit ? min_dist : 0.0f;
+
+                    if (is_hit && min_dist < min_hit_dist)
+                    {
+                        min_hit_dist = min_dist;
+                        min_hit_i = i;
+                        min_hit_j = j;
+                        min_hit_k = k;
+                        min_hit_index = min_index;
+                        is_anything_hit = is_hit;
+                    }
+                }
+            }
+
+    // angle += 1.0f;
+
+    if (is_anything_hit)
+    {
         for (int i = 0; i < 3; ++i)
             for (int j = 0; j < 3; ++j)
                 for (int k = 0; k < 3; ++k)
                 {
-                    if (false)
-                    {
-                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 1.0f, 0.0f));
-                        model = glm::rotate(model, glm::radians(angle2), glm::vec3(0.0f, 1.0f, 0.0f));
-                    }
-                    else
-                    {
-                        model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 1.0f, 0.0f));
-                    }
+                    auto model = glm::translate(glm::mat4(1.0f),
+                                                glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
-                    model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
-                    glm::mat4 model_full_size = model;
-
+                    auto model_full_size = glm::scale(model, glm::vec3(0.35f));
                     model = glm::scale(model, glm::vec3(1.0f / 3.0f));
-                    model_full_size = glm::scale(model_full_size, glm::vec3(0.35f));
 
                     auto transform_matrix = view * model_full_size;
 
                     cube.models[i][j][k] = std::move(model);
                     cube.models_full_size[i][j][k] = std::move(model_full_size);
-
-                    if (pressed)
-                    {
-                        constexpr float epsilon = 1e-8;
-
-                        float min_dist = std::numeric_limits<float>::max();
-                        float min_index = 0.0f;
-                        bool is_hit = false;
-
-                        for (int v = 0; v < cube.vec3s.size(); v += 3)
-                        {
-                            auto vertex1 = transform_matrix * glm::vec4(cube.vec3s[v], 1.0f);
-                            auto vertex2 = transform_matrix * glm::vec4(cube.vec3s[v + 1], 1.0f);
-                            auto vertex3 = transform_matrix * glm::vec4(cube.vec3s[v + 2], 1.0f);
-
-                            float dist = dist_from_ray_to_triangle(mouse_origin, world_ray, vertex1, vertex2, vertex3);
-                            bool non_zero = dist > epsilon;
-                            int index = cube.vertices[v * 4 + 3];
-
-                            if (non_zero && dist < min_dist)
-                            {
-                                is_hit = true;
-                                min_dist = dist;
-                                min_index = cube.vertices[v * 4 + 3];
-                            }
-                        }
-
-                        if (is_hit && min_dist < min_hit_dist)
-                        {
-                            min_hit_dist = min_dist;
-                            min_hit_i = i;
-                            min_hit_j = j;
-                            min_hit_k = k;
-                            min_hit_index = min_index;
-                            is_anything_hit = is_hit;
-                        }
-
-                        // std::cout << i << ' ' << j << ' ' << k << ' ' << max_dist << '\n';
-                    }
                 }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
-                for (int k = 0; k < 3; ++k)
-                {
-                    shdProgram.setUniform1i("i", i);
-                    shdProgram.setUniform1i("j", j);
-                    shdProgram.setUniform1i("k", k);
-
-                    if (is_anything_hit && i == min_hit_i && j == min_hit_j && k == min_hit_k)
-                    {
-                        shdProgram.setUniform1i("is_hit", true);
-                        shdProgram.setUniform1f("hit_index", static_cast<float>(min_hit_index));
-                    }
-                    else
-                    {
-                        shdProgram.setUniform1i("is_hit", false);
-                    }
-
-                    shdProgram.setUniformMatrix4fv("model", cube.models[i][j][k]);
-                    shdProgram.setUniformVector3fv("colors", cube.cubes[i][j][k]);
-
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-
-        angle += 1.0f;
-        angle2 += 1.0f;
-
-        float time_now = glfwGetTime();
-        float mills_passed = (time_now - time_before) * 1000.0f;
-        time_before = time_now;
-
-        if (time_counter % 30 == 0)
-        {
-            const std::string title = std::to_string(mills_passed);
-
-            glfwSetWindowTitle(window, title.c_str());
-        }
-
-        ++time_counter;
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        rotating = true;
+        rotation_angle += 1.0f;
     }
+    else
+    {
+        rotating = false;
+        rotation_angle = 0.0f;
+    }
+}
+
+void App::draw()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            for (int k = 0; k < 3; ++k)
+            {
+                shdProgram.setUniform1i("i", i);
+                shdProgram.setUniform1i("j", j);
+                shdProgram.setUniform1i("k", k);
+
+                if (is_anything_hit && i == min_hit_i && j == min_hit_j && k == min_hit_k)
+                {
+                    shdProgram.setUniform1i("is_hit", true);
+                    shdProgram.setUniform1f("hit_index", static_cast<float>(min_hit_index));
+                }
+                else
+                {
+                    shdProgram.setUniform1i("is_hit", false);
+                }
+
+                shdProgram.setUniformMatrix4fv("model", cube.models[i][j][k]);
+                shdProgram.setUniformVector3fv("colors", cube.cubes[i][j][k]);
+
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+}
+
+void App::update_fps()
+{
+    static double time_before = 0.0f;
+    static int time_counter = 0;
+
+    double time_now = glfwGetTime();
+    double mills_passed = (time_now - time_before) * 1000.0;
+    time_before = time_now;
+
+    if (time_counter == 30)
+    {
+        const std::string title = std::to_string(mills_passed);
+
+        glfwSetWindowTitle(window, title.c_str());
+
+        time_counter = 0;
+    }
+
+    ++time_counter;
+}
+
+bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
+                   int &index, int &hit_i, int &hit_j, int &hit_k)
+{
+    bool is_anything_hit = false;
+    bool min_hit_dist = std::numeric_limits<float>::max();
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            for (int k = 0; k < 3; ++k)
+            {
+                auto model = glm::translate(glm::mat4(1.0f),
+                                            glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
+
+                auto model_full_size = glm::scale(model, glm::vec3(0.35f));
+                model = glm::scale(model, glm::vec3(1.0f / 3.0f));
+
+                auto transform_matrix = view * model_full_size;
+
+                cube.models[i][j][k] = std::move(model);
+                cube.models_full_size[i][j][k] = std::move(model_full_size);
+
+                constexpr float epsilon = 1e-8;
+
+                float min_dist = std::numeric_limits<float>::max();
+                int min_index;
+                bool is_hit = false;
+
+                for (int v = 0; v < cube.vec3s.size(); v += 3)
+                {
+                    auto vertex1 = transform_matrix * glm::vec4(cube.vec3s[v], 1.0f);
+                    auto vertex2 = transform_matrix * glm::vec4(cube.vec3s[v + 1], 1.0f);
+                    auto vertex3 = transform_matrix * glm::vec4(cube.vec3s[v + 2], 1.0f);
+
+                    float dist = dist_from_ray_to_triangle(mouse_origin, world_ray, vertex1, vertex2, vertex3);
+                    bool non_zero = dist > epsilon;
+                    int index = cube.vertices[v * 4 + 3];
+
+                    if (non_zero && dist < min_dist)
+                    {
+                        is_hit = true;
+                        min_dist = dist;
+                        min_index = index;
+                    }
+                }
+
+                cube.dists[i][j][k] = is_hit ? min_dist : 0.0f;
+
+                if (is_hit && min_dist < min_hit_dist)
+                {
+                    min_hit_dist = min_dist;
+                    hit_i = i;
+                    hit_j = j;
+                    hit_k = k;
+                    index = min_index;
+                    is_anything_hit = is_hit;
+                }
+            }
+
+    return is_anything_hit;
 }
 
 App::~App()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
+}
+
+void CallbackCaller::error_callback_caller(int error, const char *description)
+{
+    app->error_callback(error, description);
+}
+
+void CallbackCaller::key_callback_caller(GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+    app->key_callback(window, key, scancode, action, mods);
+}
+
+void CallbackCaller::frame_buffer_change_callback_caller(GLFWwindow * window, int width, int height)
+{
+    app->frame_buffer_change_callback(window, width, height);
+}
+
+void CallbackCaller::mouse_callback_caller(GLFWwindow * window, int button, int action, int mods)
+{
+    app->mouse_callback(window, button, action, mods);
 }

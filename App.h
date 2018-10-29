@@ -21,16 +21,61 @@ public:
     App(int width, int height);
     ~App();
 
+    void error_callback(int, const char *);
+    void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+    void frame_buffer_change_callback(GLFWwindow *window, int width, int height);
+    void mouse_callback(GLFWwindow *window, int button, int action, int mods);
+
 private:
     void run();
+
+    void prepare();
+    void calculate();
+    void draw();
+    void update_fps();
+
+    bool hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
+                  int &index, int &hit_i, int &hit_j, int &hit_k);
 
     GLFWwindow *window;
     const int width;
     const int height;
+
+    Shader vertex;
+    Shader fragment;
+    ShaderProgram shdProgram;
+    VBO cubeVBO;
+    VAO cubeVAO;
+
+    Cube cube;
+    glm::mat4 projection;
+    glm::mat4 view;
+
+    bool is_anything_hit = false;
+    float min_hit_dist;
+    int min_hit_index;
+    int min_hit_i, min_hit_j, min_hit_k;
+
+    bool mouse_pressed = false;
+
+    bool rotating = false;
+    float rotation_angle = 0.0f;
+
+    float angle = 0.0f;
 };
 
-void error_callback(int, const char *);
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-void frame_buffer_change_callback(GLFWwindow *window, int width, int height);
+struct CallbackCaller
+{
+    static App *app;
+
+    static void error_callback_caller(int, const char *);
+    static void key_callback_caller(GLFWwindow *window, int key, int scancode, int action, int mods);
+    static void frame_buffer_change_callback_caller(GLFWwindow *window, int width, int height);
+    static void mouse_callback_caller(GLFWwindow *window, int button, int action, int mods);
+};
+
 float dist_from_ray_to_triangle(const glm::vec3 &origin, const glm::vec3 &dir,
                                 const glm::vec3 &v0, const glm::vec3 &v1, const glm::vec3 &v2);
+glm::vec3 get_eye_ray(double x_pos, double y_pos, int width, int height,
+                      const glm::mat4 &projection, const glm::mat4 &view);
+bool needs_rotation(int index, int i, int j, int k, int hit_i, int hit_j, int hit_k);

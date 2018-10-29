@@ -10,6 +10,8 @@
 class Shader
 {
 public:
+    Shader() : ID(0), shaderType(0) {};
+
     Shader(GLenum shaderType, std::string filename);
 
     Shader(Shader&& s);

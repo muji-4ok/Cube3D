@@ -45,6 +45,32 @@ Cube::Cube()
             }
 }
 
+Cube & Cube::operator=(const Cube & c)
+{
+    if (&c == this)
+        return *this;
+
+    faces = c.faces;
+    cubes = c.cubes;
+    models = c.models;
+    models_full_size = c.models_full_size;
+
+    return *this;
+}
+
+Cube & Cube::operator=(Cube && c)
+{
+    if (&c == this)
+        return *this;
+
+    faces = std::move(c.faces);
+    cubes = std::move(c.cubes);
+    models = std::move(c.models);
+    models_full_size = std::move(c.models_full_size);
+
+    return *this;
+}
+
 
 Cube::~Cube()
 {
