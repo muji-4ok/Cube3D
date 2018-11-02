@@ -77,3 +77,4 @@ float dist_from_ray_to_triangle(const glm::vec3 &origin, const glm::vec3 &dir,
 glm::vec3 get_eye_ray(double x_pos, double y_pos, int width, int height,
                       const glm::mat4 &projection, const glm::mat4 &view);
 bool needs_rotation(int index, int i, int j, int k, int hit_i, int hit_j, int hit_k);
+glm::vec3 get_rotation_vec(int index);

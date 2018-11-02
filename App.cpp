@@ -30,17 +30,12 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
         double x_pos, y_pos;
         glfwGetCursorPos(window, &x_pos, &y_pos);
 
-        std::cout << x_pos << ' ' << y_pos << '\n';
+        // std::cout << x_pos << ' ' << y_pos << '\n';
 
         auto world_ray = get_eye_ray(x_pos, y_pos, width, height, projection, view);
+        auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
 
-        float x = 2.0 * x_pos / width - 1.0;
-        float y = 2.0 * y_pos / height - 1.0;
-        y = -y;
-
-        auto mouse_origin = glm::vec3(x, y, 0.0f);
-
-        std::cout << world_ray.x << ' ' << world_ray.y << ' ' << world_ray.z << '\n';
+        // std::cout << world_ray.x << ' ' << world_ray.y << ' ' << world_ray.z << '\n';
 
         int index;
         int hit_i, hit_j, hit_k;
@@ -125,6 +120,22 @@ bool needs_rotation(int index, int i, int j, int k, int hit_i, int hit_j, int hi
             return j == 0;
         case 5:
             return j == 2;
+    }
+}
+
+glm::vec3 get_rotation_vec(int index)
+{
+    switch (index)
+    {
+        case 0:
+        case 1:
+            return glm::vec3(0.0f, 0.0f, 1.0f);
+        case 2:
+        case 3:
+            return glm::vec3(1.0f, 0.0f, 0.0f);
+        case 4:
+        case 5:
+            return glm::vec3(0.0f, 1.0f, 0.0f);
     }
 }
 
@@ -220,16 +231,20 @@ void App::calculate()
 {
     // std::cout << rotating << '\n';
 
+    auto rotation_vec = get_rotation_vec(hit_index);
+
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             for (int k = 0; k < 3; ++k)
             {
                 glm::mat4 model;
 
-                if (needs_rotation(hit_index, i, j, k, hit_i, hit_j, hit_k))
-                    model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation_angle), glm::vec3(1.0f, 1.0f, 0.0f));
-                else
-                    model = glm::mat4(1.0f);
+                model = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+
+                if (rotating && needs_rotation(hit_index, i, j, k, hit_i, hit_j, hit_k))
+                    model = glm::rotate(model, glm::radians(rotation_angle), rotation_vec);
+                // else
+                    // model = glm::mat4(1.0f);
 
                 model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
@@ -258,7 +273,8 @@ void App::draw()
                 shdProgram.setUniform1i("j", j);
                 shdProgram.setUniform1i("k", k);
 
-                if (needs_rotation(hit_index, i, j, k, hit_i, hit_j, hit_k))
+                if (rotating && (needs_rotation(hit_index, i, j, k, hit_i, hit_j, hit_k) ||
+                    (i == hit_i && j == hit_j && k == hit_k)))
                 {
                     shdProgram.setUniform1i("is_hit", true);
                     shdProgram.setUniform1f("hit_index", static_cast<float>(hit_index));
@@ -300,14 +316,16 @@ bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
                    int &index, int &hit_i, int &hit_j, int &hit_k)
 {
     bool is_anything_hit = false;
-    bool min_hit_dist = std::numeric_limits<float>::max();
+    float min_hit_dist = std::numeric_limits<float>::max();
 
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             for (int k = 0; k < 3; ++k)
             {
-                auto model = glm::translate(glm::mat4(1.0f),
-                                            glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
+                glm::mat4 model;
+                model = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+
+                model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
                 model = glm::scale(model, glm::vec3(0.35f));
 
@@ -340,7 +358,7 @@ bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
                     }
                 }
 
-                std::cout << "dist for " << i << ' ' << j << ' ' << k << " is " << min_dist << '\n';
+                // std::cout << "dist for " << i << ' ' << j << ' ' << k << " is " << min_dist << '\n';
 
                 // cube.dists[i][j][k] = is_hit ? min_dist : 0.0f;
 
@@ -355,7 +373,7 @@ bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
                 }
             }
 
-    std::cout << "anything hit: " << is_anything_hit << '\n';
+    // std::cout << "anything hit: " << is_anything_hit << '\n';
 
     return is_anything_hit;
 }
