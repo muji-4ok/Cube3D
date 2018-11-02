@@ -20,19 +20,41 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
         mouse_pressed = (action == GLFW_PRESS);
 
         if (action != GLFW_PRESS)
-            return;
+        {
+            this->rotating = false;
+            this->rotation_angle = 0.0f;
 
-        int index;
-        int hit_i, hit_j, hit_k;
+            return;
+        }
 
         double x_pos, y_pos;
         glfwGetCursorPos(window, &x_pos, &y_pos);
 
-        auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
+        std::cout << x_pos << ' ' << y_pos << '\n';
+
         auto world_ray = get_eye_ray(x_pos, y_pos, width, height, projection, view);
+
+        float x = 2.0 * x_pos / width - 1.0;
+        float y = 2.0 * y_pos / height - 1.0;
+        y = -y;
+
+        auto mouse_origin = glm::vec3(x, y, 0.0f);
+
+        std::cout << world_ray.x << ' ' << world_ray.y << ' ' << world_ray.z << '\n';
+
+        int index;
+        int hit_i, hit_j, hit_k;
 
         if (!hit_side(mouse_origin, world_ray, index, hit_i, hit_j, hit_k))
             return;
+
+        this->hit_index = index;
+        this->hit_i = hit_i;
+        this->hit_j = hit_j;
+        this->hit_k = hit_k;
+
+        this->rotating = true;
+        this->rotation_angle = 0.0f;
     }
 }
 
@@ -89,41 +111,20 @@ glm::vec3 get_eye_ray(double x_pos, double y_pos, int width, int height,
 
 bool needs_rotation(int index, int i, int j, int k, int hit_i, int hit_j, int hit_k)
 {
-    if (index == 0)
+    switch (index)
     {
-        if (k != 0)
-            return false;
-
-    }
-    else if (index == 1)
-    {
-        if (k != 2)
-            return false;
-
-    }
-    else if (index == 2)
-    {
-        if (i != 0)
-            return false;
-
-    }
-    else if (index == 3)
-    {
-        if (i != 2)
-            return false;
-
-    }
-    else if (index == 4)
-    {
-        if (j != 0)
-            return false;
-
-    }
-    else
-    {
-        if (j != 2)
-            return false;
-
+        case 0:
+            return k == 0;
+        case 1:
+            return k == 2;
+        case 2:
+            return i == 0;
+        case 3:
+            return i == 2;
+        case 4:
+            return j == 0;
+        case 5:
+            return j == 2;
     }
 }
 
@@ -217,36 +218,20 @@ void App::prepare()
 
 void App::calculate()
 {
-    int mouse_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-
-    auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 world_ray;
-    bool pressed = false;
-
-    if (mouse_state == GLFW_PRESS)
-    {
-        pressed = true;
-
-        double x_pos, y_pos;
-        glfwGetCursorPos(window, &x_pos, &y_pos);
-
-        world_ray = get_eye_ray(x_pos, y_pos, width, height, projection, view);
-
-        // std::cout << "LMB pressed"
-            // << " ; x = " << world_ray.x
-            // << " ; y = " << world_ray.y
-            // << " ; z = " << world_ray.z << '\n';
-    }
-
-    is_anything_hit = false;
-    min_hit_dist = std::numeric_limits<float>::max();
+    // std::cout << rotating << '\n';
 
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             for (int k = 0; k < 3; ++k)
             {
-                auto model = glm::translate(glm::mat4(1.0f),
-                                            glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
+                glm::mat4 model;
+
+                if (needs_rotation(hit_index, i, j, k, hit_i, hit_j, hit_k))
+                    model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation_angle), glm::vec3(1.0f, 1.0f, 0.0f));
+                else
+                    model = glm::mat4(1.0f);
+
+                model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
                 auto model_full_size = glm::scale(model, glm::vec3(0.35f));
                 model = glm::scale(model, glm::vec3(1.0f / 3.0f));
@@ -255,75 +240,10 @@ void App::calculate()
 
                 cube.models[i][j][k] = std::move(model);
                 cube.models_full_size[i][j][k] = std::move(model_full_size);
-
-                if (pressed)
-                {
-                    constexpr float epsilon = 1e-8;
-
-                    float min_dist = std::numeric_limits<float>::max();
-                    int min_index;
-                    bool is_hit = false;
-
-                    for (int v = 0; v < cube.vec3s.size(); v += 3)
-                    {
-                        auto vertex1 = transform_matrix * glm::vec4(cube.vec3s[v], 1.0f);
-                        auto vertex2 = transform_matrix * glm::vec4(cube.vec3s[v + 1], 1.0f);
-                        auto vertex3 = transform_matrix * glm::vec4(cube.vec3s[v + 2], 1.0f);
-
-                        float dist = dist_from_ray_to_triangle(mouse_origin, world_ray, vertex1, vertex2, vertex3);
-                        bool non_zero = dist > epsilon;
-                        int index = cube.vertices[v * 4 + 3];
-
-                        if (non_zero && dist < min_dist)
-                        {
-                            is_hit = true;
-                            min_dist = dist;
-                            min_index = index;
-                        }
-                    }
-
-                    cube.dists[i][j][k] = is_hit ? min_dist : 0.0f;
-
-                    if (is_hit && min_dist < min_hit_dist)
-                    {
-                        min_hit_dist = min_dist;
-                        min_hit_i = i;
-                        min_hit_j = j;
-                        min_hit_k = k;
-                        min_hit_index = min_index;
-                        is_anything_hit = is_hit;
-                    }
-                }
             }
 
-    // angle += 1.0f;
-
-    if (is_anything_hit)
-    {
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
-                for (int k = 0; k < 3; ++k)
-                {
-                    auto model = glm::translate(glm::mat4(1.0f),
-                                                glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
-
-                    auto model_full_size = glm::scale(model, glm::vec3(0.35f));
-                    model = glm::scale(model, glm::vec3(1.0f / 3.0f));
-
-                    auto transform_matrix = view * model_full_size;
-
-                    cube.models[i][j][k] = std::move(model);
-                    cube.models_full_size[i][j][k] = std::move(model_full_size);
-                }
-
-        rotating = true;
+    if (rotating)
         rotation_angle += 1.0f;
-    }
-    else
-    {
-        rotating = false;
-        rotation_angle = 0.0f;
-    }
 }
 
 void App::draw()
@@ -338,10 +258,10 @@ void App::draw()
                 shdProgram.setUniform1i("j", j);
                 shdProgram.setUniform1i("k", k);
 
-                if (is_anything_hit && i == min_hit_i && j == min_hit_j && k == min_hit_k)
+                if (needs_rotation(hit_index, i, j, k, hit_i, hit_j, hit_k))
                 {
                     shdProgram.setUniform1i("is_hit", true);
-                    shdProgram.setUniform1f("hit_index", static_cast<float>(min_hit_index));
+                    shdProgram.setUniform1f("hit_index", static_cast<float>(hit_index));
                 }
                 else
                 {
@@ -389,13 +309,9 @@ bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
                 auto model = glm::translate(glm::mat4(1.0f),
                                             glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
-                auto model_full_size = glm::scale(model, glm::vec3(0.35f));
-                model = glm::scale(model, glm::vec3(1.0f / 3.0f));
+                model = glm::scale(model, glm::vec3(0.35f));
 
-                auto transform_matrix = view * model_full_size;
-
-                cube.models[i][j][k] = std::move(model);
-                cube.models_full_size[i][j][k] = std::move(model_full_size);
+                auto transform_matrix = view * model;
 
                 constexpr float epsilon = 1e-8;
 
@@ -410,6 +326,9 @@ bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
                     auto vertex3 = transform_matrix * glm::vec4(cube.vec3s[v + 2], 1.0f);
 
                     float dist = dist_from_ray_to_triangle(mouse_origin, world_ray, vertex1, vertex2, vertex3);
+
+                    std::cout << dist << '\n';
+
                     bool non_zero = dist > epsilon;
                     int index = cube.vertices[v * 4 + 3];
 
@@ -421,7 +340,9 @@ bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
                     }
                 }
 
-                cube.dists[i][j][k] = is_hit ? min_dist : 0.0f;
+                std::cout << "dist for " << i << ' ' << j << ' ' << k << " is " << min_dist << '\n';
+
+                // cube.dists[i][j][k] = is_hit ? min_dist : 0.0f;
 
                 if (is_hit && min_dist < min_hit_dist)
                 {
@@ -433,6 +354,8 @@ bool App::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
                     is_anything_hit = is_hit;
                 }
             }
+
+    std::cout << "anything hit: " << is_anything_hit << '\n';
 
     return is_anything_hit;
 }

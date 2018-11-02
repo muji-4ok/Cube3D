@@ -52,16 +52,14 @@ private:
     glm::mat4 view;
 
     bool is_anything_hit = false;
-    float min_hit_dist;
-    int min_hit_index;
-    int min_hit_i, min_hit_j, min_hit_k;
-
-    bool mouse_pressed = false;
 
     bool rotating = false;
     float rotation_angle = 0.0f;
 
-    float angle = 0.0f;
+    int hit_index;
+    int hit_i, hit_j, hit_k;
+
+    bool mouse_pressed = false;
 };
 
 struct CallbackCaller
