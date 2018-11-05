@@ -146,10 +146,8 @@ void ShaderProgram::setUniformMatrix3fv(const std::string & name, const glm::mat
     glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, &mat3[0][0]);
 }
 
-int ShaderProgram::getUniformLocation(const std::string &name) const
+int ShaderProgram::getUniformLocation(const std::string &name)
 {
-    static std::map<std::string, int> cache;
-
     auto elem = cache.find(name);
 
     if (elem != cache.end())

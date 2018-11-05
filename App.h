@@ -53,7 +53,7 @@ private:
     int get_rot_index(int index, Rotation_Dir dir);
     glm::vec3 project_point_onto_plane(const glm::vec3 &plane_point, const glm::vec3 &plane_normal,
                                        const glm::vec3 &point);
-    bool are_similary_oriented(const glm::vec3 &v1, const glm::vec3 &v2);
+    bool are_similary_oriented(const glm::vec3 &stable , const glm::vec3 &unstable);
 
     GLFWwindow *window;
     int width;
@@ -84,12 +84,16 @@ private:
     bool mouse_pressed = false;
 
     glm::vec3 original_mouse_dir;
+    glm::vec3 mouse_dir;
     glm::vec3 pane_origin;
     glm::vec3 normal;
     glm::vec3 rot_normal;
     glm::vec3 pane_vert_1;
     glm::vec3 world_ray;
     glm::vec3 vert;
+    glm::vec3 rotation_vec = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    glm::vec2 dir_vec;
 
     glm::mat4 rotation_view;
 
@@ -97,6 +101,21 @@ private:
     glm::vec3 up;
 
     glm::vec3 obj_position;
+
+    const std::vector<float> square_vertices{
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
+    };
+
+    Shader squareVertex;
+    Shader squareFragment;
+    ShaderProgram squareShdProgram;
+    VBO squareVBO;
+    VAO squareVAO;
 };
 
 struct CallbackCaller

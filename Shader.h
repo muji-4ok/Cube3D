@@ -5,6 +5,8 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <vector>
+#include <map>
+#include <string>
 
 
 class Shader
@@ -56,6 +58,7 @@ public:
 
 private:
     unsigned int ID;
+    std::map<std::string, int> cache;
 
-    int getUniformLocation(const std::string &name) const;
+    int getUniformLocation(const std::string &name);
 };

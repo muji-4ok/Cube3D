@@ -158,10 +158,6 @@ glm::vec3 get_rotation_vec(int index)
 float App::get_rotation_angle(int index, int i, int j, int k,
                               const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos)
 {
-    // glm::vec3 pane_vert_1, pane_vert_2, pane_vert_3;
-    // get_pane_vertices(index, pane_vert_1, pane_vert_2, pane_vert_3);
-    // auto pane_edge_2 = pane_vert_3 - pane_vert_1;
-
     if (!has_dir)
     {
         auto dist = glm::distance(original_mouse_pos, mouse_pos);
@@ -173,179 +169,23 @@ float App::get_rotation_angle(int index, int i, int j, int k,
         else
             return dist;
     }
-    else if (!has_original)
+    else
     {
-        has_original = true;
+        auto mouse_diff = mouse_pos - original_mouse_pos;
 
-        glm::vec3 pane_vert_2, pane_vert_3;
-        get_pane_vertices(index, pane_vert_1, pane_vert_2, pane_vert_3);
-        std::cout << "v1: x = " << pane_vert_1.x << " ; y = " << pane_vert_1.y << " ; z = " << pane_vert_1.z << '\n';
+        auto dot = 2.0f * glm::dot(dir_vec, mouse_diff);
 
-        auto pane_edge_1 = pane_vert_2 - pane_vert_1;
-        auto pane_edge_2 = pane_vert_3 - pane_vert_1;
-
-        std::cout << "edge_1: x = " << pane_edge_1.x << " ; y = " << pane_edge_1.y << " ; z = " << pane_edge_1.z << '\n';
-        std::cout << "edge_2: x = " << pane_edge_2.x << " ; y = " << pane_edge_2.y << " ; z = " << pane_edge_2.z << '\n';
-
-        normal = glm::normalize(glm::cross(pane_edge_1, pane_edge_2));
-
-        auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
-        auto original_ray = glm::normalize(world_ray);
-
-        vert = get_vert_by_coord(hit_i, hit_j, hit_k);
-
-        auto original_dist = intersect_ray_plane(normal, vert, mouse_origin, original_ray);
-        
-        auto original_intersect_point = original_ray * original_dist;
+        rotation_vec = get_rot_vec(hit_index, hit_i, hit_j, hit_k, dir);
 
         auto rot_index = get_rot_index(index, dir);
-        // std::cout << "rot_index: " << rot_index << ' ' << "index: " << index << '\n';
-        glm::vec3 rot_pane_vert_1, rot_pane_vert_2, rot_pane_vert_3;
-        get_rot_pane_vertices(rot_index, hit_i, hit_j, hit_k, rot_pane_vert_1, rot_pane_vert_2, rot_pane_vert_3);
 
-        auto rot_pane_edge_1 = rot_pane_vert_2 - rot_pane_vert_1;
-        auto rot_pane_edge_2 = rot_pane_vert_3 - rot_pane_vert_1;
+        if (rot_index == 2 || rot_index == 3 ||
+            ((rot_index == 4 || rot_index == 5) && (index == 2 || index == 3)) ||
+            rot_index == 0 || rot_index == 1)
+            dot = -dot;
 
-        rot_normal = glm::normalize(glm::cross(rot_pane_edge_1, rot_pane_edge_2));
-
-        pane_origin = (rot_pane_edge_1 + rot_pane_edge_2) / 2.0f;
-
-        auto projected_original_intersect_point = project_point_onto_plane(vert, rot_normal, original_intersect_point);
-
-        original_mouse_dir = glm::normalize(projected_original_intersect_point - pane_origin);
+        return dot;
     }
-    // static float angle = 0.0f;
-    // return angle += 0.01;
-    // return std::acos(glm::dot(glm::normalize(original_mouse_pos), glm::normalize(mouse_pos)));
-
-    // glm::vec3 pane_vert_1, pane_vert_2, pane_vert_3;
-    // get_pane_vertices(index, pane_vert_1, pane_vert_2, pane_vert_3);
-
-    // std::cout << "v1: x = " << pane_vert_1.x << " ; y = " << pane_vert_1.y << " ; z = " << pane_vert_1.z << '\n';
-    // std::cout << "v2: x = " << pane_vert_2.x << " ; y = " << pane_vert_2.y << " ; z = " << pane_vert_2.z << '\n';
-    // std::cout << "v3: x = " << pane_vert_3.x << " ; y = " << pane_vert_3.y << " ; z = " << pane_vert_3.z << '\n';
-
-    // auto pane_edge_1 = pane_vert_2 - pane_vert_1;
-    // auto pane_edge_2 = pane_vert_3 - pane_vert_1;
-
-    // std::cout << "edge_1: x = " << pane_edge_1.x << " ; y = " << pane_edge_1.y << " ; z = " << pane_edge_1.z << '\n';
-    // std::cout << "edge_2: x = " << pane_edge_2.x << " ; y = " << pane_edge_2.y << " ; z = " << pane_edge_2.z << '\n';
-
-    // auto normal = glm::normalize(glm::cross(pane_edge_1, pane_edge_2));
-
-    // std::cout << "normal: x = " << normal.x << " ; y = " << normal.y << " ; z = " << normal.z << '\n';
-
-    // auto original_ray = glm::normalize(get_eye_ray(original_mouse_pos, projection, view));
-    auto ray = glm::normalize(get_eye_ray(mouse_pos, projection, view));
-    auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
-    // mouse_origin = glm::vec3(mouse_pos, 0.0f);
-
-    // std::cout << "orignal_ray: x = " << original_ray.x << " ; y = " << original_ray.y << " ; z = " << original_ray.z << '\n';
-    // std::cout << "ray: x = " << ray.x << " ; y = " << ray.y << " ; z = " << ray.z << '\n';
-
-    // auto original_dist = intersect_ray_plane(normal, pane_vert_1, mouse_origin, original_ray);
-    // auto vert = get_vert_by_coord(hit_i, hit_j, hit_k);
-    auto dist = intersect_ray_plane(normal, vert, mouse_origin, ray);
-
-    // std::cout << "original_dist: " << original_dist << ' ' << "dist: " << dist << '\n';
-
-    // auto original_intersect_point = original_ray * original_dist;
-    auto intersect_point = ray * dist;
-
-    auto projected_intersect_point = project_point_onto_plane(vert, rot_normal, intersect_point);
-
-    // up = glm::normalize(glm::cross(normal, intersect_point - pane_origin));
-    // center = intersect_point;
-    // rotation_view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), intersect_point, up);
-
-    // auto pane_origin = (pane_edge_1 + pane_edge_2) / 2.0f;
-
-    // std::cout << "pane_origin: x = " << pane_origin.x << " ; y = " << pane_origin.y << " ; z = " << pane_origin.z << '\n';
-
-    // auto original_mouse_dir = glm::normalize(original_intersect_point - pane_origin);
-    auto mouse_dir = glm::normalize(projected_intersect_point - pane_origin);
-
-    std::cout << "original_mouse_dir: x = " << original_mouse_dir.x << " ; y = " << original_mouse_dir.y << " ; z = " << original_mouse_dir.z << '\n';
-    std::cout << "mouse_dir: x = " << mouse_dir.x << " ; y = " << mouse_dir.y << " ; z = " << mouse_dir.z << '\n';
-
-    auto dot = glm::dot(original_mouse_dir, mouse_dir);
-    // auto dot = glm::dot(original_intersect_point, intersect_point);
-    // auto dot = glm::dot(original_mouse_pos, mouse_pos);
-
-    constexpr float epsilon = 1e-5;
-
-    if (std::abs(dot - 1.0f) <= epsilon)
-        return 0.0f;
-
-    auto cross = glm::normalize(glm::cross(original_mouse_dir, mouse_dir));
-
-    std::cout << "rot_normal: x = " << rot_normal.x << " ; y = " << rot_normal.y << " ; z = " << rot_normal.z << '\n';
-    std::cout << "cross: x = " << cross.x << " ; y = " << cross.y << " ; z = " << cross.z << '\n';
-
-    bool similar = are_similary_oriented(cross, rot_normal);
-
-    std::cout << similar << '\n';
-
-    // std::cout << dot << '\n';
-
-    auto acos = std::acos(dot);
-
-    acos *= 2.0f;
-
-    auto rot_index = get_rot_index(index, dir);
-
-    if (!((rot_index == 0 || rot_index == 1) && index == 5))
-        acos = -acos;
-
-    if (!similar)
-        acos = -acos;
-    // acos = std::copysign(acos, -similar);
-
-    std::cout << glm::degrees(acos) << '\n';
-
-    // std::cout << acos << '\n';
-
-    if (std::abs(acos) < epsilon)
-        return 0.0f;
-    else
-        return acos; // std::copysign(acos, dot);
-
-    // auto pane_origin = glm::vec3(view * cube.models_full_size[2][1][1] * glm::vec4(0.35f, 0.0f, 0.0f, 1.0f));
-    // auto original_mouse_pos_3d = glm::vec3(original_mouse_pos, 0.0f);
-    // auto mouse_pos_3d = glm::vec3(mouse_pos, 0.0f);
-
-    // auto mouse_diff_vec = glm::normalize(mouse_pos_3d - original_mouse_pos_3d);
-
-    // auto dot_1 = std::abs(glm::dot(pane_vec_1, mouse_diff_vec));
-    // auto dot_2 = std::abs(glm::dot(pane_vec_2, mouse_diff_vec));
-
-    // std::cout << "dot_1: " << dot_1 << ' ' << "dot_2: " << dot_2 << '\n';
-
-    // if (!std::isnan(dot_1))
-        // if (dot_2 > dot_1)
-            // std::cout << "VERTICAL\n";
-        // else
-            // std::cout << "HORIZONTAL\n";
-
-    // auto v1 = glm::normalize(original_mouse_pos_3d - pane_origin);
-    // auto v2 = glm::normalize(mouse_pos_3d - pane_origin);
-
-    // auto dot = glm::dot(v1, v2);
-    // auto dot = glm::dot(original_mouse_pos, mouse_pos);
-
-    // constexpr float epsilon = 1e-5;
-
-    // if (std::abs(dot - 1.0f) <= epsilon)
-        // return 0.0f;
-
-    // std::cout << dot << '\n';
-
-    // auto acos = 2 * std::acos(dot);
-
-    // if (std::abs(acos) < epsilon)
-        // return 0.0f;
-    // else
-        // return std::copysign(acos, glm::cross(original_mouse_pos_3d, mouse_pos_3d).z);
 }
 
 void App::get_pane_vertices(int index, glm::vec3 & v1, glm::vec3 & v2, glm::vec3 & v3)
@@ -471,23 +311,40 @@ Rotation_Dir App::get_dir(int index, const glm::vec2 &original_mouse_pos, const 
     glm::vec3 pane_vert_1, pane_vert_2, pane_vert_3;
     get_pane_vertices(index, pane_vert_1, pane_vert_2, pane_vert_3);
 
-    auto pane_vec_1 = glm::normalize(pane_vert_2 - pane_vert_1);
-    auto pane_vec_2 = glm::normalize(pane_vert_3 - pane_vert_1);
+    auto pane_vec_1 = glm::normalize(glm::vec2(pane_vert_2 - pane_vert_1));
+    auto pane_vec_2 = glm::normalize(glm::vec2(pane_vert_3 - pane_vert_1));
 
-    auto pane_origin = glm::vec3(view * cube.models_full_size[2][1][1] * glm::vec4(0.35f, 0.0f, 0.0f, 1.0f));
-    auto original_mouse_pos_3d = glm::vec3(original_mouse_pos, 0.0f);
-    auto mouse_pos_3d = glm::vec3(mouse_pos, 0.0f);
-
-    auto mouse_diff_vec = glm::normalize(mouse_pos_3d - original_mouse_pos_3d);
+    auto mouse_diff_vec = glm::normalize(mouse_pos - original_mouse_pos);
 
     auto dot_1 = std::abs(glm::dot(pane_vec_1, mouse_diff_vec));
     auto dot_2 = std::abs(glm::dot(pane_vec_2, mouse_diff_vec));
 
-    // std::cout << "dot_1: " << dot_1 << ' ' << "dot_2: " << dot_2 << '\n';
     if (std::isnan(dot_1))
         return DIR1;
     else
-        return dot_1 > dot_2 ? DIR1 : DIR2;
+        if (dot_1 > dot_2)
+        {
+            dir_vec = pane_vec_1;
+
+            return DIR1;
+        }
+        else
+        {
+            dir_vec = pane_vec_2;
+
+            return DIR2;
+        }
+
+    // auto original_mouse_pos_3d = glm::vec3(original_mouse_pos, 0.0f);
+    // auto mouse_pos_3d = glm::vec3(mouse_pos, 0.0f);
+    // auto mouse_diff_vec = glm::normalize(mouse_pos_3d - original_mouse_pos_3d);
+    // auto dot_1 = std::abs(glm::dot(pane_vec_1, mouse_diff_vec));
+    // auto dot_2 = std::abs(glm::dot(pane_vec_2, mouse_diff_vec));
+    // // std::cout << "dot_1: " << dot_1 << ' ' << "dot_2: " << dot_2 << '\n';
+    // if (std::isnan(dot_1))
+        // return DIR1;
+    // else
+        // return dot_1 > dot_2 ? DIR1 : DIR2;
 }
 
 int App::get_rot_index(int index, Rotation_Dir dir)
@@ -536,29 +393,15 @@ glm::vec3 App::project_point_onto_plane(const glm::vec3 &plane_point, const glm:
     return point - plane_normal * d;
 }
 
-bool App::are_similary_oriented(const glm::vec3 & v1, const glm::vec3 & v2)
+bool App::are_similary_oriented(const glm::vec3 &stable, const glm::vec3 &unstable)
 {
-    auto cmp = [](const float &val1, const float &val2) {
-        return std::abs(val1) < std::abs(val2);
+    auto cmp = [&stable](const int &ind_1, const int &ind_2) {
+        return std::abs(stable[ind_1]) < std::abs(stable[ind_2]);
     };
 
-    auto max1 = std::max({ v1.x, v1.y, v1.z }, cmp);
-    auto max2 = std::max({ v2.x, v2.y, v2.z }, cmp);
+    auto max_i = std::max({ 0, 1, 2 }, cmp);
 
-    return max1 * max2 > 0;
-    // constexpr float epsilon = 1e-1;
-    // bool is_x_good = std::abs(v1.x) >= epsilon && std::abs(v2.x) >= epsilon;
-    // bool is_y_good = std::abs(v1.y) >= epsilon && std::abs(v2.y) >= epsilon;
-    // bool is_z_good = std::abs(v1.z) >= epsilon && std::abs(v2.z) >= epsilon;
-    // if (is_x_good)
-        // return v1.x * v2.x > 0;
-    // else if (is_y_good)
-        // return v1.y * v2.y > 0;
-    // else if (is_z_good)
-        // return v1.z * v2.z > 0;
-    // else
-        // return false;
-        // throw std::runtime_error("vectors not collinear");
+    return stable[max_i] * unstable[max_i] > 0;
 }
 
 glm::vec2 get_mouse_pos(double x_pos, double y_pos, int width, int height)
@@ -649,8 +492,33 @@ void App::prepare()
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
 
+
+
+    std::string square_vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\squareVertex.glsl)";
+    std::string square_fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\squareFragment.glsl)";
+
+    squareVertex = std::move(Shader(GL_VERTEX_SHADER, square_vertex_path));
+    squareFragment = std::move(Shader(GL_FRAGMENT_SHADER, square_fragment_path));
+    squareShdProgram = std::move(ShaderProgram(squareVertex, squareFragment));
+
+    squareVBO.generate();
+    squareVAO.generate();
+
+    squareVBO.bind();
+    squareVBO.setStaticData(square_vertices);
+
+    squareVAO.bind();
+    squareVAO.setAttribPointer(0, 3, false, 3, 0);
+    squareVAO.enableAttribute(0);
+
+    squareVAO.bind();
+    squareVBO.bind();
+    VAO::unbind();
+
     std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
     std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
+    // std::string vertex_path = R"(standardVertex.glsl)";
+    // std::string fragment_path = R"(standardFragment.glsl)";
 
     vertex = std::move(Shader(GL_VERTEX_SHADER, vertex_path));
     fragment = std::move(Shader(GL_FRAGMENT_SHADER, fragment_path));
@@ -696,7 +564,9 @@ void App::calculate()
         dir = get_dir(hit_index, last_mouse_pos, mouse_pos);
     }
 
-    auto rotation_vec = get_rot_vec(hit_index, hit_i, hit_j, hit_k, dir);
+    // auto rotation_vec = get_rot_vec(hit_index, hit_i, hit_j, hit_k, dir);
+
+    // std::cout << "rotation_vec: x = " << rotation_vec.x << " ; y = " << rotation_vec.y << " ; z = " << rotation_vec.z << '\n';
 
     // std::cout << rot_angle << '\n';
 
@@ -749,6 +619,18 @@ void App::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    squareVAO.bind();
+    squareShdProgram.use();
+
+    glm::mat4 square_model(1.0f);
+
+    square_model = glm::translate(square_model, glm::vec3(-0.875f, 0.875f, 0.0f));
+    square_model = glm::scale(square_model, glm::vec3(0.25f));
+
+    squareShdProgram.setUniformMatrix4fv("model", square_model);
+
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+
     // static double rotation_angle = 0.0f;
     // auto model = glm::mat4(1.0f);
     // obj_position = glm::vec3(-4.0f, 5 * std::sin(rotation_angle), -4.0f);
@@ -757,6 +639,9 @@ void App::draw()
     // shdProgram.setUniformMatrix4fv("model", model);
     // rotation_angle += 0.03f;
     // glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    cubeVAO.bind();
+    shdProgram.use();
 
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
