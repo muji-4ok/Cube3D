@@ -55,6 +55,8 @@ private:
                                        const glm::vec3 &point);
     bool are_similary_oriented(const glm::vec3 &stable , const glm::vec3 &unstable);
     bool needs_fixing(int index, int rot_index);
+    void rotated_view(const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos);
+    glm::vec3 get_index_normal(int index);
 
     GLFWwindow *window;
     int width;
@@ -96,7 +98,28 @@ private:
 
     glm::vec2 dir_vec;
 
+    bool right_mouse_pressed = false;
+    glm::vec2 right_last_mouse_pos;
+    float x_rot = 0.0f;
+    float y_rot = 0.0f;
+    glm::vec3 x_rot_vec = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 y_rot_vec = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    float x_rot_a = 0.0f;
+    float y_rot_a = 0.0f;
+    float z_rot_a = 0.0f;
+
+    glm::mat4 mat = glm::mat4(1.0f);
+    glm::mat4 cur_mat = glm::mat4(1.0f);
+    glm::mat4 original_view = glm::mat4(1.0f);
+
+    glm::mat4 translate_view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::vec3 axis_in_camera_coord;
+
     glm::mat4 rotation_view;
+
+    bool is_cur_good = false;
 
     float a = 0.0f;
 
