@@ -54,6 +54,7 @@ private:
     glm::vec3 project_point_onto_plane(const glm::vec3 &plane_point, const glm::vec3 &plane_normal,
                                        const glm::vec3 &point);
     bool are_similary_oriented(const glm::vec3 &stable , const glm::vec3 &unstable);
+    bool needs_fixing(int index, int rot_index);
 
     GLFWwindow *window;
     int width;
@@ -96,6 +97,8 @@ private:
     glm::vec2 dir_vec;
 
     glm::mat4 rotation_view;
+
+    float a = 0.0f;
 
     glm::vec3 center;
     glm::vec3 up;

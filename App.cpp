@@ -175,13 +175,15 @@ float App::get_rotation_angle(int index, int i, int j, int k,
 
         auto dot = 2.0f * glm::dot(dir_vec, mouse_diff);
 
-        rotation_vec = get_rot_vec(hit_index, hit_i, hit_j, hit_k, dir);
+        if (!has_original)
+        {
+            has_original = true;
+            rotation_vec = get_rot_vec(hit_index, hit_i, hit_j, hit_k, dir);
+        }
 
         auto rot_index = get_rot_index(index, dir);
 
-        if (rot_index == 2 || rot_index == 3 ||
-            ((rot_index == 4 || rot_index == 5) && (index == 2 || index == 3)) ||
-            rot_index == 0 || rot_index == 1)
+        if (needs_fixing(index, rot_index))
             dot = -dot;
 
         return dot;
@@ -404,6 +406,25 @@ bool App::are_similary_oriented(const glm::vec3 &stable, const glm::vec3 &unstab
     return stable[max_i] * unstable[max_i] > 0;
 }
 
+bool App::needs_fixing(int index, int rot_index)
+{
+    switch (index)
+    {
+        case 0:
+            return rot_index == 4 || rot_index == 5;
+        case 1:
+            return rot_index == 2 || rot_index == 3;
+        case 2:
+            return true;
+        case 3:
+            return false;
+        case 4:
+            return false;
+        case 5:
+            return true;
+    }
+}
+
 glm::vec2 get_mouse_pos(double x_pos, double y_pos, int width, int height)
 {
     float x = 2.0 * x_pos / width - 1.0;
@@ -601,7 +622,7 @@ void App::calculate()
                 else
                     model = glm::mat4(1.0f);
 
-                model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+                model = glm::rotate(model, glm::radians(a), glm::vec3(1.0f, 1.0f, 0.0f));
                 model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
                 auto model_full_size = glm::scale(model, glm::vec3(0.35f));
@@ -610,6 +631,9 @@ void App::calculate()
                 cube.models[i][j][k] = std::move(model);
                 cube.models_full_size[i][j][k] = std::move(model_full_size);
             }
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        a += 1.0f;
 
     if (rotating)
         rotation_angle += 1.0f;
