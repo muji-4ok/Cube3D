@@ -57,6 +57,7 @@ private:
     bool needs_fixing(int index, int rot_index);
     void rotated_view(const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos);
     glm::vec3 get_index_normal(int index);
+    glm::mat4 get_mat();
 
     GLFWwindow *window;
     int width;

@@ -62,7 +62,7 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
 
         original_view = view;
 
-        if (!right_mouse_pressed)
+        if (!right_mouse_pressed && is_cur_good)
             mat *= cur_mat;
 
         double x_pos, y_pos;
@@ -268,7 +268,7 @@ void App::get_rot_pane_vertices(int index, int i, int j, int k, glm::vec3 & v1, 
 
 glm::vec3 App::get_vert_by_coord(int i, int j, int k)
 {
-    return glm::vec3(translate_view * cube.models_full_size[i][j][k] *
+    return glm::vec3(view * cube.models_full_size[i][j][k] *
                      glm::vec4(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1), 1.0f));
 }
 
@@ -286,7 +286,7 @@ glm::vec3 App::get_rot_vec(int index, int i, int j, int k, Rotation_Dir dir)
     auto e1 = v2 - v1;
     auto e2 = v3 - v1;
 
-    return glm::normalize(glm::cross(e1, e2));
+    return glm::normalize(glm::vec3(glm::inverse(get_mat()) * glm::vec4(glm::cross(e1, e2), 1.0f)));
 }
 
 bool App::needs_rotation(int index, Rotation_Dir dir, int hit_i, int hit_j, int hit_k, int i, int j, int k)
@@ -470,6 +470,14 @@ glm::vec3 App::get_index_normal(int index)
     return glm::normalize(glm::cross(e1, e2));
 }
 
+glm::mat4 App::get_mat()
+{
+    if (is_cur_good)
+        return mat * cur_mat;
+    else
+        return mat;
+}
+
 glm::vec2 get_mouse_pos(double x_pos, double y_pos, int width, int height)
 {
     float x = 2.0 * x_pos / width - 1.0;
@@ -614,6 +622,8 @@ void App::calculate()
     glfwGetCursorPos(window, &x_pos, &y_pos);
     auto mouse_pos = get_mouse_pos(x_pos, y_pos, width, height);
 
+    is_cur_good = false;
+
     if (right_mouse_pressed)
     {
         rotated_view(right_last_mouse_pos, mouse_pos);
@@ -625,9 +635,12 @@ void App::calculate()
 
         cur_mat = glm::rotate(glm::mat4(1.0f), a, axis_in_camera_coord);
 
-        constexpr float epsilon = 1e-3;
+        constexpr float epsilon = 1e-2;
 
-        if (std::abs(a) > epsilon)
+        // std::cout << "axis: x = " << axis_in_camera_coord.x << " ; y = " << axis_in_camera_coord.y << " ; z = " << axis_in_camera_coord.z << '\n';
+        // std::cout << "a: " << a << '\n';
+
+        if (glm::length(a) > epsilon && std::abs(a) > epsilon)
             is_cur_good = true;
 
         // right_last_mouse_pos = mouse_pos;
@@ -637,10 +650,7 @@ void App::calculate()
     view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     
-    if (is_cur_good)
-        view *= mat * cur_mat;
-    else
-        view *= mat;
+    view *= get_mat();
 
     shdProgram.setUniformMatrix4fv("view", view);
 
@@ -654,8 +664,6 @@ void App::calculate()
 
     // std::cout << "right_mouse_pressed: " << right_mouse_pressed << '\n';
 
-    is_cur_good = false;
-
 
     // auto eye_ray = get_eye_ray(mouse_pos, view, projection);
     auto x_rot_mat = glm::rotate(glm::mat4(1.0f), x_rot, x_rot_vec);
@@ -663,12 +671,10 @@ void App::calculate()
     auto view_vec = glm::vec3(0.0f, 0.0f, -1.0f);
     y_rot_vec = glm::cross(view_vec, x_rot_vec);
     // std::cout << "dir_vec: x = " << dir_vec.x << " ; y = " << dir_vec.y << '\n';
-    std::cout << "rotation_vec: x = " << rotation_vec.x << " ; y = " << rotation_vec.y << " ; z = " << rotation_vec.z << '\n';
-    std::cout << "world_ray: x = " << world_ray.x << " ; y = " << world_ray.y << " ; z = " << world_ray.z << '\n';
+    // std::cout << "rotation_vec: x = " << rotation_vec.x << " ; y = " << rotation_vec.y << " ; z = " << rotation_vec.z << '\n';
+    // std::cout << "world_ray: x = " << world_ray.x << " ; y = " << world_ray.y << " ; z = " << world_ray.z << '\n';
     // std::cout << rot_angle << '\n';
 
-    // std::cout << "axis: x = " << axis_in_camera_coord.x << " ; y = " << axis_in_camera_coord.y << " ; z = " << axis_in_camera_coord.z << '\n';
-    // std::cout << "a: " << a << '\n';
 
     auto x_normal = get_index_normal(2);
     auto y_normal = get_index_normal(4);
