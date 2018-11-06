@@ -99,6 +99,8 @@ private:
 
     glm::vec2 dir_vec;
 
+    float rot_angle = 0.0f;
+
     bool right_mouse_pressed = false;
     glm::vec2 right_last_mouse_pos;
     float x_rot = 0.0f;

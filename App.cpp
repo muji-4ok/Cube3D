@@ -24,6 +24,10 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
             this->rotating = false;
             this->rotation_angle = 0.0f;
 
+            std::cout << "rot_angle: " << glm::degrees(rot_angle) << '\n';
+            std::cout << "dir: " << dir << '\n';
+            std::cout << "hit: i = " << hit_i << " ; j = " << hit_j << " ; k = " << hit_k << '\n';
+
             return;
         }
 
@@ -633,6 +637,8 @@ void App::calculate()
         a = std::acos(std::min(1.0f, glm::dot(normal_mouse_pos, normal_right_last_mouse_pos)));
         axis_in_camera_coord = glm::cross(normal_mouse_pos, normal_right_last_mouse_pos);
 
+        a += glm::length(mouse_pos - right_last_mouse_pos);
+        
         cur_mat = glm::rotate(glm::mat4(1.0f), a, axis_in_camera_coord);
 
         constexpr float epsilon = 1e-2;
@@ -654,7 +660,7 @@ void App::calculate()
 
     shdProgram.setUniformMatrix4fv("view", view);
 
-    auto rot_angle = get_rotation_angle(hit_index, hit_i, hit_j, hit_k, last_mouse_pos, mouse_pos);
+    rot_angle = get_rotation_angle(hit_index, hit_i, hit_j, hit_k, last_mouse_pos, mouse_pos);
 
     if (!has_dir && rot_angle)
     {
