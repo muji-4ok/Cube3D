@@ -22,11 +22,19 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
         if (action != GLFW_PRESS)
         {
             this->rotating = false;
-            this->rotation_angle = 0.0f;
 
-            std::cout << "rot_angle: " << glm::degrees(rot_angle) << '\n';
-            std::cout << "dir: " << dir << '\n';
+            auto angle = glm::degrees(rot_angle);
+
+            if (std::abs(angle) < 45.0f)
+                return;
+
+            auto turns = static_cast<int>(std::round(angle / 90.0f));
+            turns = (turns > 0 ? 1 : -1) * (std::abs(turns) % 4);
+
+            std::cout << "angle: " << angle << '\n';
+            std::cout << "turns: " << turns << '\n';
             std::cout << "hit: i = " << hit_i << " ; j = " << hit_j << " ; k = " << hit_k << '\n';
+            std::cout << "index: " << hit_index << '\n';
 
             return;
         }
@@ -38,7 +46,7 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
 
         // std::cout << x_pos << ' ' << y_pos << '\n';
 
-        world_ray = get_eye_ray(last_mouse_pos, projection, translate_view);
+        auto world_ray = get_eye_ray(last_mouse_pos, projection, translate_view);
         auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
         // mouse_origin = glm::vec3(last_mouse_pos, 0.0f);
 
@@ -56,9 +64,8 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
         this->hit_k = hit_k;
 
         this->has_dir = false;
-        this->has_original = false;
+        this->has_rotation_vec = false;
         this->rotating = true;
-        this->rotation_angle = 0.0f;
     }
     else if (button == GLFW_MOUSE_BUTTON_RIGHT)
     {
@@ -72,7 +79,7 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
         double x_pos, y_pos;
         glfwGetCursorPos(window, &x_pos, &y_pos);
 
-        right_last_mouse_pos = get_mouse_pos(x_pos, y_pos, width, height);
+        last_right_mouse_pos = get_mouse_pos(x_pos, y_pos, width, height);
     }
 }
 
@@ -138,43 +145,8 @@ glm::vec3 get_eye_ray(const glm::vec2 & mouse_pos, const glm::mat4 & projection,
     return glm::normalize(glm::vec3(glm::inverse(view) * eye_ray));
 }
 
-bool needs_rotation(int index, int i, int j, int k, int hit_i, int hit_j, int hit_k)
-{
-    switch (index)
-    {
-        case 0:
-            return k == 0;
-        case 1:
-            return k == 2;
-        case 2:
-            return i == 0;
-        case 3:
-            return i == 2;
-        case 4:
-            return j == 0;
-        case 5:
-            return j == 2;
-    }
-}
-
-glm::vec3 get_rotation_vec(int index)
-{
-    switch (index)
-    {
-        case 0:
-        case 1:
-            return glm::vec3(0.0f, 0.0f, 1.0f);
-        case 2:
-        case 3:
-            return glm::vec3(1.0f, 0.0f, 0.0f);
-        case 4:
-        case 5:
-            return glm::vec3(0.0f, 1.0f, 0.0f);
-    }
-}
-
-float App::get_rotation_angle(int index, int i, int j, int k,
-                              const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos)
+float App::get_rotation_angle(int index, int i, int j, int k, Rotation_Dir dir, const glm::vec2 &dir_vec,
+                              const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos, glm::vec3 &rotation_vec)
 {
     if (!has_dir)
     {
@@ -193,9 +165,9 @@ float App::get_rotation_angle(int index, int i, int j, int k,
 
         auto dot = 2.0f * glm::dot(dir_vec, mouse_diff);
 
-        if (!has_original)
+        if (!has_rotation_vec)
         {
-            has_original = true;
+            has_rotation_vec = true;
             rotation_vec = get_rot_vec(hit_index, hit_i, hit_j, hit_k, dir);
         }
 
@@ -330,7 +302,7 @@ bool App::needs_rotation(int index, Rotation_Dir dir, int hit_i, int hit_j, int 
     }
 }
 
-Rotation_Dir App::get_dir(int index, const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos)
+Rotation_Dir App::get_dir(int index, const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos, glm::vec2 &dir_vec)
 {
     glm::vec3 pane_vert_1, pane_vert_2, pane_vert_3;
     get_pane_vertices(index, pane_vert_1, pane_vert_2, pane_vert_3);
@@ -359,16 +331,7 @@ Rotation_Dir App::get_dir(int index, const glm::vec2 &original_mouse_pos, const 
             return DIR2;
         }
 
-    // auto original_mouse_pos_3d = glm::vec3(original_mouse_pos, 0.0f);
-    // auto mouse_pos_3d = glm::vec3(mouse_pos, 0.0f);
-    // auto mouse_diff_vec = glm::normalize(mouse_pos_3d - original_mouse_pos_3d);
-    // auto dot_1 = std::abs(glm::dot(pane_vec_1, mouse_diff_vec));
-    // auto dot_2 = std::abs(glm::dot(pane_vec_2, mouse_diff_vec));
-    // // std::cout << "dot_1: " << dot_1 << ' ' << "dot_2: " << dot_2 << '\n';
-    // if (std::isnan(dot_1))
-        // return DIR1;
-    // else
-        // return dot_1 > dot_2 ? DIR1 : DIR2;
+    // std::cout << "dot_1: " << dot_1 << ' ' << "dot_2: " << dot_2 << '\n';
 }
 
 int App::get_rot_index(int index, Rotation_Dir dir)
@@ -445,22 +408,6 @@ bool App::needs_fixing(int index, int rot_index)
         case 5:
             return true;
     }
-}
-
-void App::rotated_view(const glm::vec2 & original_mouse_pos, const glm::vec2 & mouse_pos)
-{
-    // glm::mat4 view(1.0f);
-
-    x_rot += mouse_pos.x - original_mouse_pos.x;
-    y_rot -= mouse_pos.y - original_mouse_pos.y;
-
-    // std::cout << "x_rot: " << x_rot << ' ' << "y_rot: " << y_rot << '\n';
-
-    // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    // view = glm::rotate(view, -y_rot, glm::vec3(1.0f, 0.0f, 0.0f));
-    // view = glm::rotate(view, x_rot, glm::vec3(0.0f, 1.0f, 0.0f));
-
-    // return view;
 }
 
 glm::vec3 App::get_index_normal(int index)
@@ -560,6 +507,8 @@ void App::run()
         update_fps();
         glfwPollEvents();
     }
+
+    exit(0);
 }
 
 void App::prepare()
@@ -568,26 +517,26 @@ void App::prepare()
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
 
-    std::string square_vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\squareVertex.glsl)";
-    std::string square_fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\squareFragment.glsl)";
+    // std::string square_vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\squareVertex.glsl)";
+    // std::string square_fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\squareFragment.glsl)";
 
-    squareVertex = std::move(Shader(GL_VERTEX_SHADER, square_vertex_path));
-    squareFragment = std::move(Shader(GL_FRAGMENT_SHADER, square_fragment_path));
-    squareShdProgram = std::move(ShaderProgram(squareVertex, squareFragment));
+    // squareVertex = std::move(Shader(GL_VERTEX_SHADER, square_vertex_path));
+    // squareFragment = std::move(Shader(GL_FRAGMENT_SHADER, square_fragment_path));
+    // squareShdProgram = std::move(ShaderProgram(squareVertex, squareFragment));
 
-    squareVBO.generate();
-    squareVAO.generate();
+    // squareVBO.generate();
+    // squareVAO.generate();
 
-    squareVBO.bind();
-    squareVBO.setStaticData(square_vertices);
+    // squareVBO.bind();
+    // squareVBO.setStaticData(square_vertices);
 
-    squareVAO.bind();
-    squareVAO.setAttribPointer(0, 3, false, 3, 0);
-    squareVAO.enableAttribute(0);
+    // squareVAO.bind();
+    // squareVAO.setAttribPointer(0, 3, false, 3, 0);
+    // squareVAO.enableAttribute(0);
 
-    squareVAO.bind();
-    squareVBO.bind();
-    VAO::unbind();
+    // squareVAO.bind();
+    // squareVBO.bind();
+    // VAO::unbind();
 
     std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
     std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
@@ -630,63 +579,49 @@ void App::calculate()
 
     if (right_mouse_pressed)
     {
-        rotated_view(right_last_mouse_pos, mouse_pos);
         auto normal_mouse_pos = get_eye_ray(mouse_pos, projection, original_view);
-        auto normal_right_last_mouse_pos = get_eye_ray(right_last_mouse_pos, projection, original_view);
+        auto normal_last_right_mouse_pos = get_eye_ray(last_right_mouse_pos, projection, original_view);
 
-        a = std::acos(std::min(1.0f, glm::dot(normal_mouse_pos, normal_right_last_mouse_pos)));
-        axis_in_camera_coord = glm::cross(normal_mouse_pos, normal_right_last_mouse_pos);
+        auto angle = std::acos(std::min(1.0f, glm::dot(normal_mouse_pos, normal_last_right_mouse_pos)));
+        auto camera_rot_vec = glm::cross(normal_mouse_pos, normal_last_right_mouse_pos);
 
-        a += glm::length(mouse_pos - right_last_mouse_pos);
+        angle += glm::length(mouse_pos - last_right_mouse_pos);
         
-        cur_mat = glm::rotate(glm::mat4(1.0f), a, axis_in_camera_coord);
+        cur_mat = glm::rotate(glm::mat4(1.0f), angle, camera_rot_vec);
 
         constexpr float epsilon = 1e-2;
 
-        // std::cout << "axis: x = " << axis_in_camera_coord.x << " ; y = " << axis_in_camera_coord.y << " ; z = " << axis_in_camera_coord.z << '\n';
         // std::cout << "a: " << a << '\n';
 
-        if (glm::length(a) > epsilon && std::abs(a) > epsilon)
+        if (std::abs(angle) > epsilon)
             is_cur_good = true;
 
-        // right_last_mouse_pos = mouse_pos;
-        // shdProgram.setUniformMatrix4fv("view", view);
+        // last_right_mouse_pos = mouse_pos;
     }
 
     view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    
     view *= get_mat();
 
     shdProgram.setUniformMatrix4fv("view", view);
 
-    rot_angle = get_rotation_angle(hit_index, hit_i, hit_j, hit_k, last_mouse_pos, mouse_pos);
+    static glm::vec2 dir_vec;
+    static glm::vec3 rotation_vec = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    rot_angle = get_rotation_angle(hit_index, hit_i, hit_j, hit_k, dir,
+                                        dir_vec, last_mouse_pos, mouse_pos, rotation_vec);
 
     if (!has_dir && rot_angle)
     {
+        dir = get_dir(hit_index, last_mouse_pos, mouse_pos, dir_vec);
         has_dir = true;
-        dir = get_dir(hit_index, last_mouse_pos, mouse_pos);
     }
 
     // std::cout << "right_mouse_pressed: " << right_mouse_pressed << '\n';
-
-
-    // auto eye_ray = get_eye_ray(mouse_pos, view, projection);
-    auto x_rot_mat = glm::rotate(glm::mat4(1.0f), x_rot, x_rot_vec);
-    // auto view_vec = glm::vec3(x_rot_mat * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
-    auto view_vec = glm::vec3(0.0f, 0.0f, -1.0f);
-    y_rot_vec = glm::cross(view_vec, x_rot_vec);
     // std::cout << "dir_vec: x = " << dir_vec.x << " ; y = " << dir_vec.y << '\n';
     // std::cout << "rotation_vec: x = " << rotation_vec.x << " ; y = " << rotation_vec.y << " ; z = " << rotation_vec.z << '\n';
     // std::cout << "world_ray: x = " << world_ray.x << " ; y = " << world_ray.y << " ; z = " << world_ray.z << '\n';
     // std::cout << rot_angle << '\n';
-
-
-    auto x_normal = get_index_normal(2);
-    auto y_normal = get_index_normal(4);
-    auto z_normal = get_index_normal(0);
-
-    static int counter = 0;
 
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
@@ -699,21 +634,6 @@ void App::calculate()
                 else
                     model = glm::mat4(1.0f);
 
-                // model = glm::rotate(model, glm::radians(a), glm::vec3(1.0f, 1.0f, 0.0f));
-                // if (right_mouse_pressed)
-                // if (is_cur_good)
-                    // model *= mat * cur_mat;
-                // else
-                    // model *= mat;
-                // model = glm::rotate(model, a, axis_in_camera_coord);
-                // model = glm::rotate(model, y_rot, y_rot_vec);
-                // model = glm::rotate(model, x_rot, x_rot_vec);
-                // if (counter > 0)
-                // {
-                    // model = glm::rotate(model, glm::radians(x_rot_a), x_normal);
-                    // model = glm::rotate(model, glm::radians(y_rot_a), y_normal);
-                    // model = glm::rotate(model, glm::radians(z_rot_a), z_normal);
-                // }
                 model = glm::translate(model, glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
                 auto model_full_size = glm::scale(model, glm::vec3(0.35f));
@@ -722,30 +642,6 @@ void App::calculate()
                 cube.models[i][j][k] = std::move(model);
                 cube.models_full_size[i][j][k] = std::move(model_full_size);
             }
-
-    if (!counter)
-        ++counter;
-
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        a += 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-        x_rot_a += 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        x_rot_a -= 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        y_rot_a += 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        y_rot_a -= 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-        z_rot_a += 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        z_rot_a -= 1.0f;
 }
 
 void App::draw()

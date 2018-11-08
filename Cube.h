@@ -13,28 +13,19 @@
 #include <utility>
 
 template <typename T>
-void swap_3(T* first, T* second, int inc = 1);
-
-template <typename T>
 void append(std::vector<T> &v1, const std::vector<T> &v2);
 
 class Cube
 {
 public:
     Cube();
-
     Cube& operator= (const Cube &c);
     Cube& operator= (Cube&& c);
-
     ~Cube();
 
-    void rotate(char dir, bool clockwise);
-
-    std::map<char, std::array<char, 9>> faces;
     std::array<std::array<std::array<std::vector<float>, 3>, 3>, 3 > cubes;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_full_size;
-    std::array<std::array<std::array<float, 3>, 3>, 3 > dists;
 
     const std::vector<float> vertices{
         // back
@@ -144,5 +135,10 @@ public:
         glm::vec3(-0.5f,  0.5f,  0.5f),
         glm::vec3(-0.5f,  0.5f, -0.5f)
     };
+
+private:
+    std::array<std::vector<float>*, 12> get_line_ptrs(const std::array<int, 3>& i_range,
+                                                      const std::array<int, 3>& j_range,
+                                                      const std::array<int, 3>& k_range);
 };
 

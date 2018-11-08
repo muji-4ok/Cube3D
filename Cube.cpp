@@ -4,14 +4,14 @@
 
 Cube::Cube()
 {
-    std::vector<float> c{
-        1.0f, 1.0f, 0.0f, // yellow
-        1.0f, 1.0f, 1.0f, // white
-        1.0f, 0.0f, 0.0f, // red
-        1.0f, 0.5f, 0.0f, // orange
-        0.0f, 0.0f, 1.0f, // blue
-        0.0f, 1.0f, 0.0f  // green
-    };
+    // std::vector<float> c{
+        // 1.0f, 1.0f, 0.0f, // yellow
+        // 1.0f, 1.0f, 1.0f, // white
+        // 1.0f, 0.0f, 0.0f, // red
+        // 1.0f, 0.5f, 0.0f, // orange
+        // 0.0f, 0.0f, 1.0f, // blue
+        // 0.0f, 1.0f, 0.0f  // green
+    // };
 
     std::vector<float> y{ 1.0f, 1.0f, 0.0f };
     std::vector<float> w{ 1.0f, 1.0f, 1.0f };
@@ -39,7 +39,6 @@ Cube & Cube::operator=(const Cube & c)
     if (&c == this)
         return *this;
 
-    faces = c.faces;
     cubes = c.cubes;
     models = c.models;
     models_full_size = c.models_full_size;
@@ -52,7 +51,6 @@ Cube & Cube::operator=(Cube && c)
     if (&c == this)
         return *this;
 
-    faces = std::move(c.faces);
     cubes = std::move(c.cubes);
     models = std::move(c.models);
     models_full_size = std::move(c.models_full_size);
@@ -65,43 +63,9 @@ Cube::~Cube()
 {
 }
 
-void Cube::rotate(char dir, bool clockwise)
+std::array<std::vector<float>*, 12> Cube::get_line_ptrs(const std::array<int, 3>& i_range, const std::array<int, 3>& j_range, const std::array<int, 3>& k_range)
 {
-    if (dir == 'U')
-    {
-        swap_3(&faces['L'][0], &faces['F'][0]);
-        swap_3(&faces['F'][0], &faces['R'][0]);
-        swap_3(&faces['R'][0], &faces['B'][0]);
-
-        //swap_3(&faces['U'][0], &faces['U'][0]);
-    }
-    else if (dir == 'D')
-    {
-
-    }
-    else if (dir == 'L')
-    {
-
-    }
-    else if (dir == 'R')
-    {
-
-    }
-    else if (dir == 'F')
-    {
-
-    }
-    else if (dir == 'B')
-    {
-
-    }
-}
-
-template <typename T>
-void swap_3(T* first, T* second, int inc)
-{
-    for (int i = 0; i < 3; i += inc)
-        std::swap(first[i], second[i]);
+    return std::array<std::vector<float>*, 12>();
 }
 
 template<typename T>
