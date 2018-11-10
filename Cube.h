@@ -12,8 +12,18 @@
 #include <map>
 #include <utility>
 
+enum Cubelet_Rotation
+{
+    X,
+    Y,
+    Z
+};
+
 template <typename T>
 void append(std::vector<T> &v1, const std::vector<T> &v2);
+
+template <typename T>
+void swap_3(std::vector<T> &v, int offset1, int offset2);
 
 class Cube
 {
@@ -22,6 +32,8 @@ public:
     Cube& operator= (const Cube &c);
     Cube& operator= (Cube&& c);
     ~Cube();
+
+    void rotate(std::array<std::vector<float>*, 8> cubelets, Cubelet_Rotation dir);
 
     std::array<std::array<std::array<std::vector<float>, 3>, 3>, 3 > cubes;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models;
@@ -137,8 +149,7 @@ public:
     };
 
 private:
-    std::array<std::vector<float>*, 12> get_line_ptrs(const std::array<int, 3>& i_range,
-                                                      const std::array<int, 3>& j_range,
-                                                      const std::array<int, 3>& k_range);
+    void rotate_cubelet(std::vector<float> &cubelet, Cubelet_Rotation dir);
+    void swap_indices(std::vector<float> &cubelet, int i1, int i2);
 };
 

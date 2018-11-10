@@ -1,7 +1,5 @@
 #include "Cube.h"
 
-
-
 Cube::Cube()
 {
     // std::vector<float> c{
@@ -58,18 +56,59 @@ Cube & Cube::operator=(Cube && c)
     return *this;
 }
 
-
 Cube::~Cube()
 {
 }
 
-std::array<std::vector<float>*, 12> Cube::get_line_ptrs(const std::array<int, 3>& i_range, const std::array<int, 3>& j_range, const std::array<int, 3>& k_range)
+void Cube::rotate(std::array<std::vector<float>*, 8> cubelets, Cubelet_Rotation dir)
 {
-    return std::array<std::vector<float>*, 12>();
+    for (auto &p : cubelets)
+    {
+        auto &c = *p;
+        rotate_cubelet(c, dir);
+    }
+
+    for (int t = 0; t < 2; ++t)
+        for (int i = 1; i < 8; ++i)
+            std::swap(*cubelets[i - 1], *cubelets[i]);
+}
+
+void Cube::rotate_cubelet(std::vector<float>& cubelet, Cubelet_Rotation dir)
+{
+    switch (dir)
+    {
+        case X:
+            swap_indices(cubelet, 1, 5);
+            swap_indices(cubelet, 5, 0);
+            swap_indices(cubelet, 0, 4);
+            break;
+        case Y:
+            swap_indices(cubelet, 1, 3);
+            swap_indices(cubelet, 3, 0);
+            swap_indices(cubelet, 0, 2);
+            break;
+        case Z:
+            swap_indices(cubelet, 2, 5);
+            swap_indices(cubelet, 5, 3);
+            swap_indices(cubelet, 3, 4);
+            break;
+    }
+}
+
+void Cube::swap_indices(std::vector<float>& cubelet, int i1, int i2)
+{
+    swap_3(cubelet, i1, i2);
 }
 
 template<typename T>
 void append(std::vector<T>& v1, const std::vector<T>& v2)
 {
     v1.insert(v1.end(), v2.begin(), v2.end());
+}
+
+template<typename T>
+void swap_3(std::vector<T>& v, int offset1, int offset2)
+{
+    for (int i = 0; i < 3; ++i)
+        std::swap(v[offset1 * 3 + i], v[offset2 * 3 + i]);
 }

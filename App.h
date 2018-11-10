@@ -59,6 +59,9 @@ private:
     bool needs_fixing(int index, int rot_index);
     glm::vec3 get_index_normal(int index);
     glm::mat4 get_mat();
+    std::array<std::vector<float>*, 8> get_rotating_cubelets(int index, Rotation_Dir dir,
+                                                             int hit_i, int hit_j, int hit_k);
+    Cubelet_Rotation get_cubelet_rotation(int index);
 
     GLFWwindow *window;
     int width;

@@ -21,6 +21,9 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
 
         if (action != GLFW_PRESS)
         {
+            if (!rotating)
+                return;
+
             this->rotating = false;
 
             auto angle = glm::degrees(rot_angle);
@@ -28,8 +31,19 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
             if (std::abs(angle) < 45.0f)
                 return;
 
+            int rot_index = get_rot_index(hit_index, dir);
             auto turns = static_cast<int>(std::round(angle / 90.0f));
             turns = (turns > 0 ? 1 : -1) * (std::abs(turns) % 4);
+
+            if (rot_index == 4 || rot_index == 5)
+                turns = -turns;
+
+            turns = (turns + 4) % 4;
+
+            auto cubelets = get_rotating_cubelets(hit_index, dir, hit_i, hit_j, hit_k);
+           
+            for (int i = 0; i < turns; ++i)
+                cube.rotate(cubelets, get_cubelet_rotation(rot_index));
 
             std::cout << "angle: " << angle << '\n';
             std::cout << "turns: " << turns << '\n';
@@ -427,6 +441,86 @@ glm::mat4 App::get_mat()
         return mat * cur_mat;
     else
         return mat;
+}
+
+std::array<std::vector<float>*, 8> App::get_rotating_cubelets(int index, Rotation_Dir dir,
+                                                              int hit_i, int hit_j, int hit_k)
+{
+    std::array<std::vector<float>*, 8> out;
+    using Coord = std::tuple<int, int, int>;
+    std::array<Coord, 8> coords;
+    int c = 0;
+
+    auto count_centers = [](int i, int j, int k) -> int {
+        return static_cast<int>(i == 1) + static_cast<int>(j == 1) + static_cast<int>(k == 1);
+    };
+
+    bool is_center = needs_rotation(index, dir, hit_i, hit_j, hit_k, 1, 1, 1);
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            for (int k = 0; k < 3; ++k)
+                if (needs_rotation(index, dir, hit_i, hit_j, hit_k, i, j, k))
+                {
+                    auto centers = count_centers(i, j, k);
+
+                    if (is_center)
+                    {
+                        if (count_centers(i, j, k) == 3)
+                            continue;
+                    }
+                    else
+                    {
+                        if (count_centers(i, j, k) >= 2)
+                            continue;
+                    }
+
+                    coords[c++] = { i, j, k };
+                }
+
+    int rot_index = get_rot_index(index, dir);
+
+    auto cmp = [rot_index](const Coord &c1, const Coord &c2) -> bool{
+        switch (rot_index)
+        {
+            case 0:
+            case 1:
+                return glm::cross(glm::vec3(std::get<0>(c1) - 1, std::get<1>(c1) - 1, 0),
+                                  glm::vec3(std::get<0>(c2) - 1, std::get<1>(c2) - 1, 0)).z < 0;
+            case 2:
+            case 3:
+                return glm::cross(glm::vec3(std::get<1>(c1) - 1, std::get<2>(c1) - 1, 0),
+                                  glm::vec3(std::get<1>(c2) - 1, std::get<2>(c2) - 1, 0)).z < 0;
+            case 4:
+            case 5:
+                return glm::cross(glm::vec3(std::get<0>(c1) - 1, std::get<2>(c1) - 1, 0),
+                                  glm::vec3(std::get<0>(c2) - 1, std::get<2>(c2) - 1, 0)).z < 0;
+        }
+    };
+
+    std::sort(coords.begin(), coords.end(), cmp);
+
+    for (int i = 0; i < 8; ++i)
+        out[i] = &cube.cubes[std::get<0>(coords[i])][std::get<1>(coords[i])][std::get<2>(coords[i])];
+
+    return out;
+
+}
+
+Cubelet_Rotation App::get_cubelet_rotation(int index)
+{
+    switch (index)
+    {
+        case 0:
+        case 1:
+            return Z;
+        case 2:
+        case 3:
+            return X;
+        case 4:
+        case 5:
+            return Y;
+    }
 }
 
 glm::vec2 get_mouse_pos(double x_pos, double y_pos, int width, int height)
