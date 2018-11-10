@@ -28,6 +28,8 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
 
             auto angle = glm::degrees(rot_angle);
 
+            // std::cout << "frames left: " << angle / 16.67f << '\n';
+
             if (std::abs(angle) < 45.0f)
                 return;
 
@@ -41,14 +43,14 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
             turns = (turns + 4) % 4;
 
             auto cubelets = get_rotating_cubelets(hit_index, dir, hit_i, hit_j, hit_k);
-           
+
             for (int i = 0; i < turns; ++i)
                 cube.rotate(cubelets, get_cubelet_rotation(rot_index));
 
-            std::cout << "angle: " << angle << '\n';
-            std::cout << "turns: " << turns << '\n';
-            std::cout << "hit: i = " << hit_i << " ; j = " << hit_j << " ; k = " << hit_k << '\n';
-            std::cout << "index: " << hit_index << '\n';
+            // std::cout << "angle: " << angle << '\n';
+            // std::cout << "turns: " << turns << '\n';
+            // std::cout << "hit: i = " << hit_i << " ; j = " << hit_j << " ; k = " << hit_k << '\n';
+            // std::cout << "index: " << hit_index << '\n';
 
             return;
         }
@@ -87,8 +89,8 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
 
         original_view = view;
 
-        if (!right_mouse_pressed && is_cur_good)
-            mat *= cur_mat;
+        // if (!right_mouse_pressed && is_cur_good)
+            // mat *= cur_mat;
 
         double x_pos, y_pos;
         glfwGetCursorPos(window, &x_pos, &y_pos);
@@ -480,7 +482,7 @@ std::array<std::vector<float>*, 8> App::get_rotating_cubelets(int index, Rotatio
 
     int rot_index = get_rot_index(index, dir);
 
-    auto cmp = [rot_index](const Coord &c1, const Coord &c2) -> bool{
+    auto cmp = [rot_index](const Coord &c1, const Coord &c2) -> bool {
         switch (rot_index)
         {
             case 0:
@@ -655,7 +657,7 @@ void App::prepare()
     cubeVBO.bind();
 
     shdProgram.use();
-    
+
     view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
     projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
 
@@ -673,24 +675,39 @@ void App::calculate()
 
     if (right_mouse_pressed)
     {
-        auto normal_mouse_pos = get_eye_ray(mouse_pos, projection, original_view);
-        auto normal_last_right_mouse_pos = get_eye_ray(last_right_mouse_pos, projection, original_view);
+        // auto normal_mouse_pos = get_eye_ray(mouse_pos, projection, view);
+        // auto normal_last_right_mouse_pos = get_eye_ray(last_right_mouse_pos, projection, view);
+        auto normal_mouse_pos = glm::normalize(glm::vec3(glm::inverse(view) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f)));
+        auto diff = mouse_pos - last_right_mouse_pos;
+        auto normal_last_right_mouse_pos = glm::normalize(glm::vec3(glm::inverse(view) * glm::vec4(diff, -1.0f, 1.0f)));
 
-        auto angle = std::acos(std::min(1.0f, glm::dot(normal_mouse_pos, normal_last_right_mouse_pos)));
-        auto camera_rot_vec = glm::cross(normal_mouse_pos, normal_last_right_mouse_pos);
+        // auto mouse_pos_3d = glm::vec3(view * glm::vec4(mouse_pos, -1.0f, 1.0f));
+        // auto last_right_mouse_pos_3d = glm::vec3(view * glm::vec4(last_right_mouse_pos, -1.0f, 1.0f));
 
-        angle += glm::length(mouse_pos - last_right_mouse_pos);
+        // auto angle = std::acos(std::min(1.0f, glm::dot(mouse_pos_3d, last_right_mouse_pos_3d)));
+        // auto camera_rot_vec = glm::cross(mouse_pos_3d, last_right_mouse_pos_3d);
+        auto angle = std::acos(glm::dot(normal_mouse_pos, normal_last_right_mouse_pos));
+        // auto camera_rot_vec = glm::normalize(glm::vec3(glm::inverse(get_mat()) * glm::vec4(glm::cross(normal_mouse_pos, normal_last_right_mouse_pos), 1.0f)));
+        auto camera_rot_vec = glm::normalize(glm::cross(normal_mouse_pos, normal_last_right_mouse_pos));
+
+        angle += 0.5f * glm::length(diff);
         
         cur_mat = glm::rotate(glm::mat4(1.0f), angle, camera_rot_vec);
 
-        constexpr float epsilon = 1e-2;
+        constexpr float epsilon = 1e-3;
 
         // std::cout << "a: " << a << '\n';
 
         if (std::abs(angle) > epsilon)
-            is_cur_good = true;
+        {
+            // std::cout << "normal_mouse: x = " << normal_mouse_pos.x << " ; y = " << normal_mouse_pos.y << " ; z = " << normal_mouse_pos.z << '\n';
+            // std::cout << "normal_last_mouse: x = " << normal_last_right_mouse_pos.x << " ; y = " << normal_last_right_mouse_pos.y << " ; z = " << normal_last_right_mouse_pos.z << '\n';
+            // std::cout << "rot_vec: x = " << camera_rot_vec.x << " ; y = " << camera_rot_vec.y << " ; z = " << camera_rot_vec.z << '\n';
+            mat *= cur_mat;
+        }
+            // is_cur_good = true;
 
-        // last_right_mouse_pos = mouse_pos;
+        last_right_mouse_pos = mouse_pos;
     }
 
     view = glm::mat4(1.0f);
