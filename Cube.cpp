@@ -11,25 +11,7 @@ Cube::Cube()
         // 0.0f, 1.0f, 0.0f  // green
     // };
 
-    std::vector<float> y{ 1.0f, 1.0f, 0.0f };
-    std::vector<float> w{ 1.0f, 1.0f, 1.0f };
-    std::vector<float> r{ 1.0f, 0.0f, 0.0f };
-    std::vector<float> o{ 1.0f, 0.5f, 0.0f };
-    std::vector<float> b{ 0.0f, 0.0f, 1.0f };
-    std::vector<float> g{ 0.0f, 1.0f, 0.0f };
-    std::vector<float> n{ 0.0f, 0.0f, 0.0f };
-
-    for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j)
-            for (int k = 0; k < 3; ++k)
-            {
-                append(cubes[i][j][k], k == 0 ? y : n);
-                append(cubes[i][j][k], k == 2 ? w : n);
-                append(cubes[i][j][k], i == 0 ? r : n);
-                append(cubes[i][j][k], i == 2 ? o : n);
-                append(cubes[i][j][k], j == 0 ? b : n);
-                append(cubes[i][j][k], j == 2 ? g : n);
-            }
+    set_solved();
 }
 
 Cube & Cube::operator=(const Cube & c)
@@ -71,6 +53,30 @@ void Cube::rotate(std::array<std::vector<float>*, 8> cubelets, Cubelet_Rotation 
     for (int t = 0; t < 2; ++t)
         for (int i = 1; i < 8; ++i)
             std::swap(*cubelets[i - 1], *cubelets[i]);
+}
+
+void Cube::set_solved()
+{
+    std::vector<float> y{ 1.0f, 1.0f, 0.0f };
+    std::vector<float> w{ 1.0f, 1.0f, 1.0f };
+    std::vector<float> r{ 1.0f, 0.0f, 0.0f };
+    std::vector<float> o{ 1.0f, 0.5f, 0.0f };
+    std::vector<float> b{ 0.0f, 0.0f, 1.0f };
+    std::vector<float> g{ 0.0f, 1.0f, 0.0f };
+    std::vector<float> n{ 0.0f, 0.0f, 0.0f };
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            for (int k = 0; k < 3; ++k)
+            {
+                cubes[i][j][k].clear();
+                append(cubes[i][j][k], k == 0 ? y : n);
+                append(cubes[i][j][k], k == 2 ? w : n);
+                append(cubes[i][j][k], i == 0 ? r : n);
+                append(cubes[i][j][k], i == 2 ? o : n);
+                append(cubes[i][j][k], j == 0 ? b : n);
+                append(cubes[i][j][k], j == 2 ? g : n);
+            }
 }
 
 void Cube::rotate_cubelet(std::vector<float>& cubelet, Cubelet_Rotation dir)

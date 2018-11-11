@@ -34,6 +34,7 @@ public:
     ~Cube();
 
     void rotate(std::array<std::vector<float>*, 8> cubelets, Cubelet_Rotation dir);
+    void set_solved();
 
     std::array<std::array<std::array<std::vector<float>, 3>, 3>, 3 > cubes;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models;

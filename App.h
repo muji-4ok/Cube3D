@@ -14,6 +14,8 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+#include <random>
+#include <ctime>
 
 enum Rotation_Dir
 {
@@ -62,6 +64,8 @@ private:
     std::array<std::vector<float>*, 8> get_rotating_cubelets(int index, Rotation_Dir dir,
                                                              int hit_i, int hit_j, int hit_k);
     Cubelet_Rotation get_cubelet_rotation(int index);
+    void rotate(int index, Rotation_Dir dir, int turns, int hit_i, int hit_j, int hit_k);
+    void shuffle();
 
     GLFWwindow *window;
     int width;
@@ -77,6 +81,12 @@ private:
     glm::mat4 projection;
     glm::mat4 view;
 
+    float mouse_dist = 0.0f;
+    float increment = 0.0f;
+    int turns = 0;
+    float auto_rotation_dir = 0.0f;
+    float final_angle = 0.0f;
+    bool auto_rotating = false;
     bool rotating = false;
     glm::vec2 last_mouse_pos;
     bool has_dir = true;
