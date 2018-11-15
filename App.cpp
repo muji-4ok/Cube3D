@@ -305,6 +305,12 @@ glm::vec3 App::get_rot_vec(int index, int i, int j, int k, Rotation_Dir dir)
     return glm::normalize(glm::vec3(glm::inverse(get_mat()) * glm::vec4(glm::cross(e1, e2), 1.0f)));
 }
 
+glm::vec3 App::get_rotation_vec(int index)
+{
+    glm::vec3 v1, v2, v3;
+    get_pane_vertices(index, v1, v2, v3);
+}
+
 bool App::needs_rotation(int index, Rotation_Dir dir, int hit_i, int hit_j, int hit_k, int i, int j, int k)
 {
     switch (index)
@@ -616,6 +622,7 @@ App::App(int width, int height) : width(width), height(height)
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     window = glfwCreateWindow(width, height, "Window", nullptr, nullptr);
 
@@ -633,10 +640,22 @@ App::App(int width, int height) : width(width), height(height)
         exit(1);
     }
 
-
     glfwSetKeyCallback(window, CallbackCaller::key_callback_caller);
     glfwSetMouseButtonCallback(window, CallbackCaller::mouse_callback_caller);
     glfwSetFramebufferSizeCallback(window, CallbackCaller::frame_buffer_change_callback_caller);
+
+    if (vcap.open(0))
+    {
+        vcap.set(CV_CAP_PROP_FRAME_WIDTH, 512);
+        vcap.set(CV_CAP_PROP_FRAME_HEIGHT, 512);
+        vcap.set(CV_CAP_PROP_FPS, 1);
+        with_webcam = true;
+    }
+    else
+    {
+        std::cerr << "Failed to find webcam\n";
+        with_webcam = false;
+    }
 
     run();
 }
@@ -684,10 +703,10 @@ void App::prepare()
     // squareVBO.bind();
     // VAO::unbind();
 
-    std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
-    std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
-    // std::string vertex_path = R"(standardVertex.glsl)";
-    // std::string fragment_path = R"(standardFragment.glsl)";
+    // std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
+    // std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
+    std::string vertex_path = R"(standardVertex.glsl)";
+    std::string fragment_path = R"(standardFragment.glsl)";
 
     vertex = std::move(Shader(GL_VERTEX_SHADER, vertex_path));
     fragment = std::move(Shader(GL_FRAGMENT_SHADER, fragment_path));
@@ -735,7 +754,7 @@ void App::calculate()
         auto camera_rot_vec = glm::normalize(glm::cross(normal_mouse_pos, normal_last_right_mouse_pos));
 
         angle += glm::length(diff);
-        
+
         cur_mat = glm::rotate(glm::mat4(1.0f), angle, camera_rot_vec);
 
         constexpr float epsilon = 1e-3;
@@ -838,6 +857,24 @@ void App::draw()
 
     // cubeVAO.bind();
     // shdProgram.use();
+
+    if (with_webcam)
+    {
+        cv::Mat frame;
+        vcap >> frame;
+
+        if(frame.empty())
+            with_webcam = false;
+
+        cv::imshow("this is you, smile! :)", frame);
+
+        // ESC
+        if(cv::waitKey(10) == 27)
+        {
+            glfwSetWindowShouldClose(window, true);
+            with_webcam = false;
+        }
+    }
 
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)

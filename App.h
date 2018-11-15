@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -23,7 +25,7 @@ enum Rotation_Dir
     DIR2 = 1
 };
 
-class App
+struct App
 {
 public:
     App(int width, int height);
@@ -51,6 +53,7 @@ private:
     void get_rot_pane_vertices(int index, int i, int j, int k, glm::vec3 &v1, glm::vec3 &v2, glm::vec3 &v3);
     glm::vec3 get_vert_by_coord(int i, int j, int k);
     glm::vec3 get_rot_vec(int index, int i, int j, int k, Rotation_Dir dir);
+    glm::vec3 get_rotation_vec(int index);
     bool needs_rotation(int index, Rotation_Dir dir, int hit_i, int hit_j, int hit_k, int i, int j, int k);
     Rotation_Dir get_dir(int index, const glm::vec2 &original_mouse_pos, const glm::vec2 &mouse_pos,
                          glm::vec2 &vec_dir);
@@ -66,6 +69,9 @@ private:
     Cubelet_Rotation get_cubelet_rotation(int index);
     void rotate(int index, Rotation_Dir dir, int turns, int hit_i, int hit_j, int hit_k);
     void shuffle();
+
+    cv::VideoCapture vcap;
+    bool with_webcam;
 
     GLFWwindow *window;
     int width;
@@ -122,11 +128,11 @@ private:
         -0.5f, -0.5f, 0.0f,
     };
 
-    Shader squareVertex;
-    Shader squareFragment;
-    ShaderProgram squareShdProgram;
-    VBO squareVBO;
-    VAO squareVAO;
+    // Shader squareVertex;
+    // Shader squareFragment;
+    // ShaderProgram squareShdProgram;
+    // VBO squareVBO;
+    // VAO squareVAO;
 };
 
 struct CallbackCaller
