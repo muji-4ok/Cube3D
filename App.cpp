@@ -309,6 +309,7 @@ glm::vec3 App::get_rotation_vec(int index)
 {
     glm::vec3 v1, v2, v3;
     get_pane_vertices(index, v1, v2, v3);
+    return {};
 }
 
 bool App::needs_rotation(int index, Rotation_Dir dir, int hit_i, int hit_j, int hit_k, int i, int j, int k)
@@ -703,10 +704,10 @@ void App::prepare()
     // squareVBO.bind();
     // VAO::unbind();
 
-    // std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
-    // std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
-    std::string vertex_path = R"(standardVertex.glsl)";
-    std::string fragment_path = R"(standardFragment.glsl)";
+    std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
+    std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
+    // std::string vertex_path = R"(standardVertex.glsl)";
+    // std::string fragment_path = R"(standardFragment.glsl)";
 
     vertex = std::move(Shader(GL_VERTEX_SHADER, vertex_path));
     fragment = std::move(Shader(GL_FRAGMENT_SHADER, fragment_path));
