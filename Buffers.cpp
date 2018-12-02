@@ -49,13 +49,11 @@ VAO & VAO::operator=(VAO && vao)
     return *this;
 }
 
-
 VAO::~VAO()
 {
     std::cout << "VAO destroyed, ID = " << ID << '\n';
     glDeleteVertexArrays(1, &ID);
 }
-
 
 void VAO::generate()
 {

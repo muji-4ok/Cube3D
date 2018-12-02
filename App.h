@@ -1,7 +1,12 @@
 #pragma once
+#include "Common.h"
 #include "Shader.h"
 #include "Buffers.h"
 #include "Cube.h"
+#include "CubeModel.h"
+#include "CubeRenderer.h"
+#include "Renderer.h"
+#include "Events.h"
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include <glm/glm.hpp>
@@ -10,6 +15,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
+#include <deque>
 #include <iostream>
 #include <string>
 #include <utility>
@@ -18,12 +24,7 @@
 #include <cmath>
 #include <random>
 #include <ctime>
-
-enum Rotation_Dir
-{
-    DIR1 = 0,
-    DIR2 = 1
-};
+#include <memory>
 
 struct App
 {
@@ -69,6 +70,8 @@ private:
     Cubelet_Rotation get_cubelet_rotation(int index);
     void rotate(int index, Rotation_Dir dir, int turns, int hit_i, int hit_j, int hit_k);
     void shuffle();
+    void get_input();
+    void reset_events();
 
     cv::VideoCapture vcap;
     bool with_webcam;
@@ -76,6 +79,13 @@ private:
     GLFWwindow *window;
     int width;
     int height;
+
+    std::deque<std::unique_ptr<Event>> eventsQueue;
+
+    State gameState = Interactive;
+
+    CubeModel cubeModel;
+    CubeRenderer cubeRenderer;
 
     Shader vertex;
     Shader fragment;
@@ -98,6 +108,7 @@ private:
     bool has_dir = true;
     bool has_rotation_vec = true;
 
+    float accum_rot_angle = 0.0f;
     float rot_angle = 0.0f;
     Rotation_Dir dir = DIR1;
 

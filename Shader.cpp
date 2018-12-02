@@ -68,6 +68,7 @@ unsigned int Shader::getID() const
 
 Shader::~Shader()
 {
+    std::cerr << "Deleted shader with ID: " << ID << '\n';
     glDeleteShader(ID);
 }
 
@@ -165,6 +166,7 @@ int ShaderProgram::getUniformLocation(const std::string &name)
 
 ShaderProgram::~ShaderProgram()
 {
+    std::cerr << "Deleted shader program with ID: " << ID << '\n';
     ShaderProgram::disable();
     glDeleteProgram(ID);
 }

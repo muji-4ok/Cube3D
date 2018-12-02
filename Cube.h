@@ -36,6 +36,7 @@ public:
     void set_solved();
 
     std::array<std::array<std::array<std::vector<float>, 3>, 3>, 3 > cubes;
+    std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_rotate;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_full_size;
 
