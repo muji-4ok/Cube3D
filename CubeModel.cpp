@@ -193,6 +193,10 @@ void CubeModel::get_dir_by_notation(const HitHeader & hit, char r, glm::vec2 & d
     auto pane_vec_1 = glm::normalize(glm::vec2(pane_vert_2 - pane_vert_1));
     auto pane_vec_2 = glm::normalize(glm::vec2(pane_vert_3 - pane_vert_1));
 
+    // dir_vec = pane_vec_2;
+    // dir = DIR2;
+    // return;
+
     if (r == 'U' || r == 'u' || r == 'D' || r == 'd')
     {
         dir_vec = pane_vec_1;
@@ -289,7 +293,7 @@ std::vector<std::unique_ptr<RotationHeader>> CubeModel::generate_rotations(float
 
     while (std::abs(end_angle - angle) > std::abs(speed))
     {
-        std::cout << "speed: " << speed << '\n';
+        // std::cout << "speed: " << speed << '\n';
         out.push_back(std::make_unique<TempRotationHeader>(vec, speed));
         angle += speed;
         speed += acceleration;
@@ -411,6 +415,8 @@ CubeletRotation CubeModel::get_cubelet_rotation(const HitHeader & hit)
 glm::vec3 CubeModel::get_rot_vec(const HitHeader &hit)
 {
     int rot_index = get_rot_index(hit);
+
+    // std::cout << "rot_index: " << rot_index << '\n';
 
     glm::vec3 v1, v2, v3;
     get_pane_vertices(rot_index, v1, v2, v3);
@@ -702,6 +708,8 @@ HitHeader CubeModel::notation_to_hit_header(char r)
     }
 
     get_dir_by_notation(hit, r, dir_vec, dir);
+    hit.dir = dir;
+    hit.dir_vec = dir_vec;
 
     return hit;
 }
@@ -736,6 +744,23 @@ std::vector<std::unique_ptr<RotationHeader>> CubeModel::get_rotations_to_orthogo
                                   acceleration, lastRotation.vec);
     out.push_back(std::make_unique<PermRotationHeader>(hit, turns));
     out.push_back(std::make_unique<ResetRotationHeader>());
+
+    return out;
+}
+
+std::vector<std::unique_ptr<RotationHeader>> CubeModel::get_rotations_for_script(const HitHeader &hit,
+                                                                                 bool clockwise, char r)
+{
+    auto start_angle = 0.0f;
+    auto end_angle = glm::radians(clockwise ? 90.0f : -90.0f);
+    auto turns = clockwise ? 1 : 3;
+    turns = (r == 'D' || r == 'd') ? 4 - turns : turns;
+    auto start_speed = glm::radians(clockwise ? 1.0f : -1.0f);
+    auto acceleration = glm::radians(clockwise ? 1.0f : -1.0f);
+    auto vec = get_rot_vec(hit);
+    auto out = generate_rotations(start_angle, end_angle, start_speed, acceleration, vec);
+    out.push_back(std::make_unique<PermRotationHeader>(hit, turns));
+    // std::cout << "vec: x = " << vec.x << " ; y = " << vec.y << " ; z = " << vec.z << '\n';
 
     return out;
 }

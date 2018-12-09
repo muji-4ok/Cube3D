@@ -50,7 +50,6 @@ void RotationQueue::set_dir(Rotation_Dir dir, glm::vec2 dir_vec)
 
 void RotationQueue::reset()
 {
-    queue.clear();
     angle = 0.0f;
     is_with_dir = false;
     is_with_header = false;

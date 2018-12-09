@@ -84,7 +84,7 @@ void CubeRenderer::handle_event(const Event *e)
     {
         if (mouse_up->left_pressed)
         {
-            if (!rotationQueue.has_header())
+            if (!rotationQueue.has_header() || !rotationQueue.has_dir())
                 return;
 
             // std::cout << "angle: " << rotationQueue.get_angle() << '\n';
@@ -129,7 +129,35 @@ void CubeRenderer::handle_event(const Event *e)
     }
     else if (key_pressed)
     {
+        if (rotationQueue.is_rotating())
+            return;
 
+        auto hit = model->notation_to_hit_header(key_pressed->key);
+
+        // std::cout << "Hit header: i = " << hit.i
+            // << " ; j = " << hit.j
+            // << " ; k = " << hit.k
+            // << " ; index = " << hit.index << '\n';
+
+        bool clockwise = (key_pressed->key < 'Z');
+
+        switch (key_pressed->key)
+        {
+            case 'U':
+            case 'u':
+            case 'R':
+            case 'r':
+            case 'F':
+            case 'f':
+                clockwise = !clockwise;
+                break;
+        }
+
+        auto rotations = model->get_rotations_for_script(hit, clockwise, key_pressed->key);
+        rotationQueue.set_hit_header(std::move(hit));
+
+        for (auto &r : rotations)
+            rotationQueue.push(std::move(r));
     }
     else if (dimensions_change)
     {

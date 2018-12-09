@@ -31,11 +31,13 @@ public:
     std::unique_ptr<TempRotationHeader> get_rotation_header(const glm::vec2 &diff, const HitHeader &hit);
     void rotate_permanent(const PermRotationHeader *perm);
     void reset_models_rotations();
-    HitHeader notation_to_hit_header(char r);
     std::vector<std::unique_ptr<RotationHeader>> get_rotations_to_orthogonal(
         float angle, const HitHeader &hit,
         const TempRotationHeader &lastRotation
     );
+    std::vector<std::unique_ptr<RotationHeader>> get_rotations_for_script(const HitHeader &hit, bool clockwise,
+                                                                          char r);
+    HitHeader notation_to_hit_header(char r);
 
 private:
     void reset_models_translations();
