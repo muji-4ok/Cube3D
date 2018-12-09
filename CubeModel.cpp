@@ -127,19 +127,21 @@ void CubeModel::rotate_all_with_mouse(const glm::vec2 &diff)
     }
 }
 
-void CubeModel::rotate_facelet(const HitHeader &hit, const RotationHeader& rot)
+void CubeModel::rotate_facelet(const HitHeader &hit, const TempRotationHeader* rot)
 {
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             for (int k = 0; k < 3; ++k)
                 if (needs_rotation(hit, i, j, k))
-                    models_rotate[i][j][k] = glm::rotate(models_rotate[i][j][k], rot.angle, rot.vec);
+                    models_rotate[i][j][k] = glm::rotate(models_rotate[i][j][k], rot->angle, rot->vec);
 }
 
 bool CubeModel::get_hit_header(const glm::vec2 & mouse_pos, HitHeader &hit)
 {
     auto world_ray = get_eye_ray(mouse_pos);
     auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
+  
+    // std::cout << "new world_ray: " << world_ray.x << ' ' << world_ray.y << ' ' << world_ray.z << '\n';
 
     int index;
     int i, j, k;
@@ -152,6 +154,8 @@ bool CubeModel::get_hit_header(const glm::vec2 & mouse_pos, HitHeader &hit)
     hit.j = j;
     hit.k = k;
     hit.dir = DIR1;
+
+    return true;
 }
 
 void CubeModel::get_dir(const HitHeader &hit, const glm::vec2 &diff, glm::vec2 &dir_vec,
@@ -181,7 +185,28 @@ void CubeModel::get_dir(const HitHeader &hit, const glm::vec2 &diff, glm::vec2 &
         }
 }
 
-RotationHeader CubeModel::get_rotation_header(const glm::vec2 & diff, const HitHeader & hit)
+void CubeModel::get_dir_by_notation(const HitHeader & hit, char r, glm::vec2 & dir_vec, Rotation_Dir & dir)
+{
+    glm::vec3 pane_vert_1, pane_vert_2, pane_vert_3;
+    get_pane_vertices(hit.index, pane_vert_1, pane_vert_2, pane_vert_3);
+
+    auto pane_vec_1 = glm::normalize(glm::vec2(pane_vert_2 - pane_vert_1));
+    auto pane_vec_2 = glm::normalize(glm::vec2(pane_vert_3 - pane_vert_1));
+
+    if (r == 'U' || r == 'u' || r == 'D' || r == 'd')
+    {
+        dir_vec = pane_vec_1;
+        dir = DIR1;
+    }
+    else if (r == 'L' || r == 'l' || r == 'R' || r == 'r' || r == 'F' || r == 'f' || r == 'B', r == 'b')
+    {
+        dir_vec = pane_vec_2;
+        dir = DIR2;
+    }
+}
+
+std::unique_ptr<TempRotationHeader> CubeModel::get_rotation_header(const glm::vec2 & diff,
+                                                                   const HitHeader & hit)
 {
     auto dot = 2.0f * glm::dot(hit.dir_vec, diff);
     auto rotation_vec = get_rot_vec(hit);
@@ -190,7 +215,98 @@ RotationHeader CubeModel::get_rotation_header(const glm::vec2 & diff, const HitH
     if (needs_fixing(hit.index, rot_index))
         dot = -dot;
 
-    return { rotation_vec, dot };
+    return std::make_unique<TempRotationHeader>(rotation_vec, dot);
+}
+
+void CubeModel::rotate_permanent(const PermRotationHeader *perm)
+{
+    auto cubelets = get_rotating_cubelets(perm->hit);
+    auto rotation_dir = get_cubelet_rotation(perm->hit);
+
+    for (int i = 0; i < perm->turns; ++i)
+    {
+        for (auto &p : cubelets)
+        {
+            auto &c = *p;
+            rotate_cubelet(c, rotation_dir);
+        }
+
+        for (int t = 0; t < 2; ++t)
+            for (int i = 1; i < 8; ++i)
+                std::swap(*cubelets[i - 1], *cubelets[i]);
+    }
+}
+
+void CubeModel::rotate_cubelet(std::vector<float>& cubelet, CubeletRotation dir)
+{
+    switch (dir)
+    {
+        case X:
+            swap_3(cubelet, 1, 5);
+            swap_3(cubelet, 5, 0);
+            swap_3(cubelet, 0, 4);
+            break;
+        case Y:
+            swap_3(cubelet, 1, 3);
+            swap_3(cubelet, 3, 0);
+            swap_3(cubelet, 0, 2);
+            break;
+        case Z:
+            swap_3(cubelet, 2, 5);
+            swap_3(cubelet, 5, 3);
+            swap_3(cubelet, 3, 4);
+            break;
+    }
+}
+
+std::vector<std::unique_ptr<RotationHeader>> CubeModel::generate_rotations(float start_angle, float end_angle,
+                                                                           float start_speed,
+                                                                           float acceleration,
+                                                                           const glm::vec3 & vec)
+{
+    std::vector<std::unique_ptr<RotationHeader>> out;
+    auto diff = end_angle - start_angle;
+
+    if (std::abs(diff) < std::abs(start_speed))
+        return out;
+
+    auto angle = start_angle;
+    auto speed = start_speed;
+
+    // if (std::abs(final_angle - accum_rot_angle) < increment)
+    // {
+        // rotating = false;
+        // auto_rotating = false;
+        // accum_rot_angle = 0.0f;
+        // rotate(hit_index, dir, turns, hit_i, hit_j, hit_k);
+    // }
+    // else
+    // {
+        // rot_angle = std::copysign(increment, auto_rotation_dir);
+        // accum_rot_angle += rot_angle;
+        // increment += glm::radians(0.8f);
+    // }
+
+    while (std::abs(end_angle - angle) > std::abs(speed))
+    {
+        std::cout << "speed: " << speed << '\n';
+        out.push_back(std::make_unique<TempRotationHeader>(vec, speed));
+        angle += speed;
+        speed += acceleration;
+    }
+
+    // while ((diff > 0 && angle < end_angle) || (diff < 0 && angle > end_angle))
+    // {
+        // out.push_back(std::make_unique<TempRotationHeader>(vec, speed));
+        // angle += speed;
+        // speed += acceleration;
+    // }
+
+    std::cout << "generate angle: " << angle << '\n';
+
+    // out.push_back(std::make_unique<TempRotationHeader>(vec, end_angle - angle));
+
+    return out;
 }
 
 bool CubeModel::needs_fixing(int index, int rot_index)
@@ -209,6 +325,86 @@ bool CubeModel::needs_fixing(int index, int rot_index)
             return false;
         case 5:
             return true;
+    }
+}
+
+std::array<std::vector<float>*, 8> CubeModel::get_rotating_cubelets(const HitHeader & hit)
+{
+    std::array<std::vector<float>*, 8> out;
+    using Coord = std::tuple<int, int, int>;
+    std::array<Coord, 8> coords;
+
+    auto count_centers = [](int i, int j, int k) -> int {
+        return static_cast<int>(i == 1) + static_cast<int>(j == 1) + static_cast<int>(k == 1);
+    };
+
+    bool is_center = needs_rotation(hit, 1, 1, 1);
+    int c = 0;
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            for (int k = 0; k < 3; ++k)
+                if (needs_rotation(hit, i, j, k))
+                {
+                    auto centers = count_centers(i, j, k);
+
+                    if (is_center)
+                    {
+                        if (count_centers(i, j, k) == 3)
+                            continue;
+                    }
+                    else
+                    {
+                        if (count_centers(i, j, k) >= 2)
+                            continue;
+                    }
+
+                    coords[c++] = { i, j, k };
+                }
+
+    int rot_index = get_rot_index(hit);
+
+    auto cmp = [rot_index](const Coord &c1, const Coord &c2) -> bool {
+        switch (rot_index)
+        {
+            case 0:
+            case 1:
+                return glm::cross(glm::vec3(std::get<0>(c1) - 1, std::get<1>(c1) - 1, 0),
+                                  glm::vec3(std::get<0>(c2) - 1, std::get<1>(c2) - 1, 0)).z < 0;
+            case 2:
+            case 3:
+                return glm::cross(glm::vec3(std::get<1>(c1) - 1, std::get<2>(c1) - 1, 0),
+                                  glm::vec3(std::get<1>(c2) - 1, std::get<2>(c2) - 1, 0)).z < 0;
+            case 4:
+            case 5:
+                return glm::cross(glm::vec3(std::get<0>(c1) - 1, std::get<2>(c1) - 1, 0),
+                                  glm::vec3(std::get<0>(c2) - 1, std::get<2>(c2) - 1, 0)).z < 0;
+        }
+    };
+
+    std::sort(coords.begin(), coords.end(), cmp);
+
+    for (int i = 0; i < 8; ++i)
+        out[i] = &colors[std::get<0>(coords[i])][std::get<1>(coords[i])][std::get<2>(coords[i])];
+
+    return out;
+}
+
+CubeletRotation CubeModel::get_cubelet_rotation(const HitHeader & hit)
+{
+    auto rot_index = get_rot_index(hit);
+
+    switch (rot_index)
+    {
+        case 0:
+        case 1:
+            return Z;
+        case 2:
+        case 3:
+            return X;
+        case 4:
+        case 5:
+            return Y;
     }
 }
 
@@ -311,7 +507,7 @@ glm::vec3 CubeModel::get_eye_ray(const glm::vec2& mouse_pos)
     eye_ray.z = -1.0f;
     eye_ray.w = 0.0f;
 
-    return glm::normalize(glm::vec3(glm::inverse(view) * eye_ray));
+    return glm::normalize(glm::vec3(glm::inverse(translation_view) * eye_ray));
 }
 
 bool CubeModel::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_ray,
@@ -324,7 +520,7 @@ bool CubeModel::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &world_r
         for (int j = 0; j < 3; ++j)
             for (int k = 0; k < 3; ++k)
             {
-                auto transform_matrix = view * models_rotate[i][j][k] * models_translate[i][j][k];
+                auto transform_matrix = view * models_rotate[i][j][k] * models_translate_full[i][j][k];
 
                 constexpr float epsilon = 1e-8;
 
@@ -456,6 +652,94 @@ void CubeModel::reset_models_rotations()
                 models_rotate[i][j][k] = glm::mat4(1.0f);
 }
 
+HitHeader CubeModel::notation_to_hit_header(char r)
+{
+    HitHeader hit;
+    Rotation_Dir dir;
+    glm::vec2 dir_vec;
+
+    if (r == 'U' || r == 'u')
+    {
+        hit.index = 1;
+        hit.i = 0;
+        hit.j = 2;
+        hit.k = 2;
+    }
+    else if (r == 'D' || r == 'd')
+    {
+        hit.index = 1;
+        hit.i = 0;
+        hit.j = 0;
+        hit.k = 2;
+    }
+    else if (r == 'L' || r == 'l')
+    {
+        hit.index = 1;
+        hit.i = 0;
+        hit.j = 0;
+        hit.k = 2;
+    }
+    else if (r == 'R' || r == 'r')
+    {
+        hit.index = 1;
+        hit.i = 2;
+        hit.j = 0;
+        hit.k = 2;
+    }
+    else if (r == 'F' || r == 'f')
+    {
+        hit.index = 3;
+        hit.i = 2;
+        hit.j = 0;
+        hit.k = 2;
+    }
+    else if (r == 'B' || r == 'b')
+    {
+        hit.index = 3;
+        hit.i = 2;
+        hit.j = 0;
+        hit.k = 0;
+    }
+
+    get_dir_by_notation(hit, r, dir_vec, dir);
+
+    return hit;
+}
+
+std::vector<std::unique_ptr<RotationHeader>> CubeModel::get_rotations_to_orthogonal(
+    float angle,
+    const HitHeader &hit,
+    const TempRotationHeader &lastRotation
+)
+{
+    auto deg_angle = glm::degrees(angle);
+    int rot_index = get_rot_index(hit);
+
+    auto turns = static_cast<int>(std::round(deg_angle / 90.0f));
+
+    if (turns == 0 && std::abs(glm::degrees(lastRotation.angle)) > 2.0f)
+        turns = angle > 0 ? 1 : -1;
+
+    auto final_angle = glm::radians(90.0f * turns);
+    auto rotation_dir = final_angle - angle;
+
+    turns = (turns > 0 ? 1 : -1) * (std::abs(turns) % 4);
+
+    if (rot_index == 4 || rot_index == 5)
+        turns = -turns;
+
+    turns = (turns + 4) % 4;
+    auto start_speed = std::copysign(glm::radians(1.0f), rotation_dir);
+    start_speed = std::abs(start_speed) > std::abs(lastRotation.angle) ? start_speed : lastRotation.angle;
+    auto acceleration = std::copysign(glm::radians(0.8f), rotation_dir);
+    auto out = generate_rotations(angle, final_angle, start_speed,
+                                  acceleration, lastRotation.vec);
+    out.push_back(std::make_unique<PermRotationHeader>(hit, turns));
+    out.push_back(std::make_unique<ResetRotationHeader>());
+
+    return out;
+}
+
 void CubeModel::reset_models_translations()
 {
     for (int i = 0; i < 3; ++i)
@@ -477,4 +761,11 @@ template<typename T>
 void append(std::vector<T>& v1, const std::vector<T>& v2)
 {
     v1.insert(v1.end(), v2.begin(), v2.end());
+}
+
+template<typename T>
+void swap_3(std::vector<T>& v, int offset1, int offset2)
+{
+    for (int i = 0; i < 3; ++i)
+        std::swap(v[offset1 * 3 + i], v[offset2 * 3 + i]);
 }

@@ -12,6 +12,7 @@
 #include <map>
 #include <utility>
 #include <limits>
+#include <memory>
 
 class CubeModel
 {
@@ -21,18 +22,22 @@ public:
 
     void generate(int width, int height);
     void set_dimensions(int width, int height);
-    // void rotate(char face, bool reverse);
-    // void rotate(...);
-    // void rotate_face(const glm::vec3 &rotation_vec, float rotation_angle);
     void draw();
     void rotate_all_with_mouse(const glm::vec2 &diff);
-    void rotate_facelet(const HitHeader &hit, const RotationHeader& rot);
+    void rotate_facelet(const HitHeader &hit, const TempRotationHeader* rot);
     bool get_hit_header(const glm::vec2 &mouse_pos, HitHeader &hit);
     void get_dir(const HitHeader &hit, const glm::vec2 &diff, glm::vec2 &dir_vec, Rotation_Dir &dir);
-    RotationHeader get_rotation_header(const glm::vec2 &diff, const HitHeader &hit);
+    void get_dir_by_notation(const HitHeader &hit, char r, glm::vec2 &dir_vec, Rotation_Dir &dir);
+    std::unique_ptr<TempRotationHeader> get_rotation_header(const glm::vec2 &diff, const HitHeader &hit);
+    void rotate_permanent(const PermRotationHeader *perm);
+    void reset_models_rotations();
+    HitHeader notation_to_hit_header(char r);
+    std::vector<std::unique_ptr<RotationHeader>> get_rotations_to_orthogonal(
+        float angle, const HitHeader &hit,
+        const TempRotationHeader &lastRotation
+    );
 
 private:
-    void reset_models_rotations();
     void reset_models_translations();
     void set_solved();
     bool needs_rotation(const HitHeader &hit, int i, int j, int k);
@@ -48,6 +53,14 @@ private:
     glm::vec3 get_rot_vec(const HitHeader &hit);
     int get_rot_index(const HitHeader &hit);
     bool needs_fixing(int index, int rot_index);
+    std::array<std::vector<float>*, 8> get_rotating_cubelets(const HitHeader &hit);
+    CubeletRotation get_cubelet_rotation(const HitHeader &hit);
+    void rotate_cubelet(std::vector<float>& cubelet, CubeletRotation dir);
+    std::vector<std::unique_ptr<RotationHeader>> generate_rotations(float start_angle,
+                                                                    float end_angle,
+                                                                    float start_speed,
+                                                                    float acceleration,
+                                                                    const glm::vec3 & vec);
 
     const std::vector<float> raw_vertices{
         // back
@@ -180,3 +193,6 @@ private:
 
 template <typename T>
 void append(std::vector<T>& v1, const std::vector<T>& v2);
+
+template<typename T>
+void swap_3(std::vector<T>& v, int offset1, int offset2);

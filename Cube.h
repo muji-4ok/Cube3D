@@ -1,6 +1,7 @@
 #pragma once
 #include "Shader.h"
 #include "Buffers.h"
+#include "Common.h"
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include <glm/glm.hpp>
@@ -10,13 +11,6 @@
 #include <vector>
 #include <map>
 #include <utility>
-
-enum Cubelet_Rotation
-{
-    X,
-    Y,
-    Z
-};
 
 template <typename T>
 void append(std::vector<T> &v1, const std::vector<T> &v2);
@@ -32,7 +26,7 @@ public:
     Cube& operator= (Cube&& c);
     ~Cube();
 
-    void rotate(std::array<std::vector<float>*, 8> cubelets, Cubelet_Rotation dir);
+    void rotate(std::array<std::vector<float>*, 8> cubelets, CubeletRotation dir);
     void set_solved();
 
     std::array<std::array<std::array<std::vector<float>, 3>, 3>, 3 > cubes;
@@ -150,7 +144,7 @@ public:
     };
 
 private:
-    void rotate_cubelet(std::vector<float> &cubelet, Cubelet_Rotation dir);
+    void rotate_cubelet(std::vector<float> &cubelet, CubeletRotation dir);
     void swap_indices(std::vector<float> &cubelet, int i1, int i2);
 };
 

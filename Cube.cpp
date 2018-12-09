@@ -42,7 +42,7 @@ Cube::~Cube()
 {
 }
 
-void Cube::rotate(std::array<std::vector<float>*, 8> cubelets, Cubelet_Rotation dir)
+void Cube::rotate(std::array<std::vector<float>*, 8> cubelets, CubeletRotation dir)
 {
     for (auto &p : cubelets)
     {
@@ -79,7 +79,7 @@ void Cube::set_solved()
             }
 }
 
-void Cube::rotate_cubelet(std::vector<float>& cubelet, Cubelet_Rotation dir)
+void Cube::rotate_cubelet(std::vector<float>& cubelet, CubeletRotation dir)
 {
     switch (dir)
     {

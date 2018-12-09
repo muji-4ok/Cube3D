@@ -67,7 +67,7 @@ private:
     glm::mat4 get_mat();
     std::array<std::vector<float>*, 8> get_rotating_cubelets(int index, Rotation_Dir dir,
                                                              int hit_i, int hit_j, int hit_k);
-    Cubelet_Rotation get_cubelet_rotation(int index);
+    CubeletRotation get_cubelet_rotation(int index);
     void rotate(int index, Rotation_Dir dir, int turns, int hit_i, int hit_j, int hit_k);
     void shuffle();
     void get_input();

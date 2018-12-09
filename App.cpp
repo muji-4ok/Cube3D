@@ -119,7 +119,7 @@ void App::mouse_callback(GLFWwindow *window, int button, int action, int mods)
         auto world_ray = get_eye_ray(last_mouse_pos, projection, translate_view);
         auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
         // mouse_origin = glm::vec3(last_mouse_pos, 0.0f);
-        // std::cout << world_ray.x << ' ' << world_ray.y << ' ' << world_ray.z << '\n';
+        // std::cout << "world_ray: " << world_ray.x << ' ' << world_ray.y << ' ' << world_ray.z << '\n';
         int index;
         int hit_i, hit_j, hit_k;
         if (!hit_side(mouse_origin, world_ray, index, hit_i, hit_j, hit_k))
@@ -567,10 +567,9 @@ std::array<std::vector<float>*, 8> App::get_rotating_cubelets(int index, Rotatio
         out[i] = &cube.cubes[std::get<0>(coords[i])][std::get<1>(coords[i])][std::get<2>(coords[i])];
 
     return out;
-
 }
 
-Cubelet_Rotation App::get_cubelet_rotation(int index)
+CubeletRotation App::get_cubelet_rotation(int index)
 {
     switch (index)
     {
