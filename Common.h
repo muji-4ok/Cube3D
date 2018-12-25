@@ -63,6 +63,16 @@ struct PermRotationHeader : public RotationHeader
     std::string get_name() override;
 };
 
+struct SetHitRotationHeader : public RotationHeader
+{
+    SetHitRotationHeader() {};
+    SetHitRotationHeader(const HitHeader &hit) : hit(hit) {}
+
+    HitHeader hit;
+
+    std::string get_name() override;
+};
+
 enum State
 {
     Interactive = 0,

@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <random>
+#include <ctime>
 
 class CubeRenderer : public Renderer
 {
@@ -19,6 +21,8 @@ public:
     void handle_event(const Event *e) override;
 
 private:
+    void rotate_by_notation(char r);
+    void rotate_sequence(std::string path);
     RotationQueue rotationQueue;
     CubeModel *model = nullptr;
 };

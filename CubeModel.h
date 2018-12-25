@@ -1,4 +1,5 @@
 #pragma once
+#include "search.h"
 #include "Shader.h"
 #include "Buffers.h"
 #include "Common.h"
@@ -13,6 +14,9 @@
 #include <utility>
 #include <limits>
 #include <memory>
+#include <algorithm>
+#include <sstream>
+#include <tuple>
 
 class CubeModel
 {
@@ -38,6 +42,7 @@ public:
     std::vector<std::unique_ptr<RotationHeader>> get_rotations_for_script(const HitHeader &hit, bool clockwise,
                                                                           char r);
     HitHeader notation_to_hit_header(char r);
+    std::string gen_solution() const;
 
 private:
     void reset_models_translations();
@@ -63,6 +68,7 @@ private:
                                                                     float start_speed,
                                                                     float acceleration,
                                                                     const glm::vec3 & vec);
+    std::string to_string() const;
 
     const std::vector<float> raw_vertices{
         // back

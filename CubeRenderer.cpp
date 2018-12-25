@@ -20,6 +20,7 @@ bool CubeRenderer::draw()
         auto temp_ptr = dynamic_cast<TempRotationHeader*>(rot_header.get());
         auto perm_ptr = dynamic_cast<PermRotationHeader*>(rot_header.get());
         auto reset_ptr = dynamic_cast<ResetRotationHeader*>(rot_header.get());
+        auto set_hit_ptr = dynamic_cast<SetHitRotationHeader*>(rot_header.get());
 
         if (temp_ptr)
         {
@@ -32,6 +33,11 @@ bool CubeRenderer::draw()
             model->rotate_permanent(perm_ptr);
             rotationQueue.reset();
             model->reset_models_rotations();
+        }
+
+        if (set_hit_ptr)
+        {
+            rotationQueue.set_hit_header(std::move(set_hit_ptr->hit));
         }
 
         if (reset_ptr)
@@ -132,35 +138,66 @@ void CubeRenderer::handle_event(const Event *e)
         if (rotationQueue.is_rotating())
             return;
 
-        auto hit = model->notation_to_hit_header(key_pressed->key);
-
-        // std::cout << "Hit header: i = " << hit.i
-            // << " ; j = " << hit.j
-            // << " ; k = " << hit.k
-            // << " ; index = " << hit.index << '\n';
-
-        bool clockwise = (key_pressed->key < 'Z');
-
-        switch (key_pressed->key)
+        if (key_pressed->key == 'S' || key_pressed->key == 's')
         {
-            case 'U':
-            case 'u':
-            case 'R':
-            case 'r':
-            case 'F':
-            case 'f':
-                clockwise = !clockwise;
-                break;
+            static std::mt19937 gen(std::time(0));
+            static std::vector<char> possible{ 'U', 'u', 'D', 'd', 'R', 'r', 'L', 'l', 'F', 'f', 'B', 'b' };
+            static std::uniform_int_distribution<int> dist(0, possible.size() - 1);
+
+            for (int i = 0; i < 30; ++i)
+                rotate_by_notation(possible[dist(gen)]);
+
+            return;
         }
-
-        auto rotations = model->get_rotations_for_script(hit, clockwise, key_pressed->key);
-        rotationQueue.set_hit_header(std::move(hit));
-
-        for (auto &r : rotations)
-            rotationQueue.push(std::move(r));
+        else if (key_pressed->key == 'C' || key_pressed->key == 'c')
+        {
+            auto sol_str = model->gen_solution();
+            std::cout << sol_str << '\n';
+            rotate_sequence(sol_str);
+        }
+        else
+        {
+            rotate_by_notation(key_pressed->key);
+        }
     }
     else if (dimensions_change)
     {
         model->set_dimensions(dimensions_change->width, dimensions_change->height);
     }
+}
+
+void CubeRenderer::rotate_by_notation(char r)
+{
+    auto hit = model->notation_to_hit_header(r);
+
+    // std::cout << "Hit header: i = " << hit.i
+        // << " ; j = " << hit.j
+        // << " ; k = " << hit.k
+        // << " ; index = " << hit.index << '\n';
+
+    bool clockwise = (r < 'Z');
+
+    switch (r)
+    {
+        case 'U':
+        case 'u':
+        case 'R':
+        case 'r':
+        case 'F':
+        case 'f':
+            clockwise = !clockwise;
+            break;
+    }
+
+    auto rotations = model->get_rotations_for_script(hit, clockwise, r);
+    rotationQueue.push(std::make_unique<SetHitRotationHeader>(hit));
+
+    for (auto &r : rotations)
+        rotationQueue.push(std::move(r));
+}
+
+void CubeRenderer::rotate_sequence(std::string path)
+{
+    for (const auto &c : path)
+        rotate_by_notation(c);
 }

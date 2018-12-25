@@ -38,6 +38,12 @@ void App::key_callback(GLFWwindow *window, int key, int scancode, int action, in
             case GLFW_KEY_B:
                 k = shift ? 'B' : 'b';
                 break;
+            case GLFW_KEY_S:
+                k = shift ? 'S' : 's';
+                break;
+            case GLFW_KEY_C:
+                k = shift ? 'C' : 'c';
+                break;
             default:
                 std::cout << "Unknown key\n";
                 return;

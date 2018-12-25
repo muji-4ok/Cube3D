@@ -14,3 +14,8 @@ std::string ResetRotationHeader::get_name()
 {
     return "ResetRotationHeader";
 }
+
+std::string SetHitRotationHeader::get_name()
+{
+    return "SetHitRotationHeader";
+}

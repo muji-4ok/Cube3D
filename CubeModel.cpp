@@ -306,9 +306,85 @@ std::vector<std::unique_ptr<RotationHeader>> CubeModel::generate_rotations(float
         // speed += acceleration;
     // }
 
-    std::cout << "generate angle: " << angle << '\n';
+    // std::cout << "generate angle: " << angle << '\n';
 
     // out.push_back(std::make_unique<TempRotationHeader>(vec, end_angle - angle));
+
+    return out;
+}
+
+std::string CubeModel::to_string() const
+{
+    // URFDLB
+    // 531420
+    auto vec_to_tuple = [this](int i, int j, int k, int index) -> std::tuple<double, double, double> {
+        auto first = this->colors[i][j][k][index * 3];
+        auto second = this->colors[i][j][k][index * 3 + 1];
+        auto third = this->colors[i][j][k][index * 3 + 2];
+
+        return { first, second, third };
+    };
+
+    auto u = vec_to_tuple(1, 2, 1, 5);
+    auto r = vec_to_tuple(2, 1, 1, 3);
+    auto f = vec_to_tuple(1, 1, 2, 1);
+    auto d = vec_to_tuple(1, 0, 1, 4);
+    auto l = vec_to_tuple(0, 1, 1, 2);
+    auto b = vec_to_tuple(1, 1, 0, 0);
+
+    auto vec_to_char = [&vec_to_tuple, &u, &r, &f, &d, &l, &b, this](int i, int j, int k, int index) -> char {
+        auto t = vec_to_tuple(i, j, k, index);
+
+        if (t == r)
+            return 'R';
+        else if (t == b)
+            return 'B';
+        else if (t == d)
+            return 'D';
+        else if (t == l)
+            return 'L';
+        else if (t == f)
+            return 'F';
+        else if (t == u)
+            return 'U';
+    };
+    std::vector<std::string> faces(6);
+
+    for (int k = 0; k < 3; ++k)
+        for (int i = 0; i < 3; ++i)
+            faces[0].push_back(vec_to_char(i, 2, k, 5));
+
+    for (int j = 2; j >= 0; --j)
+        for (int k = 2; k >= 0; --k)
+            faces[1].push_back(vec_to_char(2, j, k, 3));
+
+    for (int j = 2; j >= 0; --j)
+        for (int i = 0; i < 3; ++i)
+            faces[2].push_back(vec_to_char(i, j, 2, 1));
+
+    for (int k = 2; k >= 0; --k)
+        for (int i = 0; i < 3; ++i)
+            faces[3].push_back(vec_to_char(i, 0, k, 4));
+
+    for (int j = 2; j >= 0; --j)
+        for (int k = 0; k < 3; ++k)
+            faces[4].push_back(vec_to_char(0, j, k, 2));
+
+    for (int j = 2; j >= 0; --j)
+        for (int i = 2; i >= 0; --i)
+            faces[5].push_back(vec_to_char(i, j, 0, 0));
+
+    std::cout << "faces:\n";
+
+    for (const auto &f : faces)
+        std::cout << f << '\n';
+
+    std::string out;
+
+    for (const auto &f : faces)
+        out += f;
+
+    std::cout << "out: " << out << '\n';
 
     return out;
 }
@@ -714,6 +790,94 @@ HitHeader CubeModel::notation_to_hit_header(char r)
     return hit;
 }
 
+std::string CubeModel::gen_solution() const
+{
+    auto cube_string = to_string();
+    char* c_cube = const_cast<char *>(cube_string.c_str());
+    std::string sol;
+
+    while (true)
+        try
+        {
+            sol = std::string(solution(
+                c_cube,
+                42,
+                1000,
+                0,
+                "cache"
+            ));
+
+            break;
+        }
+        catch (const std::exception &e)
+        {
+            std::cout << "error\n";
+            std::cout << e.what() << '\n';
+        }
+
+    std::cout << sol << '\n';
+
+    std::istringstream iss(sol);
+    std::vector<std::string> moves;
+    std::copy(std::istream_iterator<std::string>(iss),
+              std::istream_iterator<std::string>(),
+              std::back_inserter(moves));
+    std::string seq;
+    auto to_notation = [](const std::string &s) -> std::string {
+        bool doub = false;
+        bool revr = false;
+
+        if (s.size() > 1)
+        {
+            doub = (s[1] == '2');
+            revr = (s[1] == '\'');
+        }
+
+        std::string out;
+
+        if (doub)
+        {
+            out.assign(2, s[0]);
+        }
+        else
+        {
+            auto c = s[0];
+
+            if (revr)
+                switch (c)
+                {
+                    case 'U':
+                        c = 'u';
+                        break;
+                    case 'D':
+                        c = 'd';
+                        break;
+                    case 'L':
+                        c = 'l';
+                        break;
+                    case 'R':
+                        c = 'r';
+                        break;
+                    case 'F':
+                        c = 'f';
+                        break;
+                    case 'B':
+                        c = 'b';
+                        break;
+                }
+
+            out.push_back(c);
+        }
+
+        return out;
+    };
+
+    for (const auto &m : moves)
+        seq += to_notation(m);
+
+    return seq;
+}
+
 std::vector<std::unique_ptr<RotationHeader>> CubeModel::get_rotations_to_orthogonal(
     float angle,
     const HitHeader &hit,
@@ -737,8 +901,9 @@ std::vector<std::unique_ptr<RotationHeader>> CubeModel::get_rotations_to_orthogo
         turns = -turns;
 
     turns = (turns + 4) % 4;
-    auto start_speed = std::copysign(glm::radians(1.0f), rotation_dir);
-    start_speed = std::abs(start_speed) > std::abs(lastRotation.angle) ? start_speed : lastRotation.angle;
+    // std::cout << "rot_angle: " << lastRotation.angle << '\n';
+    auto start_speed = std::copysign(glm::radians(1.0f) > std::abs(lastRotation.angle) ?
+                                     glm::radians(1.0f) : lastRotation.angle, rotation_dir);
     auto acceleration = std::copysign(glm::radians(0.8f), rotation_dir);
     auto out = generate_rotations(angle, final_angle, start_speed,
                                   acceleration, lastRotation.vec);
@@ -754,7 +919,7 @@ std::vector<std::unique_ptr<RotationHeader>> CubeModel::get_rotations_for_script
     auto start_angle = 0.0f;
     auto end_angle = glm::radians(clockwise ? 90.0f : -90.0f);
     auto turns = clockwise ? 1 : 3;
-    turns = (r == 'D' || r == 'd') ? 4 - turns : turns;
+    turns = (r == 'D' || r == 'd' || r == 'U' || r == 'u') ? 4 - turns : turns;
     auto start_speed = glm::radians(clockwise ? 1.0f : -1.0f);
     auto acceleration = glm::radians(clockwise ? 1.0f : -1.0f);
     auto vec = get_rot_vec(hit);
