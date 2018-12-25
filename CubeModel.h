@@ -182,10 +182,14 @@ private:
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_translate;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_translate_full;
 
+    // const std::string vertex_path
+        // = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
+    // const std::string fragment_path
+        // = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
     const std::string vertex_path
-        = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
+        = R"(shaders\standardVertex.glsl)";
     const std::string fragment_path
-        = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
+        = R"(shaders\standardFragment.glsl)";
     ShaderProgram shdProgram;
     VBO cubeVBO;
     VAO cubeVAO;

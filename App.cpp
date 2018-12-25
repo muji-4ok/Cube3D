@@ -739,7 +739,7 @@ void App::run()
 
     while (!glfwWindowShouldClose(window))
     {
-        calculate();
+        // calculate();
         draw();
         glfwSwapBuffers(window);
         update_fps();
@@ -770,30 +770,30 @@ void App::prepare()
     // squareVAO.bind();
     // squareVBO.bind();
     // VAO::unbind();
-    std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
-    std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
+    // std::string vertex_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
+    // std::string fragment_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
     // std::string vertex_path = R"(standardVertex.glsl)";
     // std::string fragment_path = R"(standardFragment.glsl)";
-    vertex = std::move(Shader(GL_VERTEX_SHADER, vertex_path));
-    fragment = std::move(Shader(GL_FRAGMENT_SHADER, fragment_path));
-    shdProgram = std::move(ShaderProgram(vertex, fragment));
-    cubeVBO.generate();
-    cubeVAO.generate();
-    cubeVBO.bind();
-    cubeVBO.setStaticData(cube.vertices);
-    cubeVAO.bind();
-    cubeVAO.setAttribPointer(0, 4, false, 4, 0);
-    cubeVAO.enableAttribute(0);
-    cubeVAO.bind();
-    cubeVBO.bind();
-    VAO::unbind();
-    shdProgram.use();
-    view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
-    mat = glm::rotate(mat, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mat = glm::rotate(mat, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
-    shdProgram.setUniformMatrix4fv("view", view);
-    shdProgram.setUniformMatrix4fv("projection", projection);
+    // vertex = std::move(Shader(GL_VERTEX_SHADER, vertex_path));
+    // fragment = std::move(Shader(GL_FRAGMENT_SHADER, fragment_path));
+    // shdProgram = std::move(ShaderProgram(vertex, fragment));
+    // cubeVBO.generate();
+    // cubeVAO.generate();
+    // cubeVBO.bind();
+    // cubeVBO.setStaticData(cube.vertices);
+    // cubeVAO.bind();
+    // cubeVAO.setAttribPointer(0, 4, false, 4, 0);
+    // cubeVAO.enableAttribute(0);
+    // cubeVAO.bind();
+    // cubeVBO.bind();
+    // VAO::unbind();
+    // shdProgram.use();
+    // view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+    // mat = glm::rotate(mat, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // mat = glm::rotate(mat, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
+    // shdProgram.setUniformMatrix4fv("view", view);
+    // shdProgram.setUniformMatrix4fv("projection", projection);
 
     cubeModel.generate(width, height);
 }
@@ -959,29 +959,29 @@ void App::draw()
         }
     }
 
-    return;
+    // return;
 
-    cubeVAO.bind();
-    for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j)
-            for (int k = 0; k < 3; ++k)
-            {
-                shdProgram.setUniform1i("i", i);
-                shdProgram.setUniform1i("j", j);
-                shdProgram.setUniform1i("k", k);
-                if (rotating && i == hit_i && j == hit_j && k == hit_k)
-                {
-                    shdProgram.setUniform1i("is_hit", true);
-                    shdProgram.setUniform1f("hit_index", static_cast<float>(hit_index));
-                }
-                else
-                {
-                    shdProgram.setUniform1i("is_hit", false);
-                }
-                shdProgram.setUniformMatrix4fv("model", cube.models[i][j][k]);
-                shdProgram.setUniformVector3fv("colors", cube.cubes[i][j][k]);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
+    // cubeVAO.bind();
+    // for (int i = 0; i < 3; ++i)
+        // for (int j = 0; j < 3; ++j)
+            // for (int k = 0; k < 3; ++k)
+            // {
+                // shdProgram.setUniform1i("i", i);
+                // shdProgram.setUniform1i("j", j);
+                // shdProgram.setUniform1i("k", k);
+                // if (rotating && i == hit_i && j == hit_j && k == hit_k)
+                // {
+                    // shdProgram.setUniform1i("is_hit", true);
+                    // shdProgram.setUniform1f("hit_index", static_cast<float>(hit_index));
+                // }
+                // else
+                // {
+                    // shdProgram.setUniform1i("is_hit", false);
+                // }
+                // shdProgram.setUniformMatrix4fv("model", cube.models[i][j][k]);
+                // shdProgram.setUniformVector3fv("colors", cube.cubes[i][j][k]);
+                // glDrawArrays(GL_TRIANGLES, 0, 36);
+            // }
 }
 
 void App::update_fps()
