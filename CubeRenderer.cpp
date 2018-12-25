@@ -25,6 +25,11 @@ bool CubeRenderer::draw()
         if (temp_ptr)
         {
             // std::cout << "angle: " << temp_ptr->angle << '\n';
+            auto hit = rotationQueue.get_hit_header();
+            //std::cout << "Hit header: i = " << hit.i
+                 //<< " ; j = " << hit.j
+                 //<< " ; k = " << hit.k
+                 //<< " ; index = " << hit.index << '\n';
             model->rotate_facelet(rotationQueue.get_hit_header(), temp_ptr);
         }
 
@@ -38,6 +43,12 @@ bool CubeRenderer::draw()
         if (set_hit_ptr)
         {
             rotationQueue.set_hit_header(std::move(set_hit_ptr->hit));
+            //std::cout << "hit header changed:\n";
+            auto hit = rotationQueue.get_hit_header();
+            //std::cout << "Hit header: i = " << hit.i
+                 //<< " ; j = " << hit.j
+                 //<< " ; k = " << hit.k
+                 //<< " ; index = " << hit.index << '\n';
         }
 
         if (reset_ptr)
@@ -168,12 +179,15 @@ void CubeRenderer::handle_event(const Event *e)
 
 void CubeRenderer::rotate_by_notation(char r)
 {
+    //std::cout << "r: " << r << '\n';
     auto hit = model->notation_to_hit_header(r);
 
-    // std::cout << "Hit header: i = " << hit.i
-        // << " ; j = " << hit.j
-        // << " ; k = " << hit.k
-        // << " ; index = " << hit.index << '\n';
+    //std::cout << "Hit header: i = " << hit.i
+         //<< " ; j = " << hit.j
+         //<< " ; k = " << hit.k
+         //<< " ; index = " << hit.index
+         //<< " ; dir = " << hit.dir
+         //<< " ; dir_vec: " << hit.dir_vec.x << ' ' << hit.dir_vec.y << '\n';
 
     bool clockwise = (r < 'Z');
 

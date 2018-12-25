@@ -140,7 +140,7 @@ bool CubeModel::get_hit_header(const glm::vec2 & mouse_pos, HitHeader &hit)
 {
     auto world_ray = get_eye_ray(mouse_pos);
     auto mouse_origin = glm::vec3(0.0f, 0.0f, 0.0f);
-  
+
     // std::cout << "new world_ray: " << world_ray.x << ' ' << world_ray.y << ' ' << world_ray.z << '\n';
 
     int index;
@@ -193,20 +193,24 @@ void CubeModel::get_dir_by_notation(const HitHeader & hit, char r, glm::vec2 & d
     auto pane_vec_1 = glm::normalize(glm::vec2(pane_vert_2 - pane_vert_1));
     auto pane_vec_2 = glm::normalize(glm::vec2(pane_vert_3 - pane_vert_1));
 
-    // dir_vec = pane_vec_2;
-    // dir = DIR2;
-    // return;
+    //std::cout << "get_dir_by_notation r: " << r << '\n';
 
     if (r == 'U' || r == 'u' || r == 'D' || r == 'd')
     {
         dir_vec = pane_vec_1;
         dir = DIR1;
     }
-    else if (r == 'L' || r == 'l' || r == 'R' || r == 'r' || r == 'F' || r == 'f' || r == 'B', r == 'b')
+    else if (r == 'L' || r == 'l' || r == 'R' || r == 'r' || r == 'F' || r == 'f' || r == 'B' || r == 'b')
     {
         dir_vec = pane_vec_2;
         dir = DIR2;
     }
+    else
+    {
+        throw std::runtime_error("incorrect r");
+    }
+
+    //std::cout << "get_dir_by_notation dir: " << dir << '\n';
 }
 
 std::unique_ptr<TempRotationHeader> CubeModel::get_rotation_header(const glm::vec2 & diff,
@@ -786,6 +790,7 @@ HitHeader CubeModel::notation_to_hit_header(char r)
     get_dir_by_notation(hit, r, dir_vec, dir);
     hit.dir = dir;
     hit.dir_vec = dir_vec;
+    //std::cout << "dir: " << dir << '\n';
 
     return hit;
 }
