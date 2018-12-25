@@ -183,14 +183,24 @@ private:
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_translate;
     std::array<std::array<std::array<glm::mat4, 3>, 3>, 3 > models_translate_full;
 
-    // const std::string vertex_path
-        // = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
-    // const std::string fragment_path
-        // = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
+#ifdef NDEBUG
+  #ifdef _WIN32
     const std::string vertex_path
         = R"(shaders\standardVertex.glsl)";
     const std::string fragment_path
         = R"(shaders\standardFragment.glsl)";
+  #else
+    const std::string vertex_path
+        = R"(shaders/standardVertex.glsl)";
+    const std::string fragment_path
+        = R"(shaders/standardFragment.glsl)";
+  #endif
+#else
+     const std::string vertex_path
+         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
+     const std::string fragment_path
+         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
+#endif
     ShaderProgram shdProgram;
     VBO cubeVBO;
     VAO cubeVAO;
