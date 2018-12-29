@@ -1,12 +1,7 @@
 #include "InputView.h"
 
 
-
-InputView::InputView()
+InputView::InputView(WindowModel * wm) : windowModel(wm)
 {
-}
-
-
-InputView::~InputView()
-{
+    cubeModel = std::make_unique<CubeModel>();
 }

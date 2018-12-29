@@ -1,15 +1,11 @@
 #include "RotationQueue.h"
 
-RotationQueue::RotationQueue()
-{
-}
-
-bool RotationQueue::is_rotating()
+bool RotationQueue::is_rotating() const
 {
     return queue.size();
 }
 
-std::unique_ptr<RotationHeader> RotationQueue::pop()
+RotationHeader* RotationQueue::pop()
 {
     auto res = std::move(queue.front());
     auto temp_ptr = dynamic_cast<TempRotationHeader*>(res.get());
@@ -22,60 +18,30 @@ std::unique_ptr<RotationHeader> RotationQueue::pop()
 
     queue.pop_front();
 
-    return std::move(res);
+    return res.release();
 }
 
-void RotationQueue::push(std::unique_ptr<RotationHeader> rh)
+void RotationQueue::push(RotationHeader* rh)
 {
-    queue.push_back(std::move(rh));
+    queue.emplace_back(rh);
 }
 
-HitHeader & RotationQueue::get_hit_header()
-{
-    return hit_header;
-}
-
-void RotationQueue::set_hit_header(HitHeader && hh)
-{
-    hit_header = std::move(hh);
-    is_with_header = true;
-}
-
-void RotationQueue::set_dir(Rotation_Dir dir, glm::vec2 dir_vec)
-{
-    hit_header.dir = dir;
-    hit_header.dir_vec = dir_vec;
-    is_with_dir = true;
-}
-
-void RotationQueue::reset()
+void RotationQueue::reset_angle()
 {
     angle = 0.0f;
-    is_with_dir = false;
-    is_with_header = false;
 }
 
-bool RotationQueue::has_dir()
-{
-    return is_with_dir;
-}
-
-bool RotationQueue::has_header()
-{
-    return is_with_header;
-}
-
-float RotationQueue::get_last_angle()
+float RotationQueue::get_last_angle() const
 {
     return last_rotation.angle;
 }
 
-float RotationQueue::get_angle()
+float RotationQueue::get_angle() const
 {
     return angle;
 }
 
-TempRotationHeader RotationQueue::get_last_rotation()
+TempRotationHeader RotationQueue::get_last_rotation() const
 {
     return last_rotation;
 }

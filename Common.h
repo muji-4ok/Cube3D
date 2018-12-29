@@ -4,14 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
 
-enum CubeletRotation
-{
-    X = 0,
-    Y = 1,
-    Z = 2
-};
-
-enum Rotation_Dir
+enum RotationDir
 {
     DIR1 = 0,
     DIR2 = 1
@@ -24,8 +17,26 @@ struct HitHeader
     int i;
     int j;
     int k;
-    Rotation_Dir dir;
+    RotationDir dir;
     glm::vec2 dir_vec;
+};
+
+class HitModel
+{
+public:
+    HitModel() {};
+
+    HitHeader get_header() const;
+    HitHeader pop_header();
+    void set_header(HitHeader&& hit);
+    void set_position(HitHeader&& hit);
+    void set_dir(glm::vec2&& dir_vec, RotationDir dir);
+
+    bool has_dir;
+    bool has_position;
+
+private:
+    HitHeader hit;
 };
 
 struct RotationHeader

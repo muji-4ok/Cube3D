@@ -1,7 +1,5 @@
 #include "App.h"
 
-App * CallbackCaller::app = nullptr;
-
 void App::error_callback(int error, const char *description)
 {
     std::cerr << "GLFW Error (" << error << ") message: " << description << '\n';
@@ -247,24 +245,4 @@ App::~App()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
-}
-
-void CallbackCaller::error_callback_caller(int error, const char *description)
-{
-    app->error_callback(error, description);
-}
-
-void CallbackCaller::key_callback_caller(GLFWwindow * window, int key, int scancode, int action, int mods)
-{
-    app->key_callback(window, key, scancode, action, mods);
-}
-
-void CallbackCaller::frame_buffer_change_callback_caller(GLFWwindow * window, int width, int height)
-{
-    app->frame_buffer_change_callback(window, width, height);
-}
-
-void CallbackCaller::mouse_callback_caller(GLFWwindow * window, int button, int action, int mods)
-{
-    app->mouse_callback(window, button, action, mods);
 }

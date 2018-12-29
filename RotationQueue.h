@@ -10,28 +10,20 @@
 class RotationQueue
 {
 public:
-    RotationQueue();
+    RotationQueue() {};
 
-    bool is_rotating();
-    std::unique_ptr<RotationHeader> pop();
-    void push(std::unique_ptr<RotationHeader> rh);
-    HitHeader& get_hit_header();
-    void set_hit_header(HitHeader&& hh);
-    void set_dir(Rotation_Dir dir, glm::vec2 dir_vec);
-    void reset();
-    bool has_dir();
-    bool has_header();
-    float get_last_angle();
-    float get_angle();
-    TempRotationHeader get_last_rotation();
+    RotationHeader* pop();
+    void push(RotationHeader* rh);
+    void reset_angle();
+
+    bool is_rotating() const;
+
+    float get_last_angle() const;
+    float get_angle() const;
+    TempRotationHeader get_last_rotation() const;
 
 private:
     std::deque<std::unique_ptr<RotationHeader>> queue;
     TempRotationHeader last_rotation;
-    HitHeader hit_header;
     float angle = 0.0f;
-    bool is_with_dir = false;
-    bool is_with_header = false;
-
 };
-

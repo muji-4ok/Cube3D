@@ -60,12 +60,3 @@ private:
     CubeRenderer cubeRenderer;
 };
 
-struct CallbackCaller
-{
-    static App *app;
-
-    static void error_callback_caller(int, const char *);
-    static void key_callback_caller(GLFWwindow *window, int key, int scancode, int action, int mods);
-    static void frame_buffer_change_callback_caller(GLFWwindow *window, int width, int height);
-    static void mouse_callback_caller(GLFWwindow *window, int button, int action, int mods);
-};
