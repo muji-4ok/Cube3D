@@ -1,6 +1,7 @@
 #include "Cubelet.h"
 
-Cubelet::Cubelet(int i, int j, int k) : i(i), j(j), k(k)
+
+Cubelet::Cubelet(int i, int j, int k) noexcept : i(i), j(j), k(k) 
 {
     reset_colors();
 }

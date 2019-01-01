@@ -1,11 +1,11 @@
 #pragma once
-#include "CubeModel.h"
 #include "Common.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <deque>
 #include <utility>
+#include <memory>
 
 class RotationQueue
 {
@@ -18,9 +18,8 @@ public:
 
     bool is_rotating() const;
 
-    float get_last_angle() const;
     float get_angle() const;
-    TempRotationHeader get_last_rotation() const;
+    const TempRotationHeader& get_last_rotation() const;
 
 private:
     std::deque<std::unique_ptr<RotationHeader>> queue;

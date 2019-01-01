@@ -2,34 +2,37 @@
 #include "Common.h"
 #include "Events.h"
 #include "CubeModel.h"
-#include "CubeHitPositionGetter.h"
 #include "Rotaters.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <random>
+#include <ctime>
 
 
 class CubeController
 {
 public:
-    CubeController(CubeModel* cm);
+    CubeController() {}
+    CubeController(CubeModel* cm) : cubeModel(cm) {};
 
     void set_perspective_projection(int width, int height);
-    void rotate();
 
     bool is_rotating() const;
     
 protected:
     CubeModel* cubeModel;
-    std::unique_ptr<TempRotater> tempRotater;
-    std::unique_ptr<PermRotater> permRotater;
 
 };
 
 class InteractiveCubeController : public CubeController
 {
 public:
-    using CubeController::CubeController;
+    InteractiveCubeController() {}
+    InteractiveCubeController(CubeModel* cm) : CubeController(cm)
+    {
+        rotater = std::make_unique<HybridRotater>(cm);
+    }
 
     void m_down(const MouseDownEvent* e);
     void m_up(const MouseUpEvent* e);
@@ -37,7 +40,30 @@ public:
     void k_pressed(const KeyPressedEvent* e);
     void d_change(const DimensionsChangeEvent* e);
 
+    void rotate();
+
 private:
-    std::unique_ptr<HybridCubeHitPositionGetter> hit_pos_getter;
+    std::unique_ptr<HybridRotater> rotater;
+    // std::unique_ptr<Solver> solver;
 
 };
+
+/*
+class WalkthroughCubeController : public CubeController
+{
+public:
+
+private:
+    std::unique_ptr<ScriptRotater> rotater;
+};
+*/
+
+/*
+class InputCubeController : public CubeController
+{
+public:
+
+private:
+    std::unique_ptr<WholeRotater> rotater;
+};
+*/

@@ -20,34 +20,47 @@ std::string SetHitRotationHeader::get_name()
     return "SetHitRotationHeader";
 }
 
-HitHeader HitModel::get_header() const
+std::string SetHitPosRotationHeader::get_name()
+{
+    return "SetHitPosRotationHeader";
+}
+
+std::string SetHitDirRotationHeader::get_name()
+{
+    return "SetHitDirRotationHeader";
+}
+
+const HitHeader& HitModel::get_header() const
 {
     return hit;
 }
 
-HitHeader HitModel::pop_header()
+HitHeader&& HitModel::pop_header()
 {
     has_dir = false;
     has_position = false;
-    return hit;
+    return std::move(hit);
 }
 
-void HitModel::set_header(HitHeader && hit)
+void HitModel::set_header(const HitHeader & hit)
 {
     has_dir = true;
     has_position = true;
-    this->hit = std::move(hit);
+    this->hit = hit;
 }
 
-void HitModel::set_position(HitHeader && hit)
+void HitModel::set_position(const HitHeader & hit)
 {
     has_position = true;
-    this->hit = std::move(hit);
+    this->hit.i = hit.i;
+    this->hit.j = hit.j;
+    this->hit.k = hit.k;
+    this->hit.index = hit.index;
 }
 
-void HitModel::set_dir(glm::vec2&& dir_vec, RotationDir dir)
+void HitModel::set_dir(const HitHeader & hit)
 {
     has_dir = true;
-    hit.dir_vec = dir_vec;
-    hit.dir = dir;
+    this->hit.dir_vec = hit.dir_vec;
+    this->hit.dir = hit.dir;
 }

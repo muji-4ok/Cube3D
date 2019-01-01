@@ -1,19 +1,25 @@
 #include "InteractiveView.h"
 
 
-InteractiveView::InteractiveView(WindowModel * wm) : windowModel(wm)
-{
-    cubeModel = std::make_unique<CubeModel>();
-}
-
 void InteractiveView::draw()
 {
+    std::cerr << "InteractiveView draw start\n";
+
+    std::cerr << "InteractiveView.controller->process start\n";
+
     controller->process();
+
+    std::cerr << "InteractiveView.controller->process end\n";
+
     draw_cube();
+
+    std::cerr << "InteractiveView draw end\n";
 }
 
 void InteractiveView::draw_cube()
 {
+    std::cerr << "InteracriveView.draw_cube start\n";
+
     cubeModel->cubeVAO.bind();
     cubeModel->shdProgram.use();
 
@@ -35,6 +41,8 @@ void InteractiveView::draw_cube()
 
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }
+
+    std::cerr << "InteracriveView.draw_cube end\n";
 }
 
 void InteractiveView::handle_event(Event * e)
@@ -44,7 +52,7 @@ void InteractiveView::handle_event(Event * e)
 
 InteractiveController::InteractiveController(CubeModel * cm)
 {
-    cubeController = std::make_unique<CubeController>(cm);
+    cubeController = std::make_unique<InteractiveCubeController>(cm);
 }
 
 void InteractiveController::handle_event(Event * e)
@@ -79,5 +87,9 @@ void InteractiveController::handle_event(Event * e)
 
 void InteractiveController::process()
 {
+    std::cerr << "InteractiveView.controller.cubeController->rotate start\n";
+
     cubeController->rotate();
+
+    std::cerr << "InteractiveView.controller.cubeController->rotate end\n";
 }

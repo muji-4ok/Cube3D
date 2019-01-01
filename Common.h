@@ -26,11 +26,11 @@ class HitModel
 public:
     HitModel() {};
 
-    HitHeader get_header() const;
-    HitHeader pop_header();
-    void set_header(HitHeader&& hit);
-    void set_position(HitHeader&& hit);
-    void set_dir(glm::vec2&& dir_vec, RotationDir dir);
+    const HitHeader& get_header() const;
+    HitHeader&& pop_header();
+    void set_header(const HitHeader& hit);
+    void set_position(const HitHeader& hit);
+    void set_dir(const HitHeader& hit);
 
     bool has_dir;
     bool has_position;
@@ -78,6 +78,26 @@ struct SetHitRotationHeader : public RotationHeader
 {
     SetHitRotationHeader() {};
     SetHitRotationHeader(const HitHeader &hit) : hit(hit) {}
+
+    HitHeader hit;
+
+    std::string get_name() override;
+};
+
+struct SetHitPosRotationHeader : public RotationHeader
+{
+    SetHitPosRotationHeader() {};
+    SetHitPosRotationHeader(const HitHeader &hit) : hit(hit) {}
+
+    HitHeader hit;
+
+    std::string get_name() override;
+};
+
+struct SetHitDirRotationHeader : public RotationHeader
+{
+    SetHitDirRotationHeader() {};
+    SetHitDirRotationHeader(const HitHeader &hit) : hit(hit) {}
 
     HitHeader hit;
 

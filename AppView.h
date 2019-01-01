@@ -2,8 +2,6 @@
 #include "WindowModel.h"
 #include "AppController.h"
 #include "InteractiveView.h"
-#include "WalkthroughView.h"
-#include "InputView.h"
 #include <memory>
 
 
@@ -17,8 +15,8 @@ public:
 
 private:
     std::unique_ptr<InteractiveView> interactiveView;
-    std::unique_ptr<WalkthroughView> walkthroughView;
-    std::unique_ptr<InputView> inputView;
+    // std::unique_ptr<WalkthroughView> walkthroughView;
+    // std::unique_ptr<InputView> inputView;
 
     std::unique_ptr<AppController> appController;
     std::unique_ptr<WindowModel> windowModel;

@@ -16,7 +16,8 @@ enum CubeletRotation
 class Cubelet
 {
 public:
-    Cubelet(int i, int j, int k);
+    Cubelet() noexcept : i(-1), j(-1), k(-1) {};
+    Cubelet(int i, int j, int k) noexcept;
 
     void reset_colors();
     void reset_rotation();
@@ -28,9 +29,9 @@ public:
     glm::mat4 rotation;
     glm::mat4 translation;
     glm::mat4 full_translation;
-    const int i;
-    const int j;
-    const int k;
+    int i;
+    int j;
+    int k;
 
 private:
 };

@@ -8,22 +8,6 @@
 #include <memory>
 
 
-class InteractiveView
-{
-public:
-    InteractiveView(WindowModel* wm);
-
-    void draw();
-    void draw_cube();
-    void handle_event(Event* e);
-
-private:
-    std::unique_ptr<InteractiveController> controller;
-    std::unique_ptr<CubeModel> cubeModel;
-    WindowModel* windowModel;
-
-};
-
 class InteractiveController
 {
 public:
@@ -34,6 +18,26 @@ public:
 
 private:
     std::unique_ptr<InteractiveCubeController> cubeController;
+
+};
+
+class InteractiveView
+{
+public:
+    InteractiveView(WindowModel* wm) : windowModel(wm)
+    {
+        cubeModel = std::make_unique<CubeModel>();
+        controller = std::make_unique<InteractiveController>(cubeModel.get());
+    }
+
+    void draw();
+    void draw_cube();
+    void handle_event(Event* e);
+
+private:
+    std::unique_ptr<InteractiveController> controller;
+    std::unique_ptr<CubeModel> cubeModel;
+    WindowModel* windowModel;
 
 };
 

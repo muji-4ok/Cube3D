@@ -31,17 +31,12 @@ void RotationQueue::reset_angle()
     angle = 0.0f;
 }
 
-float RotationQueue::get_last_angle() const
-{
-    return last_rotation.angle;
-}
-
 float RotationQueue::get_angle() const
 {
     return angle;
 }
 
-TempRotationHeader RotationQueue::get_last_rotation() const
+const TempRotationHeader& RotationQueue::get_last_rotation() const
 {
     return last_rotation;
 }
