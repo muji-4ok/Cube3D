@@ -53,6 +53,7 @@ public:
     void setUniform1fv(const std::string &name, const std::vector<float> &vals);
     void setUniform1f(const std::string &name, const float &value);
     void setUniform1i(const std::string &name, const int &value);
+    void setUniform3f(const std::string &name, const glm::vec3 &value);
     void setUniformMatrix4fv(const std::string &name, const glm::mat4 &mat4);
     void setUniformMatrix3fv(const std::string &name, const glm::mat3 &mat3);
 

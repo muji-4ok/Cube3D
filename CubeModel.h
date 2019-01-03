@@ -1,14 +1,16 @@
 #pragma once
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 #include "Shader.h"
 #include "Buffers.h"
 #include "Common.h"
 #include "Cubelet.h"
 #include "RotationQueue.h"
-#include <glad/glad.h>
 #include <array>
 #include <vector>
 #include <memory>
 #include <tuple>
+
 
 class CubeModel
 {
@@ -16,12 +18,31 @@ public:
     CubeModel(int width, int height);
 
     void reset_rotations();
-    // void reset_models_rotations();
-    // void reset_models_translations();
-    // void set_solved();
 
     RotationQueue rotationQueue;
     HitModel hitModel;
+
+    std::array<std::array<std::array<Cubelet, 3>, 3>, 3> cubelets;
+
+    glm::mat4 projection;
+    glm::mat4 view;
+    glm::mat4 rotation_view;
+    glm::mat4 translation_view;
+};
+
+class CubeModelOpenGLData
+{
+public:
+    static CubeModelOpenGLData& instance()
+    {
+        static CubeModelOpenGLData self;
+        return self;
+    }
+
+    CubeModelOpenGLData(const CubeModelOpenGLData&) = delete;
+    CubeModelOpenGLData(CubeModelOpenGLData&&) = delete;
+    CubeModelOpenGLData& operator= (const CubeModelOpenGLData&) = delete;
+    CubeModelOpenGLData& operator= (CubeModelOpenGLData&&) = delete;
 
     const std::vector<float> raw_vertices{
         // back
@@ -130,7 +151,13 @@ public:
         glm::vec3(-0.5f,  0.5f, -0.5f)
     };
 
-    std::array<std::array<std::array<Cubelet, 3>, 3>, 3> cubelets;
+    ShaderProgram shdProgram;
+    VBO cubeVBO;
+    VAO cubeVAO;
+
+private:
+    CubeModelOpenGLData();
+    ~CubeModelOpenGLData() {}
 
 #ifdef NDEBUG
   #ifdef _WIN32
@@ -150,12 +177,5 @@ public:
      const std::string fragment_path
          = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
 #endif
-    ShaderProgram shdProgram;
-    VBO cubeVBO;
-    VAO cubeVAO;
 
-    glm::mat4 projection;
-    glm::mat4 view;
-    glm::mat4 rotation_view;
-    glm::mat4 translation_view;
 };

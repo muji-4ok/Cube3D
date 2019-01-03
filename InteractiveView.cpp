@@ -5,32 +5,8 @@ void InteractiveView::draw()
 {
     controller->process();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    draw_cube();
-}
-
-void InteractiveView::draw_cube()
-{
-    cubeModel->cubeVAO.bind();
-    cubeModel->shdProgram.use();
-
-    cubeModel->shdProgram.setUniformMatrix4fv("view", cubeModel->view);
-    cubeModel->shdProgram.setUniformMatrix4fv("projection", cubeModel->projection);
-
-    for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j)
-            for (int k = 0; k < 3; ++k)
-            {
-                cubeModel->shdProgram.setUniform1i("i", i);
-                cubeModel->shdProgram.setUniform1i("j", j);
-                cubeModel->shdProgram.setUniform1i("k", k);
-
-                auto model = cubeModel->cubelets[i][j][k].rotation * cubeModel->cubelets[i][j][k].translation;
-
-                cubeModel->shdProgram.setUniformMatrix4fv("model", model);
-                cubeModel->shdProgram.setUniformVector3fv("colors", cubeModel->cubelets[i][j][k].colors);
-
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
+    textView->draw();
+    // cubeView->draw();
 }
 
 void InteractiveView::handle_event(Event * e)
@@ -38,9 +14,10 @@ void InteractiveView::handle_event(Event * e)
     controller->handle_event(e);
 }
 
-InteractiveController::InteractiveController(CubeModel * cm, WindowModel * wm) : windowModel(wm)
+InteractiveController::InteractiveController(CubeModel * cm, TextModel * tm, WindowModel * wm) : windowModel(wm)
 {
     cubeController = std::make_unique<InteractiveCubeController>(cm);
+    textController = std::make_unique<TextController>(tm);
 }
 
 void InteractiveController::handle_event(Event * e)
@@ -73,6 +50,7 @@ void InteractiveController::handle_event(Event * e)
     else if (dimensions_change)
     {
         cubeController->d_change(dimensions_change);
+        textController->d_change(dimensions_change);
     }
 }
 

@@ -636,20 +636,22 @@ bool CubeMouseHitter::hit_side(const glm::vec3 &mouse_origin, const glm::vec3 &w
                 int min_index;
                 bool is_hit = false;
 
-                for (int v = 0; v < cubeModel->vertices.size(); v += 3)
+                auto& cubeData = CubeModelOpenGLData::instance();
+
+                for (int v = 0; v < cubeData.vertices.size(); v += 3)
                 {
                     auto vertex1 = transform_matrix *
-                                   glm::vec4(cubeModel->vertices[v], 1.0f);
+                                   glm::vec4(cubeData.vertices[v], 1.0f);
                     auto vertex2 = transform_matrix *
-                                   glm::vec4(cubeModel->vertices[v + 1], 1.0f);
+                                   glm::vec4(cubeData.vertices[v + 1], 1.0f);
                     auto vertex3 = transform_matrix *
-                                   glm::vec4(cubeModel->vertices[v + 2], 1.0f);
+                                   glm::vec4(cubeData.vertices[v + 2], 1.0f);
 
                     float dist = dist_ray_to_triangle(mouse_origin, world_ray,
                                                       vertex1, vertex2, vertex3);
 
                     bool non_zero = dist > epsilon;
-                    int index = cubeModel->raw_vertices[v * 4 + 3];
+                    int index = cubeData.raw_vertices[v * 4 + 3];
 
                     if (non_zero && dist < min_dist)
                     {
