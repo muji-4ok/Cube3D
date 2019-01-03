@@ -3,23 +3,13 @@
 
 void InteractiveView::draw()
 {
-    std::cerr << "InteractiveView draw start\n";
-
-    std::cerr << "InteractiveView.controller->process start\n";
-
     controller->process();
-
-    std::cerr << "InteractiveView.controller->process end\n";
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     draw_cube();
-
-    std::cerr << "InteractiveView draw end\n";
 }
 
 void InteractiveView::draw_cube()
 {
-    std::cerr << "InteracriveView.draw_cube start\n";
-
     cubeModel->cubeVAO.bind();
     cubeModel->shdProgram.use();
 
@@ -41,8 +31,6 @@ void InteractiveView::draw_cube()
 
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }
-
-    std::cerr << "InteracriveView.draw_cube end\n";
 }
 
 void InteractiveView::handle_event(Event * e)
@@ -50,7 +38,7 @@ void InteractiveView::handle_event(Event * e)
     controller->handle_event(e);
 }
 
-InteractiveController::InteractiveController(CubeModel * cm)
+InteractiveController::InteractiveController(CubeModel * cm, WindowModel * wm) : windowModel(wm)
 {
     cubeController = std::make_unique<InteractiveCubeController>(cm);
 }
@@ -78,6 +66,9 @@ void InteractiveController::handle_event(Event * e)
     else if (key_pressed)
     {
         cubeController->k_pressed(key_pressed);
+
+        if (key_pressed->key == static_cast<char>(GLFW_KEY_ESCAPE))
+            windowModel->close_window();
     }
     else if (dimensions_change)
     {
@@ -87,9 +78,5 @@ void InteractiveController::handle_event(Event * e)
 
 void InteractiveController::process()
 {
-    std::cerr << "InteractiveView.controller.cubeController->rotate start\n";
-
     cubeController->rotate();
-
-    std::cerr << "InteractiveView.controller.cubeController->rotate end\n";
 }

@@ -11,13 +11,14 @@
 class InteractiveController
 {
 public:
-    InteractiveController(CubeModel* cm);
+    InteractiveController(CubeModel* cm, WindowModel* wm);
 
     void handle_event(Event* e);
     void process();
 
 private:
     std::unique_ptr<InteractiveCubeController> cubeController;
+    WindowModel* windowModel;
 
 };
 
@@ -26,8 +27,8 @@ class InteractiveView
 public:
     InteractiveView(WindowModel* wm) : windowModel(wm)
     {
-        cubeModel = std::make_unique<CubeModel>();
-        controller = std::make_unique<InteractiveController>(cubeModel.get());
+        cubeModel = std::make_unique<CubeModel>(wm->width, wm->height);
+        controller = std::make_unique<InteractiveController>(cubeModel.get(), wm);
     }
 
     void draw();

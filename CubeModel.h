@@ -13,11 +13,12 @@
 class CubeModel
 {
 public:
-    CubeModel();
+    CubeModel(int width, int height);
 
-    void reset_models_rotations();
-    void reset_models_translations();
-    void set_solved();
+    void reset_rotations();
+    // void reset_models_rotations();
+    // void reset_models_translations();
+    // void set_solved();
 
     RotationQueue rotationQueue;
     HitModel hitModel;

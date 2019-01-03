@@ -3,14 +3,6 @@
 
 void Rotater::process_queue()
 {
-    std::cerr << "InteractiveView.controller.cubeController.rotater->process_queue start\n";
-
-    std::cerr << "Accessing cubeModel pointer start\n";
-
-    std::cerr << cubeModel->rotationQueue.is_rotating() << ' ' << cubeModel->cubelets.size() << '\n';
-
-    std::cerr << "Accessing cubeModel pointer end\n";
-
     if (cubeModel->rotationQueue.is_rotating())
     {
         auto rot_header = cubeModel->rotationQueue.pop();
@@ -37,8 +29,6 @@ void Rotater::process_queue()
         else
             throw std::runtime_error("Incorrect pointer");
     }
-
-    std::cerr << "InteractiveView.controller.cubeController.rotater->process_queue end\n";
 }
 
 void Rotater::process_temp(const TempRotationHeader* header)
@@ -65,9 +55,13 @@ void Rotater::process_perm(const PermRotationHeader* header)
             p->rotate(rotation_dir);
 
         for (int t = 0; t < 2; ++t)
-            for (int i = 1; i < 8; ++i)
-                std::swap(*cubelets[i - 1], *cubelets[i]);
+            for (int j = 1; j < 8; ++j)
+                std::swap(cubelets[j - 1]->colors, cubelets[j]->colors);
     }
+
+    cubeModel->hitModel.pop_header();
+    cubeModel->reset_rotations();
+    cubeModel->rotationQueue.reset_angle();
 }
 
 std::array<Cubelet*, 8> Rotater::get_rotating_cubelets() const
@@ -335,9 +329,9 @@ int Rotater::get_rot_index(int index, RotationDir dir) const
     {
         case 0:
             if (dir == DIR1)
-                return 4;
+                return 5;
             else
-                return 2;
+                return 3;
         case 1:
             if (dir == DIR1)
                 return 4;
@@ -345,9 +339,9 @@ int Rotater::get_rot_index(int index, RotationDir dir) const
                 return 2;
         case 2:
             if (dir == DIR1)
-                return 4;
+                return 5;
             else
-                return 0;
+                return 1;
         case 3:
             if (dir == DIR1)
                 return 4;
@@ -355,9 +349,9 @@ int Rotater::get_rot_index(int index, RotationDir dir) const
                 return 0;
         case 4:
             if (dir == DIR1)
-                return 0;
+                return 1;
             else
-                return 2;
+                return 3;
         case 5:
             if (dir == DIR1)
                 return 0;
@@ -382,7 +376,7 @@ glm::vec3 Rotater::get_index_normal(int index) const
 glm::vec3 Rotater::get_rot_vec(int index, RotationDir dir) const
 {
     int rot_index = get_rot_index(index, dir);
-    auto normal = get_index_normal(index);
+    auto normal = get_index_normal(rot_index);
     return glm::vec3(glm::inverse(cubeModel->rotation_view) * glm::vec4(normal, 1.0f));
 }
 
@@ -439,6 +433,7 @@ void ScriptRotater::rotate_script(char r)
 
     auto hit = get_hit_header(r);
     auto vec = get_rot_vec(hit.index, hit.dir);
+    cubeModel->rotationQueue.push(new SetHitRotationHeader(hit));
     generate_temp_rotations(start_angle, end_angle, start_speed, acceleration, vec);
     cubeModel->rotationQueue.push(new PermRotationHeader(hit, turns));
 }
@@ -477,17 +472,23 @@ void InteractiveRotater::rotate_interactive(const glm::vec2& mouse_diff)
     switch (hit.index)
     {
         case 0:
-            needs_fixing = (rot_index == 4 || rot_index == 5);
+            needs_fixing = (hit.dir == DIR1);
+            break;
         case 1:
-            needs_fixing = (rot_index == 2 || rot_index == 3);
+            needs_fixing = (hit.dir == DIR2);
+            break;
         case 2:
             needs_fixing = true;
+            break;
         case 3:
             needs_fixing = false;
+            break;
         case 4:
             needs_fixing = false;
+            break;
         case 5:
             needs_fixing = true;
+            break;
     }
 
     if (needs_fixing)

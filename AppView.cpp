@@ -6,29 +6,20 @@ AppView::AppView(int width, int height)
     windowModel = std::make_unique<WindowModel>(width, height);
     appController = std::make_unique<AppController>(windowModel.get());
     interactiveView = std::make_unique<InteractiveView>(windowModel.get());
-    std::cerr << "Constructed AppView\n";
 }
 
 void AppView::run()
 {
     while (!windowModel->closed)
     {
-        std::cerr << "Frame start\n";
-
         switch (windowModel->appState)
         {
             case Interactive:
-                std::cerr << "Event handling start\n";
 
                 while (!windowModel->event_queue_empty())
                     interactiveView->handle_event(windowModel->pop_event());
                 
-                std::cerr << "Event handling done\n";
-                std::cerr << "Drawing start\n";
-
                 interactiveView->draw();
-
-                std::cerr << "Drawing done\n";
                 break;
             case Walkthrough:
                 break;
@@ -40,15 +31,8 @@ void AppView::run()
 
         windowModel->swap_buffers();
         update_fps();
-
-        std::cerr << "Getting new events start\n";
-
         appController->get_mouse_move_events();
         windowModel->poll_events();
-
-        std::cerr << "Getting new events done\n";
-
-        std::cerr << "Frame done\n";
     }
 }
 

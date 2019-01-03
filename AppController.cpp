@@ -22,7 +22,7 @@ void AppController::get_mouse_move_events()
     last_mouse_pos = mouse_pos;
 
     bool left_pressed = windowModel->is_left_mb_pressed();
-    bool right_pressed = windowModel->is_left_mb_pressed();
+    bool right_pressed = windowModel->is_right_mb_pressed();
 
     if (mouse_diff.x || mouse_diff.y)
         windowModel->add_event(new MouseMoveEvent(mouse_diff, left_pressed, right_pressed));

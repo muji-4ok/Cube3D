@@ -4,6 +4,8 @@
 Cubelet::Cubelet(int i, int j, int k) noexcept : i(i), j(j), k(k) 
 {
     reset_colors();
+    reset_rotation();
+    reset_translation();
 }
 
 void Cubelet::reset_colors()
@@ -27,14 +29,14 @@ void Cubelet::reset_colors()
 
 void Cubelet::reset_rotation()
 {
-    translation = glm::mat4(1.0f);
+    rotation = glm::mat4(1.0f);
 }
 
 void Cubelet::reset_translation()
 {
     translation = glm::translate(glm::mat4(1.0f), glm::vec3(0.35f * (i - 1), 0.35f * (j - 1), 0.35f * (k - 1)));
 
-    full_translation = glm::scale(full_translation, glm::vec3(0.35f));
+    full_translation = glm::scale(translation, glm::vec3(0.35f));
     translation = glm::scale(translation, glm::vec3(1.0f / 3.0f));
 }
 

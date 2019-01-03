@@ -16,6 +16,7 @@ class WindowModel
 {
 public:
     WindowModel(int width, int height);
+    ~WindowModel();
 
     void add_event(Event* e);
     Event* pop_event();

@@ -1,7 +1,7 @@
 #include "WindowModel.h"
 
 
-WindowModel::WindowModel(int width, int height)
+WindowModel::WindowModel(int width, int height) : width(width), height(height)
 {
     if (!glfwInit())
     {
@@ -29,7 +29,15 @@ WindowModel::WindowModel(int width, int height)
         exit(1);
     }
 
+    glClearColor(0.1f, 0.2f, 0.4f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);
+}
+
+WindowModel::~WindowModel()
+{
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
 
 void WindowModel::add_event(Event* e)
@@ -51,7 +59,7 @@ Event * WindowModel::peek_event() const
 
 bool WindowModel::event_queue_empty() const
 {
-    return eventQueue.size();
+    return !eventQueue.size();
 }
 
 void WindowModel::close_window()
@@ -80,7 +88,11 @@ glm::vec2 WindowModel::get_mouse_pos() const
     double x_pos, y_pos;
     glfwGetCursorPos(window, &x_pos, &y_pos);
 
-    return { static_cast<float>(x_pos), static_cast<float>(y_pos) };
+    float x = 2.0 * x_pos / width - 1.0;
+    float y = 2.0 * y_pos / height - 1.0;
+    y = -y;
+
+    return { x, y };
 }
 
 bool WindowModel::is_left_mb_pressed() const
