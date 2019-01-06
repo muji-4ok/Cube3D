@@ -3,6 +3,25 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
+#include <vector>
+
+
+class Observer
+{
+public:
+    virtual void update() = 0;
+};
+
+class Observable
+{
+public:
+    void add_observer(Observer* observer);
+    void notify();
+
+private:
+    std::vector<Observer*> observers;
+
+};
 
 enum RotationDir
 {

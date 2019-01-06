@@ -6,7 +6,7 @@ void InteractiveView::draw()
     controller->process();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     textView->draw();
-    // cubeView->draw();
+    cubeView->draw();
 }
 
 void InteractiveView::handle_event(Event * e)

@@ -25,8 +25,9 @@ public:
     glm::vec2 position;
     glm::vec3 color;
     float scale;
-};
 
+    void set_orthogonal_projection(float width, float height);
+};
 
 struct DrawChar
 {

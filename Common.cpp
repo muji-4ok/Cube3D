@@ -64,3 +64,14 @@ void HitModel::set_dir(const HitHeader & hit)
     this->hit.dir_vec = hit.dir_vec;
     this->hit.dir = hit.dir;
 }
+
+void Observable::add_observer(Observer * observer)
+{
+    observers.push_back(observer);
+}
+
+void Observable::notify()
+{
+    for (auto &o : observers)
+        o->update();
+}

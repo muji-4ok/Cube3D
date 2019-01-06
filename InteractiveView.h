@@ -35,7 +35,7 @@ public:
         cubeView = std::make_unique<CubeView>(cubeModel.get());
 
         auto proj = glm::ortho(0.0f, static_cast<float>(wm->width), 0.0f, static_cast<float>(wm->height));
-        textModel = std::make_unique<TextModel>("test123", glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 4.0f, proj);
+        textModel = std::make_unique<TextModel>("test123", glm::vec2(50.0f, 50.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, proj);
         textView = std::make_unique<TextView>(textModel.get());
 
         controller = std::make_unique<InteractiveController>(cubeModel.get(), textModel.get(), wm);

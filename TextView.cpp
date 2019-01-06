@@ -49,4 +49,5 @@ void TextView::draw() const
 
 void TextController::d_change(const DimensionsChangeEvent * e)
 {
+    textModel->set_orthogonal_projection(e->width, e->height);
 }

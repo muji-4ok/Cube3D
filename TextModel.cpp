@@ -68,3 +68,8 @@ TextModelOpenGLData::TextModelOpenGLData()
 
     VAO::unbind();
 }
+
+void TextModel::set_orthogonal_projection(float width, float height)
+{
+    projection = glm::ortho(0.0f, width, 0.0f, height);
+}

@@ -1,6 +1,9 @@
 #pragma once
 #include "TextModel.h"
 #include "Events.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 class TextView
@@ -12,6 +15,8 @@ public:
 
 private:
     TextModel* textModel;
+    glm::mat4 projection;
+
 };
 
 class TextController
