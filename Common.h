@@ -123,9 +123,3 @@ struct SetHitDirRotationHeader : public RotationHeader
     std::string get_name() override;
 };
 
-enum State
-{
-    Interactive = 0,
-    Walkthrough = 1,
-    Input = 2
-};

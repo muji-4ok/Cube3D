@@ -3,7 +3,6 @@
 
 void CubeController::set_perspective_projection(int width, int height)
 {
-    cubeModel->projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
 }
 
 bool CubeController::is_rotating() const

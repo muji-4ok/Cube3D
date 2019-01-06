@@ -577,7 +577,7 @@ bool CubeMouseHitter::get_hit_position(const glm::vec2& mouse_pos, HitHeader& hi
 
 glm::vec3 CubeMouseHitter::get_eye_ray(const glm::vec2& mouse_pos) const
 {
-    auto eye_ray = glm::inverse(cubeModel->projection) * glm::vec4(mouse_pos, -1.0f, 1.0f);
+    auto eye_ray = glm::inverse(cubeModel->windowModel->perspectiveProjection) * glm::vec4(mouse_pos, -1.0f, 1.0f);
     eye_ray.z = -1.0f;
     eye_ray.w = 0.0f;
     return glm::normalize(glm::vec3(glm::inverse(cubeModel->translation_view) * eye_ray));

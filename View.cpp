@@ -1,6 +1,6 @@
-#include "CubeView.h"
+#include "View.h"
 
-void CubeView::draw() const
+void drawCube(const CubeModel * cubeModel, const WindowModel* windowModel)
 {
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -9,7 +9,7 @@ void CubeView::draw() const
     cubeData.shdProgram.use();
 
     cubeData.shdProgram.setUniformMatrix4fv("view", cubeModel->view);
-    cubeData.shdProgram.setUniformMatrix4fv("projection", cubeModel->projection);
+    cubeData.shdProgram.setUniformMatrix4fv("projection", windowModel->perspectiveProjection);
 
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)

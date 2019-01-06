@@ -1,6 +1,104 @@
 #include "WindowModel.h"
 
 
+WindowModel* CallbackCaller::windowModel = nullptr;
+
+void CallbackCaller::error_callback_caller(int error, const char *description)
+{
+    windowModel->error_callback(error, description);
+}
+
+void CallbackCaller::key_callback_caller(GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+    windowModel->key_callback(key, scancode, action, mods);
+}
+
+void CallbackCaller::frame_buffer_change_callback_caller(GLFWwindow * window, int width, int height)
+{
+    windowModel->frame_buffer_change_callback(width, height);
+}
+
+void CallbackCaller::mouse_callback_caller(GLFWwindow * window, int button, int action, int mods)
+{
+    windowModel->mouse_callback(button, action, mods);
+}
+
+void WindowModel::error_callback(int error, const char* description)
+{
+    std::cerr << "GLFW Error (" << error << ") message: " << description << '\n';
+}
+
+void WindowModel::key_callback(int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_RELEASE)
+    {
+        bool shift = (mods & GLFW_MOD_SHIFT);
+        bool control = (mods & GLFW_MOD_CONTROL);
+        bool alt = (mods & GLFW_MOD_ALT);
+        bool super = (mods & GLFW_MOD_SUPER);
+
+        char k;
+
+        switch (key)
+        {
+            case GLFW_KEY_U:
+                k = shift ? 'U' : 'u';
+                break;
+            case GLFW_KEY_D:
+                k = shift ? 'D' : 'd';
+                break;
+            case GLFW_KEY_L:
+                k = shift ? 'L' : 'l';
+                break;
+            case GLFW_KEY_R:
+                k = shift ? 'R' : 'r';
+                break;
+            case GLFW_KEY_F:
+                k = shift ? 'F' : 'f';
+                break;
+            case GLFW_KEY_B:
+                k = shift ? 'B' : 'b';
+                break;
+            case GLFW_KEY_S:
+                k = shift ? 'S' : 's';
+                break;
+            case GLFW_KEY_C:
+                k = shift ? 'C' : 'c';
+                break;
+            case GLFW_KEY_ESCAPE:
+                k = GLFW_KEY_ESCAPE;
+                break;
+            default:
+                std::cout << "Unknown key\n";
+                return;
+        }
+
+        addEvent(new KeyPressedEvent(k, shift, control, alt, super));
+    }
+}
+
+void WindowModel::frame_buffer_change_callback(int width, int height)
+{
+    addEvent(new DimensionsChangeEvent(width, height));
+    glViewport(0, 0, width, height);
+    this->width = width;
+    this->height = height;
+}
+
+void WindowModel::mouse_callback(int button, int action, int mods)
+{
+    auto mousePos = getMousePos();
+
+    bool isPressed = (action == GLFW_PRESS);
+    bool isLeft = (button == GLFW_MOUSE_BUTTON_LEFT);
+    bool isRight = (button == GLFW_MOUSE_BUTTON_RIGHT);
+
+    if (isPressed)
+        addEvent(new MouseDownEvent(mousePos, isLeft, isRight));
+    else
+        addEvent(new MouseUpEvent(mousePos, isLeft, isRight));
+}
+
 WindowModel::WindowModel(int width, int height) : width(width), height(height)
 {
     if (!glfwInit())
@@ -21,6 +119,13 @@ WindowModel::WindowModel(int width, int height) : width(width), height(height)
         exit(1);
     }
 
+    CallbackCaller::windowModel = this;
+
+    glfwSetErrorCallback(CallbackCaller::error_callback_caller);
+    glfwSetKeyCallback(window, CallbackCaller::key_callback_caller);
+    glfwSetMouseButtonCallback(window, CallbackCaller::mouse_callback_caller);
+    glfwSetFramebufferSizeCallback(window, CallbackCaller::frame_buffer_change_callback_caller);
+
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -28,6 +133,9 @@ WindowModel::WindowModel(int width, int height) : width(width), height(height)
         std::cerr << "Failed to initialize GLAD\n";
         exit(1);
     }
+
+    setPerspectiveProjection(width, height);
+    setOrthogonalProjection(width, height);
 
     glClearColor(0.1f, 0.2f, 0.4f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -40,74 +148,115 @@ WindowModel::~WindowModel()
     glfwTerminate();
 }
 
-void WindowModel::add_event(Event* e)
+void WindowModel::addEvent(Event* e)
 {
     eventQueue.emplace_back(e);
 }
 
-Event * WindowModel::pop_event()
+Event * WindowModel::popEvent()
 {
     auto e_ptr = std::move(eventQueue.front());
     eventQueue.pop_front();
     return e_ptr.release();
 }
 
-Event * WindowModel::peek_event() const
+Event * WindowModel::peekEvent() const
 {
     return eventQueue.front().get();
 }
 
-bool WindowModel::event_queue_empty() const
+bool WindowModel::eventQueueEmpty() const
 {
     return !eventQueue.size();
 }
 
-void WindowModel::close_window()
+void WindowModel::closeWindow()
 {
     closed = true;
     glfwSetWindowShouldClose(window, true);
 }
 
-void WindowModel::swap_buffers()
+void WindowModel::swapBuffers()
 {
     glfwSwapBuffers(window);
 }
 
-void WindowModel::poll_events()
+void WindowModel::pollEvents()
 {
     glfwPollEvents();
+    getMouseMoveEvents();
 }
 
-void WindowModel::set_title(const std::string & title)
+void WindowModel::updateFPS()
+{
+    static double timeBefore = 0.0f;
+    static int timeCounter = 0;
+
+    double timeNow = glfwGetTime();
+    double millsPassed = (timeNow - timeBefore) * 1000.0;
+    timeBefore = timeNow;
+
+    if (timeCounter == 30)
+    {
+        const std::string title = std::to_string(millsPassed);
+        setTitle(title);
+        timeCounter = 0;
+    }
+
+    ++timeCounter;
+}
+
+void WindowModel::getMouseMoveEvents()
+{
+    auto mousePos = getMousePos();
+
+    static auto lastMousePos = mousePos;
+    auto mouseDiff = mousePos - lastMousePos;
+    lastMousePos = mousePos;
+
+    bool leftPressed = isLeftMbPressed();
+    bool rightPressed = isRightMbPressed();
+
+    if (mouseDiff.x || mouseDiff.y)
+        addEvent(new MouseMoveEvent(mouseDiff, leftPressed, rightPressed));
+}
+
+void WindowModel::setPerspectiveProjection(float width, float height)
+{
+    perspectiveProjection = glm::perspective(glm::radians(45.0f), width / height, 0.1f, 100.0f);
+}
+
+void WindowModel::setOrthogonalProjection(float width, float height)
+{
+    orthogonalProjection = glm::ortho(0.0f, width, 0.0f, height);
+}
+
+void WindowModel::setTitle(const std::string & title)
 {
     glfwSetWindowTitle(window, title.c_str());
 }
 
-glm::vec2 WindowModel::get_mouse_pos() const
+glm::vec2 WindowModel::getMousePos() const
 {
-    double x_pos, y_pos;
-    glfwGetCursorPos(window, &x_pos, &y_pos);
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    y = height - y;
+    return { static_cast<float>(x), static_cast<float>(y) };
+}
 
-    float x = 2.0 * x_pos / width - 1.0;
-    float y = 2.0 * y_pos / height - 1.0;
-    y = -y;
-
+glm::vec2 WindowModel::toNDC(const glm::vec2 & mousePos) const
+{
+    float x = mousePos.x / width * 2.0f - 1.0f;
+    float y = mousePos.y / height * 2.0f - 1.0f;
     return { x, y };
 }
 
-glm::vec2 WindowModel::normal_mouse_to_screen(const glm::vec2 & mouse_pos) const
-{
-    float x = (mouse_pos.x + 1.0f) * 0.5f * width;
-    float y = (mouse_pos.y + 1.0f) * 0.5f * height;
-    return { x, y };
-}
-
-bool WindowModel::is_left_mb_pressed() const
+bool WindowModel::isLeftMbPressed() const
 {
     return (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
 }
 
-bool WindowModel::is_right_mb_pressed() const
+bool WindowModel::isRightMbPressed() const
 {
     return (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
 }

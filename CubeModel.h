@@ -6,16 +6,16 @@
 #include "Common.h"
 #include "Cubelet.h"
 #include "RotationQueue.h"
+#include "WindowModel.h"
 #include <array>
 #include <vector>
 #include <memory>
 #include <tuple>
 
 
-class CubeModel
+struct CubeModel
 {
-public:
-    CubeModel(int width, int height);
+    CubeModel(const WindowModel* wm);
 
     void reset_rotations();
 
@@ -24,10 +24,11 @@ public:
 
     std::array<std::array<std::array<Cubelet, 3>, 3>, 3> cubelets;
 
-    glm::mat4 projection;
     glm::mat4 view;
     glm::mat4 rotation_view;
     glm::mat4 translation_view;
+
+    const WindowModel* windowModel;
 };
 
 class CubeModelOpenGLData
