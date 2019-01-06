@@ -5,6 +5,9 @@
 #include "CubeModel.h"
 #include "TextModel.h"
 #include "TextView.h"
+#include "RectangleModel.h"
+#include "RectangleView.h"
+#include "Widgets.h"
 #include "CubeController.h"
 #include "CubeView.h"
 #include "WindowModel.h"
@@ -14,14 +17,15 @@
 class InteractiveController
 {
 public:
-    InteractiveController(CubeModel* cm, TextModel* tm, WindowModel* wm);
+    InteractiveController(CubeModel* cm, InterfaceModel* im, SolveButton* sb, WindowModel* wm);
 
     void handle_event(Event* e);
     void process();
 
 private:
     std::unique_ptr<InteractiveCubeController> cubeController;
-    std::unique_ptr<TextController> textController;
+    SolveButton* solveButton;
+    InterfaceModel* interfaceModel;
     WindowModel* windowModel;
 
 };
@@ -34,11 +38,13 @@ public:
         cubeModel = std::make_unique<CubeModel>(wm->width, wm->height);
         cubeView = std::make_unique<CubeView>(cubeModel.get());
 
-        auto proj = glm::ortho(0.0f, static_cast<float>(wm->width), 0.0f, static_cast<float>(wm->height));
-        textModel = std::make_unique<TextModel>("test123", glm::vec2(50.0f, 50.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, proj);
-        textView = std::make_unique<TextView>(textModel.get());
+        interfaceModel = std::make_unique<InterfaceModel>();
+        interfaceModel->set_orthogonal_projection(wm->width, wm->height);
 
-        controller = std::make_unique<InteractiveController>(cubeModel.get(), textModel.get(), wm);
+        solveButton = std::make_unique<SolveButton>();
+
+        controller = std::make_unique<InteractiveController>(cubeModel.get(), interfaceModel.get(),
+                                                             solveButton.get(), wm);
     }
 
     void draw();
@@ -48,8 +54,8 @@ private:
     std::unique_ptr<InteractiveController> controller;
     std::unique_ptr<CubeModel> cubeModel;
     std::unique_ptr<CubeView> cubeView;
-    std::unique_ptr<TextModel> textModel;
-    std::unique_ptr<TextView> textView;
+    std::unique_ptr<InterfaceModel> interfaceModel;
+    std::unique_ptr<SolveButton> solveButton;
     WindowModel* windowModel;
 
 };

@@ -95,6 +95,13 @@ glm::vec2 WindowModel::get_mouse_pos() const
     return { x, y };
 }
 
+glm::vec2 WindowModel::normal_mouse_to_screen(const glm::vec2 & mouse_pos) const
+{
+    float x = (mouse_pos.x + 1.0f) * 0.5f * width;
+    float y = (mouse_pos.y + 1.0f) * 0.5f * height;
+    return { x, y };
+}
+
 bool WindowModel::is_left_mb_pressed() const
 {
     return (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);

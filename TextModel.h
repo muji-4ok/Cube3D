@@ -10,23 +10,26 @@
 #include <memory>
 #include <utility>
 #include <map>
+#include <algorithm>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 
-class TextModel
+struct TextModel
 {
-public:
-    TextModel(const std::string& t, const glm::vec2& p, const glm::vec3& c, float s, const glm::mat4& pr) :
-        text(t), position(p), color(c), scale(s), projection(pr) {}
+    TextModel(const std::string& t, const glm::vec2& p, const glm::vec3& c, float s) :
+        position(p), color(c), scale(s)
+    {
+        setText(t);
+    }
 
-    glm::mat4 projection;
     std::string text;
     glm::vec2 position;
+    glm::vec2 size;
     glm::vec3 color;
     float scale;
 
-    void set_orthogonal_projection(float width, float height);
+    void setText(const std::string& text);
 };
 
 struct DrawChar

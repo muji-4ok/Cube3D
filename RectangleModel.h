@@ -10,16 +10,14 @@
 #include <utility>
 
 
-class RectangleModel
+struct RectangleModel
 {
-public:
-    RectangleModel(const glm::vec3& p, const glm::vec3& c, const glm::vec2& s) :
-        position(p), color(c), scale(s) {};
+    RectangleModel(const glm::vec2& pos, const glm::vec3& col, const glm::vec2& size) :
+        position(pos), color(col), size(size) {};
 
-    glm::vec3 position;
+    glm::vec2 position;
+    glm::vec2 size;
     glm::vec3 color;
-    glm::vec2 scale;
-
 };
 
 class RectangleModelOpenGLData
@@ -35,15 +33,6 @@ public:
     RectangleModelOpenGLData(RectangleModelOpenGLData&&) = delete;
     RectangleModelOpenGLData& operator= (const RectangleModelOpenGLData&) = delete;
     RectangleModelOpenGLData& operator= (RectangleModelOpenGLData&&) = delete;
-
-    const std::vector<float> raw_vertices {
-        -0.5f, -0.5f, // Bottom-Left
-         0.5f, -0.5f, // Bottom-Right
-         0.5f,  0.5f, // Top-Right
-         0.5f,  0.5f, // Top-Right
-        -0.5f,  0.5f, // Top-Left
-        -0.5f, -0.5f  // Bottom-Left
-    };
 
     ShaderProgram shdProgram;
     VBO rectVBO;

@@ -1,13 +1,14 @@
 #include "TextView.h"
 
-void TextView::draw() const
+void TextView::draw(const glm::mat4& projection) const
 {
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     auto& textData = TextModelOpenGLData::instance();
     textData.shdProgram.use();
-    textData.shdProgram.setUniformMatrix4fv("projection", textModel->projection);
+    textData.shdProgram.setUniformMatrix4fv("projection", projection);
     textData.shdProgram.setUniform3f("textColor", textModel->color);
     glActiveTexture(GL_TEXTURE0);
     textData.textVAO.bind();
@@ -45,9 +46,4 @@ void TextView::draw() const
 
         x += (character.advance >> 6) * textModel->scale;
     }
-}
-
-void TextController::d_change(const DimensionsChangeEvent * e)
-{
-    textModel->set_orthogonal_projection(e->width, e->height);
 }

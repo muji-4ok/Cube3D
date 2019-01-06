@@ -28,6 +28,7 @@ public:
     void set_title(const std::string &title);
 
     glm::vec2 get_mouse_pos() const;
+    glm::vec2 normal_mouse_to_screen(const glm::vec2& mouse_pos) const;
     bool is_left_mb_pressed() const;
     bool is_right_mb_pressed() const;
 

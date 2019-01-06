@@ -13,7 +13,7 @@ RectangleModelOpenGLData::RectangleModelOpenGLData()
     rectVAO.bind();
     rectVBO.bind();
 
-    rectVBO.setStaticData(raw_vertices);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 2, nullptr, GL_DYNAMIC_DRAW);
     rectVAO.setAttribPointer(0, 2, false, 2, 0);
     rectVAO.enableAttribute(0);
 

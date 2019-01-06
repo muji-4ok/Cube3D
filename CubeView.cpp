@@ -2,6 +2,7 @@
 
 void CubeView::draw() const
 {
+    glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     auto& cubeData = CubeModelOpenGLData::instance();
     cubeData.cubeVAO.bind();

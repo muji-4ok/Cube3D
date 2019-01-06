@@ -13,7 +13,7 @@ TextModelOpenGLData::TextModelOpenGLData()
     if (FT_New_Face(lib, font_path.c_str(), 0, &face))
         std::cerr << "Failed to load font " << font_path << '\n';
 
-    FT_Set_Pixel_Sizes(face, 0, 48);
+    FT_Set_Pixel_Sizes(face, 0, 100);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
@@ -24,7 +24,7 @@ TextModelOpenGLData::TextModelOpenGLData()
             std::cerr << "Failed to load Glyph N" << static_cast<int>(c) << '\n';
             continue;
         }
-
+        
         auto texture = std::make_unique<Texture>();
         texture->generate();
         texture->bind();
@@ -69,7 +69,24 @@ TextModelOpenGLData::TextModelOpenGLData()
     VAO::unbind();
 }
 
-void TextModel::set_orthogonal_projection(float width, float height)
+void TextModel::setText(const std::string & text)
 {
-    projection = glm::ortho(0.0f, width, 0.0f, height);
+    this->text = text;
+    auto& textData = TextModelOpenGLData::instance();
+
+    float w = 0.0;
+    float max_h = 0.0f;
+
+    for (const auto& c : text)
+    {
+        auto& character = textData.characters[c];
+
+        float h = character.size.y * scale;
+        max_h = std::max(max_h, h);
+
+        w += (character.advance >> 6) * scale;
+    }
+
+    size.x = w;
+    size.y = max_h;
 }

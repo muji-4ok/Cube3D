@@ -2,52 +2,39 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <memory>
+#include <utility>
+#include <functional>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "TextModel.h"
+#include "TextView.h"
+#include "RectangleModel.h"
+#include "RectangleView.h"
 
 
-struct TextBoxModel
+struct InterfaceModel
 {
-    std::vector<std::string> textLines;
-    glm::vec2 position;
-    glm::vec2 size;
-    glm::vec3 bgColor;
-    glm::vec3 textColor;
+    glm::mat4 projection;
+
+    void set_orthogonal_projection(float width, float height);
 };
 
-struct ButtonModel : public TextBoxModel
+struct SolveButton
 {
-    bool pressed;
-};
+    SolveButton();
 
-struct ItemBoxModel
-{
-    std::deque<TextBoxModel> items;
-};
+    glm::vec3 bgColorPressed = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 bgColorNormal = glm::vec3(0.0f, 1.0f, 0.0f);
+    bool pressed = false;
 
-class TextBoxController
-{
-public:
-    void setText(const std::string& text);
+    RectangleModel rectModel;
+    TextModel textModel;
+    RectangleView rectView;
+    TextView textView;
 
-private:
-    TextBoxModel* textBoxModel;
-};
-
-class ButtonController : public TextBoxController
-{
-public:
-    virtual void onMousePress() = 0;
-    virtual void onMouseRelease() = 0;
-
-private:
-    ButtonModel* buttonModel;
-};
-
-class ItemBoxController
-{
-public:
-    void popFront();
-
-private:
-    ItemBoxModel* itemBoxModel;
+    void draw(const glm::mat4& projection) const;
+    bool isInside(const glm::vec2& mouse_pos) const;
+    void onMousePress();
+    void onMouseRelease();
 };

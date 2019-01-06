@@ -1,26 +1,38 @@
 #include "Widgets.h"
 
-void ItemBoxController::popFront()
+
+void InterfaceModel::set_orthogonal_projection(float width, float height)
 {
-    itemBoxModel->items.pop_front();
+    projection = glm::ortho(0.0f, width, 0.0f, height);
 }
 
-void TextBoxController::setText(const std::string & text)
+SolveButton::SolveButton() : rectModel(glm::vec2(0.0f, 0.0f), bgColorNormal, glm::vec2(200.0f, 50.0f)),
+                             textModel("Solve", glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.5f),
+                             rectView(&rectModel),
+                             textView(&textModel)
 {
-    textBoxModel->textLines.clear();
+}
 
-    std::string word;
+void SolveButton::draw(const glm::mat4 & projection) const
+{
+    rectView.draw(projection);
+    textView.draw(projection);
+}
 
-    for (const auto&c : text)
-        if (c == '\n')
-            if (word.size())
-            {
-                textBoxModel->textLines.push_back(word);
-                word.clear();
-            }
-        else
-            word.push_back(c);
+bool SolveButton::isInside(const glm::vec2 & mouse_pos) const
+{
+    return rectModel.position.x <= mouse_pos.x && mouse_pos.x <= rectModel.position.x + rectModel.size.x &&
+        rectModel.position.y <= mouse_pos.y && mouse_pos.y <= rectModel.position.y + rectModel.size.y;
+}
 
-    if (word.size())
-        textBoxModel->textLines.push_back(word);
+void SolveButton::onMousePress()
+{
+    pressed = true;
+    rectModel.color = bgColorPressed;
+}
+
+void SolveButton::onMouseRelease()
+{
+    pressed = false;
+    rectModel.color = bgColorNormal;
 }

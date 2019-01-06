@@ -5,7 +5,7 @@ void InteractiveView::draw()
 {
     controller->process();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    textView->draw();
+    solveButton->draw(interfaceModel->projection);
     cubeView->draw();
 }
 
@@ -14,10 +14,11 @@ void InteractiveView::handle_event(Event * e)
     controller->handle_event(e);
 }
 
-InteractiveController::InteractiveController(CubeModel * cm, TextModel * tm, WindowModel * wm) : windowModel(wm)
+InteractiveController::InteractiveController(CubeModel * cm, InterfaceModel * im, SolveButton* sb,
+                                             WindowModel * wm) :
+    windowModel(wm), interfaceModel(im), solveButton(sb)
 {
     cubeController = std::make_unique<InteractiveCubeController>(cm);
-    textController = std::make_unique<TextController>(tm);
 }
 
 void InteractiveController::handle_event(Event * e)
@@ -31,10 +32,22 @@ void InteractiveController::handle_event(Event * e)
     if (mouse_down)
     {
         cubeController->m_down(mouse_down);
+
+        if (solveButton->isInside(windowModel->normal_mouse_to_screen(mouse_down->mouse_pos))
+            && !solveButton->pressed && mouse_down->left_pressed)
+            solveButton->onMousePress();
     }
     else if (mouse_up)
     {
         cubeController->m_up(mouse_up);
+
+        solveButton->onMouseRelease();
+
+        if (solveButton->isInside(windowModel->normal_mouse_to_screen(mouse_up->mouse_pos))
+            && solveButton->pressed && mouse_up->left_pressed)
+        {
+
+        }
     }
     else if (mouse_move)
     {
@@ -50,7 +63,7 @@ void InteractiveController::handle_event(Event * e)
     else if (dimensions_change)
     {
         cubeController->d_change(dimensions_change);
-        textController->d_change(dimensions_change);
+        interfaceModel->set_orthogonal_projection(dimensions_change->width, dimensions_change->height);
     }
 }
 
