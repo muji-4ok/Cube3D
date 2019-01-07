@@ -4,6 +4,8 @@
 #include "WindowModel.h"
 #include "InteractiveInterface.h"
 #include "Events.h"
+#include "CubeController.h"
+#include "Widgets.h"
 
 
 class InteractiveView : public View

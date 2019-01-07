@@ -19,12 +19,30 @@ int main()
     WindowModel windowModel(width, height);
     CubeModel interactiveCubeModel(&windowModel);
     CubeModel inputCubeModel(&windowModel);
-    SolveButtonModel solveButtonModel;
+    SolveButtonModel solveButtonModel(
+        [&interactiveCubeModel]() {
+            std::cout << "Solve btn pressed\n";
+        }
+    );
     InteractiveHelpBoxModel interactiveHelpBoxModel;
-    InteractiveNextButtonModel interactiveNextButtonModel;
-    InteractivePrevButtonModel interactivePrevButtonModel;
     InstructionsBoxModel instructionsBoxModel;
-    WebcamSwitchButtonModel webcamSwitchButtonModel;
+    InteractiveNextButtonModel interactiveNextButtonModel(
+        [&interactiveCubeModel, &instructionsBoxModel]() {
+            std::cout << "Next btn pressed\n";
+            instructionsBoxModel.addItem("a");
+        }
+    );
+    InteractivePrevButtonModel interactivePrevButtonModel(
+        [&interactiveCubeModel, &instructionsBoxModel]() {
+            std::cout << "Prev btn pressed\n";
+            instructionsBoxModel.popItem();
+        }
+    );
+    WebcamSwitchButtonModel webcamSwitchButtonModel(
+        [&windowModel]() {
+            std::cout << "Webcam switch btn pressed\n";
+        }
+    );
     InputHelpBoxModel inputHelpBoxModel;
     InputNextButtonModel inputNextButtonModel;
     InputPrevButtonModel inputPrevButtonModel;
@@ -39,7 +57,7 @@ int main()
                         &inputPrevButtonModel, &returnButtonModel, &doneButtonModel, &readButtonModel);
     View* curView = nullptr;
 
-    while (!windowModel.closed)
+    while (!windowModel.isClosed())
     {
         if (windowModel.appState == Interactive)
             curView = &interactiveView;

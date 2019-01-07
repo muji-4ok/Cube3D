@@ -83,6 +83,8 @@ void WindowModel::frame_buffer_change_callback(int width, int height)
     glViewport(0, 0, width, height);
     this->width = width;
     this->height = height;
+    setPerspectiveProjection(width, height);
+    setOrthogonalProjection(width, height);
 }
 
 void WindowModel::mouse_callback(int button, int action, int mods)
@@ -172,7 +174,6 @@ bool WindowModel::eventQueueEmpty() const
 
 void WindowModel::closeWindow()
 {
-    closed = true;
     glfwSetWindowShouldClose(window, true);
 }
 
@@ -204,6 +205,11 @@ void WindowModel::updateFPS()
     }
 
     ++timeCounter;
+}
+
+bool WindowModel::isClosed() const
+{
+    return glfwWindowShouldClose(window);
 }
 
 void WindowModel::getMouseMoveEvents()
@@ -249,6 +255,11 @@ glm::vec2 WindowModel::toNDC(const glm::vec2 & mousePos) const
     float x = mousePos.x / width * 2.0f - 1.0f;
     float y = mousePos.y / height * 2.0f - 1.0f;
     return { x, y };
+}
+
+glm::vec2 WindowModel::diffToNDC(const glm::vec2 & mouseDiff) const
+{
+    return { static_cast<float>(mouseDiff.x) / width, static_cast<float>(mouseDiff.y) / height };
 }
 
 bool WindowModel::isLeftMbPressed() const

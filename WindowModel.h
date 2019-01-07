@@ -31,10 +31,12 @@ public:
     void swapBuffers();
     void pollEvents();
     void updateFPS();
+    bool isClosed() const;
     void setTitle(const std::string &title);
 
     glm::vec2 getMousePos() const;
     glm::vec2 toNDC(const glm::vec2& mousePos) const;
+    glm::vec2 diffToNDC(const glm::vec2& mouseDiff) const;
     bool isLeftMbPressed() const;
     bool isRightMbPressed() const;
 
@@ -49,7 +51,6 @@ public:
     int width;
     int height;
     State appState = Interactive;
-    bool closed = false;
 
 private:
     std::deque<std::unique_ptr<Event>> eventQueue;

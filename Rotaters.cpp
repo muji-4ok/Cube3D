@@ -144,6 +144,8 @@ CubeletRotation Rotater::get_cubelet_rotation(int rot_index) const
         case 4:
         case 5:
             return Y;
+        default:
+            throw std::runtime_error("Incorrect rot_index");
     }
 }
 
@@ -183,6 +185,8 @@ bool Rotater::needs_rotation(int i, int j, int k) const
                 return k == hit.k;
             else
                 return i == hit.i;
+        default:
+            throw std::runtime_error("Incorrect index");
     }
 }
 

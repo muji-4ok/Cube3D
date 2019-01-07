@@ -15,10 +15,6 @@ class CubeController
 public:
     CubeController() {}
     CubeController(CubeModel* cm) : cubeModel(cm) {};
-
-    void set_perspective_projection(int width, int height);
-
-    bool is_rotating() const;
     
 protected:
     CubeModel* cubeModel;
@@ -28,22 +24,19 @@ protected:
 class InteractiveCubeController : public CubeController
 {
 public:
-    InteractiveCubeController() {}
-    InteractiveCubeController(CubeModel* cm) : CubeController(cm)
+    InteractiveCubeController(CubeModel* cm) : CubeController(cm), rotater(cm)
     {
-        rotater = std::make_unique<HybridRotater>(cm);
     }
 
     void m_down(const MouseDownEvent* e);
     void m_up(const MouseUpEvent* e);
     void m_move(const MouseMoveEvent* e);
     void k_pressed(const KeyPressedEvent* e);
-    void d_change(const DimensionsChangeEvent* e);
 
     void rotate();
 
 private:
-    std::unique_ptr<HybridRotater> rotater;
+    HybridRotater rotater;
     // std::unique_ptr<Solver> solver;
 
 };

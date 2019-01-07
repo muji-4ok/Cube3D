@@ -1,38 +1,56 @@
 #include "Widgets.h"
 
 
-void InterfaceModel::set_orthogonal_projection(float width, float height)
+void ButtonController::setModel(ButtonModel * bm)
 {
-    projection = glm::ortho(0.0f, width, 0.0f, height);
+    buttonModel = bm;
 }
 
-SolveButton::SolveButton() : rectModel(glm::vec2(0.0f, 0.0f), bgColorNormal, glm::vec2(200.0f, 50.0f)),
-                             textModel("Solve", glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.5f),
-                             rectView(&rectModel),
-                             textView(&textModel)
+void ButtonController::onMousePress(MouseDownEvent * e)
 {
+    if (e->left_pressed && isInside(e->mouse_pos))
+    {
+        assert(!buttonModel->pressed);
+        buttonModel->pressed = true;
+        buttonModel->rectModel.color = buttonModel->bgColorPressed;
+    }
 }
 
-void SolveButton::draw(const glm::mat4 & projection) const
+void ButtonController::onMouseRelease(MouseUpEvent * e)
 {
-    rectView.draw(projection);
-    textView.draw(projection);
+    if (e->left_pressed)
+    {
+        if (isInside(e->mouse_pos))
+            buttonModel->callback();
+
+        buttonModel->pressed = false;
+        buttonModel->rectModel.color = buttonModel->bgColorNormal;
+    }
 }
 
-bool SolveButton::isInside(const glm::vec2 & mouse_pos) const
+bool ButtonController::isInside(const glm::vec2 & mouse_pos) const
 {
+    auto& rectModel = buttonModel->rectModel;
     return rectModel.position.x <= mouse_pos.x && mouse_pos.x <= rectModel.position.x + rectModel.size.x &&
         rectModel.position.y <= mouse_pos.y && mouse_pos.y <= rectModel.position.y + rectModel.size.y;
 }
 
-void SolveButton::onMousePress()
+void TextBoxModel::addTextLine(const glm::vec2 & textPos, const std::string & text, float textScale,
+                               const glm::vec3 & textColor)
 {
-    pressed = true;
-    rectModel.color = bgColorPressed;
+    textLines.emplace_back(text, textPos, textColor, textScale);
 }
 
-void SolveButton::onMouseRelease()
+void ItemBoxModel::addItem(const std::string & text)
 {
-    pressed = false;
-    rectModel.color = bgColorNormal;
+    auto copyRect = itemRect;
+    auto copyText = itemText;
+    copyText.text = text;
+    items.emplace_back(copyText, copyRect);
+}
+
+void ItemBoxModel::popItem()
+{
+    if (items.size())
+        items.pop_front();
 }

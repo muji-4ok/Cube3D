@@ -51,8 +51,8 @@ public:
     void set_position(const HitHeader& hit);
     void set_dir(const HitHeader& hit);
 
-    bool has_dir;
-    bool has_position;
+    bool has_dir = false;
+    bool has_position = false;
 
 private:
     HitHeader hit;
@@ -76,7 +76,7 @@ struct TempRotationHeader : public RotationHeader
     TempRotationHeader() {};
     TempRotationHeader(const glm::vec3 &vec, float angle) : vec(vec), angle(angle) {}
 
-    glm::vec3 vec = glm::vec3(1.0f);
+    glm::vec3 vec = glm::vec3(0.0f);
     float angle = 0.0f;
 
     std::string get_name() override;
