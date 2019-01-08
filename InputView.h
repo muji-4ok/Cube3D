@@ -5,15 +5,17 @@
 #include "InputInterface.h"
 #include "Events.h"
 #include "CubeController.h"
+#include "Webcam.h"
 
 
 class InputView : public View
 {
 public:
-    InputView(CubeModel* cm, WindowModel* wm, InputHelpBoxModel* hbm, InputNextButtonModel* nbm,
-              InputPrevButtonModel* pbm, ReturnButtonModel* retbm, DoneButtonModel* dbm, ReadButtonModel* readbm)
-        : cubeModel(cm), windowModel(wm), helpBoxModel(hbm), nextButtonModel(nbm), prevButtonModel(pbm),
-        returnButtonModel(retbm), doneButtonModel(dbm), readButtonModel(readbm) {}
+    InputView(CubeModel* cm, WebcamModel* webm, WindowModel* winm, InputHelpBoxModel* hbm,
+              InputNextButtonModel* nbm, InputPrevButtonModel* pbm, ReturnButtonModel* retbm,
+              DoneButtonModel* dbm, ReadButtonModel* readbm)
+        : cubeModel(cm), webcamModel(webm), windowModel(winm), helpBoxModel(hbm), nextButtonModel(nbm),
+        prevButtonModel(pbm), returnButtonModel(retbm), doneButtonModel(dbm), readButtonModel(readbm) {}
 
     void draw() override;
     void mousePress(MouseDownEvent* e) override;
@@ -24,6 +26,7 @@ public:
 
 private:
     CubeModel* cubeModel;
+    WebcamModel* webcamModel;
     WindowModel* windowModel;
     InputHelpBoxModel* helpBoxModel;
     InputNextButtonModel* nextButtonModel;

@@ -11,6 +11,7 @@
 #include "InputInterface.h"
 #include "Rotaters.h"
 #include "Solver.h"
+#include "Webcam.h"
 
 
 int main()
@@ -73,8 +74,9 @@ int main()
             }
         }
     );
+    WebcamModel webcamModel(&windowModel);
     WebcamSwitchButtonModel webcamSwitchButtonModel(
-        [&windowModel]() {
+        [&windowModel, &webcamModel]() {
             windowModel.appState = Input;
         }
     );
@@ -88,7 +90,7 @@ int main()
     InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &solveButtonModel, &interactiveHelpBoxModel,
                                     &interactiveNextButtonModel, &interactivePrevButtonModel, &instructionsBoxModel,
                                     &webcamSwitchButtonModel);
-    InputView inputView(&inputCubeModel, &windowModel, &inputHelpBoxModel, &inputNextButtonModel,
+    InputView inputView(&inputCubeModel, &webcamModel, &windowModel, &inputHelpBoxModel, &inputNextButtonModel,
                         &inputPrevButtonModel, &returnButtonModel, &doneButtonModel, &readButtonModel);
     View* curView = nullptr;
 

@@ -7,8 +7,12 @@ void InputView::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     InputCubeController cubeController(cubeModel);
     cubeController.rotate();
-    drawCube(cubeModel, windowModel);
-    //Draw
+    // drawCube(cubeModel, windowModel);
+    windowModel->setViewport(windowModel->screenWidth / 2, 0.0f, windowModel->screenWidth / 2,
+                             windowModel->screenHeight);
+    windowModel->setViewport(0.0f, 0.0f, windowModel->screenWidth, windowModel->screenHeight);
+    webcamModel->setRegions(windowModel);
+    drawWebcam(webcamModel, windowModel);
     windowModel->updateFPS();
 }
 

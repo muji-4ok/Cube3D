@@ -5,6 +5,11 @@
 #include "Events.h"
 #include "CubeModel.h"
 #include "WindowModel.h"
+#include "Webcam.h"
+#include <opencv2/core.hpp>
+#include <tuple>
+#include <vector>
+#include <cmath>
 
 
 struct View
@@ -23,3 +28,5 @@ void drawTextBox(const TextBoxModel* textBoxModel, const WindowModel* windowMode
 void drawItemBox(const ItemBoxModel* itemBoxModel, const WindowModel* windowModel);
 void drawText(const TextModel* textModel, const WindowModel* windowModel);
 void drawRect(const RectangleModel* rectModel, const WindowModel* windowModel);
+void drawCVImage(const WebcamModel* webcamModel, const WindowModel* windowModel);
+void drawWebcam(const WebcamModel* webcamModel, const WindowModel* windowModel);

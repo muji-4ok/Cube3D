@@ -167,3 +167,80 @@ void drawRect(const RectangleModel * rectModel, const WindowModel * windowModel)
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
+void drawCVImage(const WebcamModel* webcamModel, const WindowModel* windowModel)
+{
+    glDisable(GL_DEPTH_TEST);
+    auto& imageData = CVImageModelOpenGLData::instance();
+    imageData.shdProgram.use();
+    imageData.shdProgram.setUniformMatrix4fv("projection", windowModel->orthogonalProjection);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, (webcamModel->mat.step & 3) ? 1 : 4);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, webcamModel->mat.step / webcamModel->mat.elemSize());
+
+    imageData.texture.bind();
+    imageData.texture.texImage2D(GL_RGB, webcamModel->mat.cols, webcamModel->mat.rows, GL_BGR, GL_UNSIGNED_BYTE,
+                                 webcamModel->mat.ptr());
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    imageData.imageVAO.bind();
+    imageData.imageVBO.bind();
+
+    float winW = windowModel->viewportWidth;
+    float winH = windowModel->viewportHeight;
+    float imW = webcamModel->mat.cols;
+    float imH = webcamModel->mat.rows;
+
+    float x = webcamModel->frame.x;
+    float y = webcamModel->frame.y;
+    float w = webcamModel->frame.w;
+    float h = webcamModel->frame.h;
+
+    assert(x >= 0.0f);
+    assert(y >= 0.0f);
+
+    float vertices[6][4] = {
+        {x    , y    , 0.0f, 0.0f},
+        {x + w, y    , 1.0f, 0.0f},
+        {x + w, y + h, 1.0f, 1.0f},
+
+        {x + w, y + h, 1.0f, 1.0f},
+        {x    , y + h, 0.0f, 1.0f},
+        {x    , y    , 0.0f, 0.0f},
+    };
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void drawWebcam(const WebcamModel * webcamModel, const WindowModel * windowModel)
+{
+    drawCVImage(webcamModel, windowModel);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        RectangleModel verRectModel(glm::vec2(webcamModel->vertDelims[i], webcamModel->frame.y),
+                                    glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec2(webcamModel->lineW, webcamModel->frame.h));
+        drawRect(&verRectModel, windowModel);
+        RectangleModel horRectModel(glm::vec2(webcamModel->frame.x, webcamModel->horDelims[i]),
+                                    glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec2(webcamModel->frame.w, webcamModel->lineW));
+        drawRect(&horRectModel, windowModel);
+    }
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+        {
+            float x = webcamModel->readRegions[i][j].x;
+            float y = webcamModel->readRegions[i][j].y;
+            float w = webcamModel->readRegions[i][j].w;
+            float h = webcamModel->readRegions[i][j].h;
+            RectangleModel rectModel(glm::vec2(x, y), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(w, h));
+            drawRect(&rectModel, windowModel);
+        }
+}
