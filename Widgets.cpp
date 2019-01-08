@@ -49,8 +49,28 @@ void ItemBoxModel::addItem(const std::string & text)
     items.emplace_back(copyText, copyRect);
 }
 
-void ItemBoxModel::popItem()
+void ItemBoxModel::addItemFront(const std::string & text)
 {
+    auto copyRect = itemRect;
+    auto copyText = itemText;
+    copyText.text = text;
+    items.emplace_front(copyText, copyRect);
+}
+
+std::string ItemBoxModel::popItem()
+{
+    std::string text;
+
     if (items.size())
+    {
+        text = items.front().first.text;
         items.pop_front();
+    }
+
+    return text;
+}
+
+void ItemBoxModel::clearItems()
+{
+    items.clear();
 }

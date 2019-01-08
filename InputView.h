@@ -4,6 +4,7 @@
 #include "WindowModel.h"
 #include "InputInterface.h"
 #include "Events.h"
+#include "CubeController.h"
 
 
 class InputView : public View

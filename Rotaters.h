@@ -67,6 +67,9 @@ public:
     ScriptRotater() {}
     ScriptRotater(CubeModel* cm) : Rotater(cm) {}
     void rotate_script(char r);
+    /*
+    void rotate_all_script();
+    */
     
 private:
     HitHeader get_hit_header(char r) const;
@@ -90,7 +93,7 @@ public:
     void rotate_interactive(const glm::vec2& mouse_diff);
     void set_interactive_dir(const glm::vec2& mouse_diff);
     void set_interactive_pos(const glm::vec2& mouse_pos);
-    void finish_interactive_rotation();
+    bool finish_interactive_rotation();
 
     void rotate_all_interactive(const glm::vec2 &mouse_diff);
 

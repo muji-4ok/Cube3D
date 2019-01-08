@@ -97,8 +97,10 @@ void drawText(const TextModel * textModel, const WindowModel * windowModel)
     textData.textVAO.bind();
     textData.textVBO.bind();
 
-    float x = textModel->position.x >= 0 ? textModel->position.x : windowModel->width + textModel->position.x;
-    float y = textModel->position.y >= 0 ? textModel->position.y : windowModel->height + textModel->position.y;
+    float x = textModel->position.x >= 0 ? textModel->position.x :
+                                           windowModel->viewportWidth + textModel->position.x;
+    float y = textModel->position.y >= 0 ? textModel->position.y :
+                                           windowModel->viewportHeight + textModel->position.y;
 
     for (const auto& c : textModel->text)
     {
@@ -142,8 +144,10 @@ void drawRect(const RectangleModel * rectModel, const WindowModel * windowModel)
     rectangleData.rectVAO.bind();
     rectangleData.rectVBO.bind();
 
-    float x = rectModel->position.x >= 0 ? rectModel->position.x : windowModel->width + rectModel->position.x;
-    float y = rectModel->position.y >= 0 ? rectModel->position.y : windowModel->height + rectModel->position.y;
+    float x = rectModel->position.x >= 0 ? rectModel->position.x :
+                                           windowModel->viewportWidth + rectModel->position.x;
+    float y = rectModel->position.y >= 0 ? rectModel->position.y :
+                                           windowModel->viewportHeight + rectModel->position.y;
     float w = rectModel->size.x;
     float h = rectModel->size.y;
 

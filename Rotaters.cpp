@@ -531,7 +531,7 @@ void InteractiveRotater::set_interactive_dir(const glm::vec2& mouse_diff)
     cubeModel->rotationQueue.push(new SetHitDirRotationHeader(hit));
 }
 
-void InteractiveRotater::finish_interactive_rotation()
+bool InteractiveRotater::finish_interactive_rotation()
 {
     auto angle = cubeModel->rotationQueue.get_angle();
     auto hit = cubeModel->hitModel.get_header();
@@ -562,6 +562,8 @@ void InteractiveRotater::finish_interactive_rotation()
     generate_temp_rotations(angle, final_angle, start_speed, acceleration, last_vec);
     cubeModel->rotationQueue.push(new PermRotationHeader(hit, turns));
     cubeModel->rotationQueue.push(new ResetRotationHeader());
+
+    return (turns != 0);
 }
 
 void InteractiveRotater::set_interactive_pos(const glm::vec2& mouse_pos)

@@ -33,6 +33,7 @@ public:
     void updateFPS();
     bool isClosed() const;
     void setTitle(const std::string &title);
+    void setViewport(float x, float y, float width, float height);
 
     glm::vec2 getMousePos() const;
     glm::vec2 toNDC(const glm::vec2& mousePos) const;
@@ -48,8 +49,10 @@ public:
     glm::mat4 perspectiveProjection;
     glm::mat4 orthogonalProjection;
     GLFWwindow *window;
-    int width;
-    int height;
+    int viewportWidth;
+    int viewportHeight;
+    int screenWidth;
+    int screenHeight;
     State appState = Interactive;
 
 private:

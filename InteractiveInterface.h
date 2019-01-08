@@ -37,19 +37,20 @@ struct InteractivePrevButtonModel : public ButtonModel
 
 struct InstructionsBoxModel : public ItemBoxModel
 {
-    // ItemBoxModel(const glm::vec2& rectPos, const glm::vec2& rectSize, const glm::vec3& bgColor,
-                 // float iRectPosY, const glm::vec2& iRectSize, const glm::vec3& iBgColor,
-                 // float iTextPosY, float iTextPosXBuff, float iTextScale, const glm::vec3& iTextColor,
-                 // float horPadding, float itemHorSpace)
+    typedef ItemBoxModel Base;
+
     InstructionsBoxModel() :
         ItemBoxModel(glm::vec2(900.0f, 0.0f), glm::vec2(900.0f, 200.0f), glm::vec3(0.18f, 0.43f, 0.41f),
                      15.0f, glm::vec2(100.0f, 100.0f), glm::vec3(0.0f, 1.0f, 0.0f), 30.0f, 30.0f, 0.3f,
                      glm::vec3(1.0f, 1.0f, 1.0f), 20.0f, 20.0f)
     {
-        addItem("a");
-        addItem("s");
-        addItem("s");
     }
+
+    std::deque<char> rotationsQueue;
+
+    std::string restoreItem();
+    std::string popItem() override;
+    void clearItems() override;
 };
 
 struct WebcamSwitchButtonModel : public ButtonModel

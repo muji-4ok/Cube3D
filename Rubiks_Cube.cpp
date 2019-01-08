@@ -9,6 +9,8 @@
 #include "WindowModel.h"
 #include "InteractiveInterface.h"
 #include "InputInterface.h"
+#include "Rotaters.h"
+#include "Solver.h"
 
 
 int main()
@@ -19,28 +21,61 @@ int main()
     WindowModel windowModel(width, height);
     CubeModel interactiveCubeModel(&windowModel);
     CubeModel inputCubeModel(&windowModel);
+    InstructionsBoxModel instructionsBoxModel;
     SolveButtonModel solveButtonModel(
-        [&interactiveCubeModel]() {
-            std::cout << "Solve btn pressed\n";
+        [&interactiveCubeModel, &instructionsBoxModel]() {
+            if (interactiveCubeModel.rotationQueue.is_rotating())
+                return;
+
+            Solver solver(&interactiveCubeModel);
+            auto solution = solver.generateSolution();
+
+            instructionsBoxModel.clearItems();
+
+            for (const auto&r : solution)
+                instructionsBoxModel.addItem(std::string(1, r));
         }
     );
     InteractiveHelpBoxModel interactiveHelpBoxModel;
-    InstructionsBoxModel instructionsBoxModel;
     InteractiveNextButtonModel interactiveNextButtonModel(
         [&interactiveCubeModel, &instructionsBoxModel]() {
-            std::cout << "Next btn pressed\n";
-            instructionsBoxModel.addItem("a");
+            if (interactiveCubeModel.rotationQueue.is_rotating())
+                return;
+
+            auto res = instructionsBoxModel.popItem();
+
+            if (res.size())
+            {
+                auto r = res[0];
+                ScriptRotater rotater(&interactiveCubeModel);
+                rotater.rotate_script(r);
+            }
         }
     );
     InteractivePrevButtonModel interactivePrevButtonModel(
         [&interactiveCubeModel, &instructionsBoxModel]() {
-            std::cout << "Prev btn pressed\n";
-            instructionsBoxModel.popItem();
+            if (interactiveCubeModel.rotationQueue.is_rotating())
+                return;
+
+            auto res = instructionsBoxModel.restoreItem();
+
+            if (res.size())
+            {
+                auto r = res[0];
+
+                if (r <= 'Z')
+                    r += 32;
+                else
+                    r -= 32;
+
+                ScriptRotater rotater(&interactiveCubeModel);
+                rotater.rotate_script(r);
+            }
         }
     );
     WebcamSwitchButtonModel webcamSwitchButtonModel(
         [&windowModel]() {
-            std::cout << "Webcam switch btn pressed\n";
+            windowModel.appState = Input;
         }
     );
     InputHelpBoxModel inputHelpBoxModel;

@@ -80,11 +80,8 @@ void WindowModel::key_callback(int key, int scancode, int action, int mods)
 void WindowModel::frame_buffer_change_callback(int width, int height)
 {
     addEvent(new DimensionsChangeEvent(width, height));
-    glViewport(0, 0, width, height);
-    this->width = width;
-    this->height = height;
-    setPerspectiveProjection(width, height);
-    setOrthogonalProjection(width, height);
+    this->screenWidth = width;
+    this->screenHeight = height;
 }
 
 void WindowModel::mouse_callback(int button, int action, int mods)
@@ -101,7 +98,8 @@ void WindowModel::mouse_callback(int button, int action, int mods)
         addEvent(new MouseUpEvent(mousePos, isLeft, isRight));
 }
 
-WindowModel::WindowModel(int width, int height) : width(width), height(height)
+WindowModel::WindowModel(int width, int height) : screenWidth(width), viewportWidth(width), screenHeight(height),
+                                                  viewportHeight(height)
 {
     if (!glfwInit())
     {
@@ -136,12 +134,9 @@ WindowModel::WindowModel(int width, int height) : width(width), height(height)
         exit(1);
     }
 
-    setPerspectiveProjection(width, height);
-    setOrthogonalProjection(width, height);
-
     glClearColor(0.1f, 0.2f, 0.4f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, width, height);
+    setViewport(0.0f, 0.0f, width, height);
 }
 
 WindowModel::~WindowModel()
@@ -242,24 +237,33 @@ void WindowModel::setTitle(const std::string & title)
     glfwSetWindowTitle(window, title.c_str());
 }
 
+void WindowModel::setViewport(float x, float y, float width, float height)
+{
+    viewportWidth = width;
+    viewportHeight = height;
+    glViewport(x, y, width, height);
+    setOrthogonalProjection(width, height);
+    setPerspectiveProjection(width, height);
+}
+
 glm::vec2 WindowModel::getMousePos() const
 {
     double x, y;
     glfwGetCursorPos(window, &x, &y);
-    y = height - y;
+    y = viewportHeight - y;
     return { static_cast<float>(x), static_cast<float>(y) };
 }
 
 glm::vec2 WindowModel::toNDC(const glm::vec2 & mousePos) const
 {
-    float x = mousePos.x / width * 2.0f - 1.0f;
-    float y = mousePos.y / height * 2.0f - 1.0f;
+    float x = mousePos.x / viewportWidth * 2.0f - 1.0f;
+    float y = mousePos.y / viewportHeight * 2.0f - 1.0f;
     return { x, y };
 }
 
 glm::vec2 WindowModel::diffToNDC(const glm::vec2 & mouseDiff) const
 {
-    return { static_cast<float>(mouseDiff.x) / width, static_cast<float>(mouseDiff.y) / height };
+    return { static_cast<float>(mouseDiff.x) / viewportWidth, static_cast<float>(mouseDiff.y) / viewportHeight };
 }
 
 bool WindowModel::isLeftMbPressed() const

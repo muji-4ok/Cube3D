@@ -11,7 +11,12 @@ void InteractiveCubeController::m_up(const MouseUpEvent * e)
 {
     if (e->left_pressed && cubeModel->hitModel.has_position && cubeModel->hitModel.has_dir
         && !cubeModel->rotationQueue.is_rotating())
-        rotater.finish_interactive_rotation();
+    {
+        bool moved = rotater.finish_interactive_rotation();
+
+        if (moved)
+            instructionsBoxModel->clearItems();
+    }
 }
 
 void InteractiveCubeController::m_move(const MouseMoveEvent * e)
@@ -37,26 +42,28 @@ void InteractiveCubeController::k_pressed(const KeyPressedEvent * e)
 
     if (e->key == 'S' || e->key == 's')
     {
+        instructionsBoxModel->clearItems();
+
         static std::mt19937 gen(std::time(0));
         static std::uniform_int_distribution<int> dist(0, possible.size() - 1);
 
         for (int i = 0; i < 30; ++i)
             rotater.rotate_script(possible[dist(gen)]);
     }
-    else if (e->key == 'C' || e->key == 'c')
-    {
-        // auto sol_str = solver->gen_solution();
-
-        // for (const auto &r : sol_str)
-        //     rotater->rotate_script(r);
-    }
     else if (std::find(possible.begin(), possible.end(), e->key) != possible.end())
     {
+        instructionsBoxModel->clearItems();
+
         rotater.rotate_script(e->key);
     }
 }
 
 void InteractiveCubeController::rotate()
+{
+    rotater.process_queue();
+}
+
+void InputCubeController::rotate()
 {
     rotater.process_queue();
 }

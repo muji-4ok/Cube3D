@@ -2,6 +2,7 @@
 #include "Common.h"
 #include "Events.h"
 #include "CubeModel.h"
+#include "InteractiveInterface.h"
 #include "Rotaters.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,7 +25,8 @@ protected:
 class InteractiveCubeController : public CubeController
 {
 public:
-    InteractiveCubeController(CubeModel* cm) : CubeController(cm), rotater(cm)
+    InteractiveCubeController(CubeModel* cm, InstructionsBoxModel* ibm) : CubeController(cm), rotater(cm),
+        instructionsBoxModel(ibm)
     {
     }
 
@@ -36,27 +38,20 @@ public:
     void rotate();
 
 private:
+    InstructionsBoxModel* instructionsBoxModel;
     HybridRotater rotater;
-    // std::unique_ptr<Solver> solver;
 
 };
 
-/*
-class WalkthroughCubeController : public CubeController
-{
-public:
-
-private:
-    std::unique_ptr<ScriptRotater> rotater;
-};
-*/
-
-/*
 class InputCubeController : public CubeController
 {
 public:
+    InputCubeController(CubeModel* cm) : CubeController(cm), rotater(cm)
+    {
+    }
+
+    void rotate();
 
 private:
-    std::unique_ptr<WholeRotater> rotater;
+    HybridRotater rotater;
 };
-*/
