@@ -15,10 +15,9 @@
 struct ButtonModel
 {
     ButtonModel(const glm::vec2& rectPos, const glm::vec2& rectSize, const std::string& text,
-                const glm::vec2& textPos, float textScale, const glm::vec3& bgColorNormal,
-                const glm::vec3& bgColorPressed, const glm::vec3& textColor,
-                const std::function<void()>& callback)
-        : rectModel(rectPos, bgColorNormal, rectSize), textModel(text, textPos, textColor, textScale),
+                float textScale, const glm::vec3& bgColorNormal, const glm::vec3& bgColorPressed,
+                const glm::vec3& textColor, const std::function<void()>& callback)
+        : rectModel(rectPos, bgColorNormal, rectSize), textModel(text, {}, textColor, textScale),
         bgColorNormal(bgColorNormal), bgColorPressed(bgColorPressed), callback(callback)
     {
     }

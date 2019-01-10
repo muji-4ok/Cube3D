@@ -15,6 +15,8 @@ struct RectangleModel
     RectangleModel(const glm::vec2& pos, const glm::vec3& col, const glm::vec2& size) :
         position(pos), color(col), size(size) {};
 
+    RectangleModel NDCtoScreen(float width, float height);
+
     glm::vec2 position;
     glm::vec2 size;
     glm::vec3 color;

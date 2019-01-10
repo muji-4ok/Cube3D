@@ -134,6 +134,7 @@ WindowModel::WindowModel(int width, int height) : screenWidth(width), viewportWi
         exit(1);
     }
 
+    glfwSwapInterval(1);
     glClearColor(0.1f, 0.2f, 0.4f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     setViewport(0.0f, 0.0f, width, height);
@@ -191,6 +192,14 @@ void WindowModel::updateFPS()
     double timeNow = glfwGetTime();
     double millsPassed = (timeNow - timeBefore) * 1000.0;
     timeBefore = timeNow;
+
+    if (millsPassed < 1000.0 / 60.0)
+    {
+        std::this_thread::sleep_for(std::chrono::nanoseconds(
+            static_cast<long long>(1e9 / 60.0 - millsPassed * 1e6)
+        ));
+        millsPassed = 1000.0 / 60.0;
+    }
 
     if (timeCounter == 30)
     {

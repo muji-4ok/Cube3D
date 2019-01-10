@@ -20,7 +20,7 @@ void ButtonController::onMouseRelease(MouseUpEvent * e)
 {
     if (e->left_pressed)
     {
-        if (isInside(e->mouse_pos))
+        if (buttonModel->pressed && isInside(e->mouse_pos))
             buttonModel->callback();
 
         buttonModel->pressed = false;

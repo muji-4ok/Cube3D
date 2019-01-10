@@ -1,37 +1,38 @@
 #pragma once
 #include "Widgets.h"
+#include <cctype>
 
 
 struct SolveButtonModel : public ButtonModel
 {
     SolveButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 100.0f), "Solve",
-                    glm::vec2(25.0f, 25.0f), 0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
-                    glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
+        ButtonModel(glm::vec2(0.0f, 0.0f), glm::vec2(0.2f, 0.1f), "Solve",
+                    0.4f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
+                    glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };
 
 struct InteractiveHelpBoxModel : public TextBoxModel
 {
-    InteractiveHelpBoxModel() : TextBoxModel(glm::vec2(0.0f, -400.0f), glm::vec2(400.0f, 400.0f),
+    InteractiveHelpBoxModel() : TextBoxModel(glm::vec2(0.0f, -50.0f), glm::vec2(100.0f, 50.0f),
                                              glm::vec3(0.18f, 0.43f, 0.41f))
     {
-        addTextLine(glm::vec2(0.0f, -50.0f), "This is a help box", 0.125f, glm::vec3(1.0f, 1.0f, 1.0f));
+        addTextLine(glm::vec2(0.0f, -30.0f), "This is a help box", 0.125f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 };
 
 struct InteractiveNextButtonModel : public ButtonModel
 {
     InteractiveNextButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(210.0f, 0.0f), glm::vec2(200.0f, 100.0f), "Next",
-                    glm::vec2(235.0f, 25.0f), 0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
+        ButtonModel(glm::vec2(575.0f, 0.0f), glm::vec2(125.0f, 75.0f), "Next",
+                    0.4f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };
 
 struct InteractivePrevButtonModel : public ButtonModel
 {
     InteractivePrevButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(420.0f, 0.0f), glm::vec2(200.0f, 100.0f), "Prev",
-                    glm::vec2(445.0f, 25.0f), 0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
+        ButtonModel(glm::vec2(710.0f, 0.0f), glm::vec2(125.0f, 75.0f), "Prev",
+                    0.4f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };
 
@@ -40,9 +41,9 @@ struct InstructionsBoxModel : public ItemBoxModel
     typedef ItemBoxModel Base;
 
     InstructionsBoxModel() :
-        ItemBoxModel(glm::vec2(900.0f, 0.0f), glm::vec2(900.0f, 200.0f), glm::vec3(0.18f, 0.43f, 0.41f),
-                     15.0f, glm::vec2(100.0f, 100.0f), glm::vec3(0.0f, 1.0f, 0.0f), 30.0f, 30.0f, 0.3f,
-                     glm::vec3(1.0f, 1.0f, 1.0f), 20.0f, 20.0f)
+        ItemBoxModel(glm::vec2(150.0f, 0.0f), glm::vec2(400.0f, 75.0f), glm::vec3(0.18f, 0.43f, 0.41f),
+                     10.0f, glm::vec2(50.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), 15.0f, 10.0f, 0.4,
+                     glm::vec3(1.0f, 1.0f, 1.0f), 5.0f, 18.0f)
     {
     }
 
@@ -53,10 +54,17 @@ struct InstructionsBoxModel : public ItemBoxModel
     void clearItems() override;
 };
 
+struct InstructionsSanitizer
+{
+    static char toCharNotation(const std::string& in);
+    static std::string toStringNotation(char r);
+    static char reverseChar(char r);
+};
+
 struct WebcamSwitchButtonModel : public ButtonModel
 {
     WebcamSwitchButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(630.0f, 0.0f), glm::vec2(200.0f, 100.0f), "Webcam",
-                    glm::vec2(655.0f, 25.0f), 0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
+        ButtonModel(glm::vec2(860.0f, 0.0f), glm::vec2(200.0f, 75.0f), "Webcam",
+                    0.4f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };

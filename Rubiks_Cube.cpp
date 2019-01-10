@@ -12,6 +12,7 @@
 #include "Rotaters.h"
 #include "Solver.h"
 #include "Webcam.h"
+#include <cctype>
 
 
 int main()
@@ -34,7 +35,7 @@ int main()
             instructionsBoxModel.clearItems();
 
             for (const auto&r : solution)
-                instructionsBoxModel.addItem(std::string(1, r));
+                instructionsBoxModel.addItem(InstructionsSanitizer::toStringNotation(r));
         }
     );
     InteractiveHelpBoxModel interactiveHelpBoxModel;
@@ -47,9 +48,8 @@ int main()
 
             if (res.size())
             {
-                auto r = res[0];
                 ScriptRotater rotater(&interactiveCubeModel);
-                rotater.rotate_script(r);
+                rotater.rotate_script(InstructionsSanitizer::toCharNotation(res));
             }
         }
     );
@@ -62,13 +62,8 @@ int main()
 
             if (res.size())
             {
-                auto r = res[0];
-
-                if (r <= 'Z')
-                    r += 32;
-                else
-                    r -= 32;
-
+                auto r = InstructionsSanitizer::toCharNotation(res);
+                r = InstructionsSanitizer::reverseChar(r);
                 ScriptRotater rotater(&interactiveCubeModel);
                 rotater.rotate_script(r);
             }

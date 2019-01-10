@@ -543,6 +543,8 @@ bool InteractiveRotater::finish_interactive_rotation()
 
     auto turns = static_cast<int>(std::round(deg_angle / 90.0f));
 
+    std::cout << glm::degrees(last_angle) << '\n';
+
     if (turns == 0 && std::abs(glm::degrees(last_angle)) > 2.0f)
         turns = angle > 0 ? 1 : -1;
 

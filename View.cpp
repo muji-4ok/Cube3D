@@ -28,10 +28,11 @@ void drawCube(const CubeModel * cubeModel, const WindowModel* windowModel)
             }
 }
 
-void drawButton(const ButtonModel * buttonModel, const WindowModel * windowModel)
+void drawButton(ButtonModel * buttonModel, const WindowModel * windowModel)
 {
-    drawRect(&buttonModel->rectModel, windowModel);
-    drawText(&buttonModel->textModel, windowModel);
+    auto rectModelNDC = buttonModel->rectModel.NDCtoScreen(windowModel->viewportWidth, windowModel->viewportHeight);
+    drawRect(&rectModelNDC, windowModel);
+    drawTextCentered(&buttonModel->textModel, &rectModelNDC, windowModel);
 }
 
 void drawTextBox(const TextBoxModel * textBoxModel, const WindowModel * windowModel)
@@ -55,7 +56,7 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
     if (itemBoxModel->items.size() > canFit)
         --canFit;
 
-    float x = itemBoxModel->rectModel.position.x + itemBoxModel->itemHorSpace;
+    float x = itemBoxModel->rectModel.position.x + itemBoxModel->horPadding;
     int i = 0;
 
     for (auto it = itemBoxModel->items.begin(); it != itemBoxModel->items.end() && i < canFit; ++it, ++i)
@@ -131,6 +132,15 @@ void drawText(const TextModel * textModel, const WindowModel * windowModel)
 
         x += (character.advance >> 6) * textModel->scale;
     }
+}
+
+void drawTextCentered(TextModel * textModel, const RectangleModel * rectModel, const WindowModel * windowModel)
+{
+    // assert(textModel->size.x <= rectModel->size.x);
+    // assert(textModel->size.y <= rectModel->size.y);
+    textModel->position.x = rectModel->position.x + (rectModel->size.x - textModel->size.x) / 2.0;
+    textModel->position.y = rectModel->position.y + (rectModel->size.y - textModel->size.y) / 2.0;
+    drawText(textModel, windowModel);
 }
 
 void drawRect(const RectangleModel * rectModel, const WindowModel * windowModel)

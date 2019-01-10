@@ -23,10 +23,11 @@ struct View
 };
 
 void drawCube(const CubeModel* cubeModel, const WindowModel* windowModel);
-void drawButton(const ButtonModel* buttonModel, const WindowModel* windowModel);
+void drawButton(ButtonModel* buttonModel, const WindowModel* windowModel);
 void drawTextBox(const TextBoxModel* textBoxModel, const WindowModel* windowModel);
 void drawItemBox(const ItemBoxModel* itemBoxModel, const WindowModel* windowModel);
 void drawText(const TextModel* textModel, const WindowModel* windowModel);
+void drawTextCentered(TextModel* textModel, const RectangleModel* rectModel, const WindowModel* windowModel);
 void drawRect(const RectangleModel* rectModel, const WindowModel* windowModel);
 void drawCVImage(const WebcamModel* webcamModel, const WindowModel* windowModel);
 void drawWebcam(const WebcamModel* webcamModel, const WindowModel* windowModel);
