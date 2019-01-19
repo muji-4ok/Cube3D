@@ -9,8 +9,8 @@ void InteractiveView::draw()
     cubeController.rotate();
     drawCube(cubeModel, windowModel);
     drawButton(solveButtonModel, windowModel);
-    // drawButton(nextButtonModel, windowModel);
-    // drawButton(prevButtonModel, windowModel);
+    drawButton(nextButtonModel, windowModel);
+    drawButton(prevButtonModel, windowModel);
     // drawButton(webcamSwitchButtonModel, windowModel);
     // drawTextBox(helpBoxModel, windowModel);
     // drawItemBox(instructionsBoxModel, windowModel);
@@ -24,7 +24,7 @@ void InteractiveView::mousePress(MouseDownEvent * e)
     normalized.mouse_pos = windowModel->toNDC(e->mouse_pos);
     cubeController.m_down(&normalized);
 
-    ButtonController buttonController(solveButtonModel);
+    ButtonController buttonController(solveButtonModel, windowModel);
     buttonController.onMousePress(e);
     buttonController.setModel(nextButtonModel);
     buttonController.onMousePress(e);
@@ -41,7 +41,7 @@ void InteractiveView::mouseRelease(MouseUpEvent * e)
     normalized.mouse_pos = windowModel->toNDC(e->mouse_pos);
     cubeController.m_up(&normalized);
 
-    ButtonController buttonController(solveButtonModel);
+    ButtonController buttonController(solveButtonModel, windowModel);
     buttonController.onMouseRelease(e);
     buttonController.setModel(nextButtonModel);
     buttonController.onMouseRelease(e);

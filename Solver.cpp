@@ -1,17 +1,7 @@
 #include "Solver.h"
 
 
-void Solver::solve()
-{
-    auto solution = generateSolution();
-
-    ScriptRotater rotater(cubeModel);
-
-    for (const auto& r : solution)
-        rotater.rotate_script(r);
-}
-
-std::string Solver::generateSolution() const
+std::string FastSolver::generateSolution() const
 {
     auto cube_string = toString();
     char* c_cube = const_cast<char *>(cube_string.c_str());
@@ -95,7 +85,7 @@ std::string Solver::generateSolution() const
     return seq;
 }
 
-std::string Solver::toString() const
+std::string FastSolver::toString() const
 {
     auto vec_to_tuple = [this](int i, int j, int k, int index) -> std::tuple<double, double, double> {
         auto first = this->cubeModel->cubelets[i][j][k].colors[index * 3];
@@ -160,4 +150,16 @@ std::string Solver::toString() const
         out += f;
 
     return out;
+}
+
+std::string OptimalSolver::generateSolution() const
+{
+    auto cubeString = toString();
+    auto sol = solve_string(cubeString.c_str());
+    return {};
+}
+
+std::string OptimalSolver::toString() const
+{
+    return "UF UR RD RB LU LF DB DL FR UB DF BL UFR RFD RDB RBU LFU LUB DLB LDF";
 }

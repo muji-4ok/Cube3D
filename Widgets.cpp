@@ -30,7 +30,7 @@ void ButtonController::onMouseRelease(MouseUpEvent * e)
 
 bool ButtonController::isInside(const glm::vec2 & mouse_pos) const
 {
-    auto& rectModel = buttonModel->rectModel;
+    auto rectModel = buttonModel->rectModel.NDCtoScreen(windowModel->viewportWidth, windowModel->viewportHeight);
     return rectModel.position.x <= mouse_pos.x && mouse_pos.x <= rectModel.position.x + rectModel.size.x &&
         rectModel.position.y <= mouse_pos.y && mouse_pos.y <= rectModel.position.y + rectModel.size.y;
 }

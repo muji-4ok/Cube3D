@@ -23,16 +23,16 @@ struct InteractiveHelpBoxModel : public TextBoxModel
 struct InteractiveNextButtonModel : public ButtonModel
 {
     InteractiveNextButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(575.0f, 0.0f), glm::vec2(125.0f, 75.0f), "Next",
-                    0.4f, glm::vec3(0.0f, 1.0f, 0.0f),
+        ButtonModel(glm::vec2(0.22f, 0.055f), glm::vec2(0.2f, 0.0475f), "Next",
+                    0.3f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };
 
 struct InteractivePrevButtonModel : public ButtonModel
 {
     InteractivePrevButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(710.0f, 0.0f), glm::vec2(125.0f, 75.0f), "Prev",
-                    0.4f, glm::vec3(0.0f, 1.0f, 0.0f),
+        ButtonModel(glm::vec2(0.22f, 0.0f), glm::vec2(0.2f, 0.0475f), "Prev",
+                    0.3f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };
 

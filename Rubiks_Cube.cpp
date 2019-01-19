@@ -1,6 +1,8 @@
 // Rubiks_Cube.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#pragma once
+
 #include "View.h"
 #include "Events.h"
 #include "InteractiveView.h"
@@ -29,7 +31,7 @@ int main()
             if (interactiveCubeModel.rotationQueue.is_rotating())
                 return;
 
-            Solver solver(&interactiveCubeModel);
+            OptimalSolver solver(&interactiveCubeModel);
             auto solution = solver.generateSolution();
 
             instructionsBoxModel.clearItems();

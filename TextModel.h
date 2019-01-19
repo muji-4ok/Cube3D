@@ -67,11 +67,13 @@ private:
   #ifdef _WIN32
     const std::string vertex_path = R"(shaders\textVertex.glsl)";
     const std::string fragment_path = R"(shaders\textFragment.glsl)";
-    const std::string font_path = R"(fonts\arial.ttf)";
+    // const std::string font_path = R"(fonts\arial.ttf)";
+    const std::string font_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\x64\Debug\fonts\arial.ttf)";
   #else
     const std::string vertex_path = R"(shaders/textVertex.glsl)";
     const std::string fragment_path = R"(shaders/textFragment.glsl)";
-    const std::string font_path = R"(fonts/arial.ttf)";
+    // const std::string font_path = R"(fonts/arial.ttf)";
+    const std::string font_path = R"(D:\Egor\projects\cpp\Graphics_Experiments\x64\Debug\fonts\arial.ttf)";
   #endif
 #else
      const std::string vertex_path

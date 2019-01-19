@@ -2,21 +2,41 @@
 #include "CubeModel.h"
 #include "Rotaters.h"
 #include "search.h"
+
+extern "C" {
+#include "cubedefs.h"
+}
+
 #include <string>
 #include <sstream>
 
 
-class Solver
+struct Solver
+{
+    Solver(const CubeModel* cm) : cubeModel(cm) {}
+
+    virtual std::string generateSolution() const = 0;
+
+protected:
+    const CubeModel* cubeModel;
+};
+
+class FastSolver : public Solver
 {
 public:
-    Solver(CubeModel* cm) : cubeModel(cm) {}
-
-    std::string generateSolution() const;
-    void solve();
+    using Solver::Solver;
+    std::string generateSolution() const override;
 
 private:
     std::string toString() const;
-
-    CubeModel* cubeModel;
 };
 
+class OptimalSolver : public Solver
+{
+public:
+    using Solver::Solver;
+    std::string generateSolution() const override;
+
+private:
+    std::string toString() const;
+};

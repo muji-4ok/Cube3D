@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "TextModel.h"
 #include "RectangleModel.h"
+#include "WindowModel.h"
 #include "Events.h"
 
 
@@ -74,7 +75,7 @@ struct ItemBoxModel
 class ButtonController
 {
 public:
-    ButtonController(ButtonModel* bm) : buttonModel(bm) {}
+    ButtonController(ButtonModel* bm, const WindowModel* wm) : buttonModel(bm), windowModel(wm) {}
 
     void setModel(ButtonModel* bm);
     void onMousePress(MouseDownEvent* e);
@@ -82,5 +83,6 @@ public:
 
 private:
     bool isInside(const glm::vec2& mouse_pos) const;
+    const WindowModel* windowModel;
     ButtonModel* buttonModel;
 };
