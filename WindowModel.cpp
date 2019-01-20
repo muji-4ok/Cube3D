@@ -99,7 +99,8 @@ void WindowModel::mouse_callback(int button, int action, int mods)
 }
 
 WindowModel::WindowModel(int width, int height) : screenWidth(width), viewportWidth(width), screenHeight(height),
-                                                  viewportHeight(height)
+                                                  viewportHeight(height), minScreenWidth(width),
+                                                  minScreenHeight(height)
 {
     if (!glfwInit())
     {
@@ -112,6 +113,7 @@ WindowModel::WindowModel(int width, int height) : screenWidth(width), viewportWi
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     window = glfwCreateWindow(width, height, "Window", nullptr, nullptr);
+    glfwSetWindowSizeLimits(window, minScreenWidth, minScreenHeight, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     if (!window)
     {

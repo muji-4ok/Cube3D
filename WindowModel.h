@@ -55,6 +55,8 @@ public:
     int viewportHeight;
     int screenWidth;
     int screenHeight;
+    const int minScreenWidth;
+    const int minScreenHeight;
     State appState = Interactive;
 
 private:

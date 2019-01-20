@@ -19,8 +19,8 @@
 
 int main()
 {
-    constexpr int width = 640;
-    constexpr int height = 480;
+    constexpr int width = 800;
+    constexpr int height = 600;
 
     {
         OptimalSolverInitializer::instance();

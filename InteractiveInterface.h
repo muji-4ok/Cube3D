@@ -64,7 +64,7 @@ struct InstructionsSanitizer
 struct WebcamSwitchButtonModel : public ButtonModel
 {
     WebcamSwitchButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(860.0f, 0.0f), glm::vec2(200.0f, 75.0f), "Webcam",
+        ButtonModel(glm::vec2(0.75f, 0.9f), glm::vec2(0.25f, 0.1f), "Webcam",
                     0.4f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };
