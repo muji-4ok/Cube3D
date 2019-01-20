@@ -22,6 +22,10 @@ int main()
     constexpr int width = 640;
     constexpr int height = 480;
 
+    {
+        OptimalSolverInitializer::instance();
+    }
+
     WindowModel windowModel(width, height);
     CubeModel interactiveCubeModel(&windowModel);
     CubeModel inputCubeModel(&windowModel);

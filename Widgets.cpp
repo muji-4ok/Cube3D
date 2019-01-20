@@ -45,7 +45,7 @@ void ItemBoxModel::addItem(const std::string & text)
 {
     auto copyRect = itemRect;
     auto copyText = itemText;
-    copyText.text = text;
+    copyText.setText(text);
     items.emplace_back(copyText, copyRect);
 }
 
@@ -53,7 +53,7 @@ void ItemBoxModel::addItemFront(const std::string & text)
 {
     auto copyRect = itemRect;
     auto copyText = itemText;
-    copyText.text = text;
+    copyText.setText(text);
     items.emplace_front(copyText, copyRect);
 }
 
@@ -63,7 +63,7 @@ std::string ItemBoxModel::popItem()
 
     if (items.size())
     {
-        text = items.front().first.text;
+        text = items.front().first.getText();
         items.pop_front();
     }
 

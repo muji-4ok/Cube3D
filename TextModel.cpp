@@ -69,6 +69,11 @@ TextModelOpenGLData::TextModelOpenGLData()
     VAO::unbind();
 }
 
+const std::string & TextModel::getText() const
+{
+    return text;
+}
+
 void TextModel::setText(const std::string & text)
 {
     this->text = text;

@@ -23,13 +23,16 @@ struct TextModel
         setText(t);
     }
 
-    std::string text;
     glm::vec2 position;
     glm::vec2 size;
     glm::vec3 color;
     float scale;
 
+    const std::string& getText() const;
     void setText(const std::string& text);
+
+private:
+    std::string text;
 };
 
 struct DrawChar

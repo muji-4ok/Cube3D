@@ -41,8 +41,8 @@ struct InstructionsBoxModel : public ItemBoxModel
     typedef ItemBoxModel Base;
 
     InstructionsBoxModel() :
-        ItemBoxModel(glm::vec2(150.0f, 0.0f), glm::vec2(400.0f, 75.0f), glm::vec3(0.18f, 0.43f, 0.41f),
-                     10.0f, glm::vec2(50.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), 15.0f, 10.0f, 0.4,
+        ItemBoxModel(glm::vec2(0.44f, 0.0f), glm::vec2(0.54f, 0.1f), glm::vec3(0.18f, 0.43f, 0.41f),
+                     glm::vec2(50.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.4f,
                      glm::vec3(1.0f, 1.0f, 1.0f), 5.0f, 18.0f)
     {
     }

@@ -13,7 +13,7 @@ void InteractiveView::draw()
     drawButton(prevButtonModel, windowModel);
     // drawButton(webcamSwitchButtonModel, windowModel);
     // drawTextBox(helpBoxModel, windowModel);
-    // drawItemBox(instructionsBoxModel, windowModel);
+    drawItemBox(instructionsBoxModel, windowModel);
     windowModel->updateFPS();
 }
 

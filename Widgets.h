@@ -47,13 +47,14 @@ struct TextBoxModel
 
 struct ItemBoxModel
 {
+    // iRectSize, horPadding, itemHorSpace - in pixels
+    // everything else - in NDC
     ItemBoxModel(const glm::vec2& rectPos, const glm::vec2& rectSize, const glm::vec3& bgColor,
-                 float iRectPosY, const glm::vec2& iRectSize, const glm::vec3& iBgColor,
-                 float iTextPosY, float iTextPosXBuff, float iTextScale, const glm::vec3& iTextColor,
+                 const glm::vec2& iRectSize, const glm::vec3& iBgColor, float iTextScale, const glm::vec3& iTextColor,
                  float horPadding, float itemHorSpace)
-        : rectModel(rectPos, bgColor, rectSize), itemRect(glm::vec2(0.0f, iRectPosY), iBgColor, iRectSize),
-        itemText("", glm::vec2(iTextPosXBuff, iTextPosY), iTextColor, iTextScale),
-        placeHolderItemText("...", glm::vec2(iTextPosXBuff, iTextPosY), iTextColor, iTextScale),
+        : rectModel(rectPos, bgColor, rectSize), itemRect({}, iBgColor, iRectSize),
+        itemText("", {}, iTextColor, iTextScale),
+        placeHolderItemText("...", {}, iTextColor, iTextScale),
         horPadding(horPadding), itemHorSpace(itemHorSpace)
     {
     }

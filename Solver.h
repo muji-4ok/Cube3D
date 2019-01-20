@@ -1,6 +1,7 @@
 #pragma once
 #include "CubeModel.h"
 #include "Rotaters.h"
+#include "InteractiveInterface.h"
 #include "search.h"
 
 extern "C" {
@@ -31,6 +32,28 @@ private:
     std::string toString() const;
 };
 
+class OptimalSolverInitializer
+{
+public:
+    static OptimalSolverInitializer& instance()
+    {
+        static OptimalSolverInitializer self;
+        return self;
+    }
+
+    OptimalSolverInitializer(const OptimalSolverInitializer&) = delete;
+    OptimalSolverInitializer(OptimalSolverInitializer&&) = delete;
+    OptimalSolverInitializer& operator= (const OptimalSolverInitializer&) = delete;
+    OptimalSolverInitializer& operator= (OptimalSolverInitializer&&) = delete;
+
+private:
+    OptimalSolverInitializer()
+    {
+        init();
+    }
+    ~OptimalSolverInitializer() {}
+};
+
 class OptimalSolver : public Solver
 {
 public:
@@ -40,3 +63,5 @@ public:
 private:
     std::string toString() const;
 };
+
+std::vector<std::string> splitWords(const std::string& s);

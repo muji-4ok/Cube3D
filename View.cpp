@@ -30,9 +30,9 @@ void drawCube(const CubeModel * cubeModel, const WindowModel* windowModel)
 
 void drawButton(ButtonModel * buttonModel, const WindowModel * windowModel)
 {
-    auto rectModelNDC = buttonModel->rectModel.NDCtoScreen(windowModel->viewportWidth, windowModel->viewportHeight);
-    drawRect(&rectModelNDC, windowModel);
-    drawTextCentered(&buttonModel->textModel, &rectModelNDC, windowModel);
+    auto rectModelScreen = buttonModel->rectModel.NDCtoScreen(windowModel->viewportWidth, windowModel->viewportHeight);
+    drawRect(&rectModelScreen, windowModel);
+    drawTextCentered(&buttonModel->textModel, &rectModelScreen, windowModel);
 }
 
 void drawTextBox(const TextBoxModel * textBoxModel, const WindowModel * windowModel)
@@ -45,29 +45,30 @@ void drawTextBox(const TextBoxModel * textBoxModel, const WindowModel * windowMo
 
 void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowModel)
 {
-    drawRect(&itemBoxModel->rectModel, windowModel);
+    auto rectModelScreen = itemBoxModel->rectModel.NDCtoScreen(windowModel->viewportWidth, windowModel->viewportHeight);
+    drawRect(&rectModelScreen, windowModel);
     /*
     n - canFit
     n * itemRect.size.x + (n - 1) * itemHorSpace + 2 * horPadding <= rectModel.size.x
     */
-    int canFit = (itemBoxModel->rectModel.size.x - 2 * itemBoxModel->horPadding + itemBoxModel->itemHorSpace)
+    int canFit = (rectModelScreen.size.x - 2 * itemBoxModel->horPadding + itemBoxModel->itemHorSpace)
                / (itemBoxModel->itemRect.size.x + itemBoxModel->itemHorSpace);
 
     if (itemBoxModel->items.size() > canFit)
         --canFit;
 
-    float x = itemBoxModel->rectModel.position.x + itemBoxModel->horPadding;
+    float x = rectModelScreen.position.x + itemBoxModel->horPadding;
     int i = 0;
 
     for (auto it = itemBoxModel->items.begin(); it != itemBoxModel->items.end() && i < canFit; ++it, ++i)
     {
         auto textModel = it->first;
         auto rectModel = it->second;
-        textModel.position.x += x;
-        rectModel.position.x += x;
+        rectModel.position.x = x;
+        rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
         
         drawRect(&rectModel, windowModel);
-        drawText(&textModel, windowModel);
+        drawTextCentered(&textModel, &rectModel, windowModel);
 
         x += itemBoxModel->itemRect.size.x + itemBoxModel->itemHorSpace;
     }
@@ -76,11 +77,11 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
     {
         auto textModel = itemBoxModel->placeHolderItemText;
         auto rectModel = itemBoxModel->itemRect;
-        textModel.position.x += x;
-        rectModel.position.x += x;
+        rectModel.position.x = x;
+        rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
         
         drawRect(&rectModel, windowModel);
-        drawText(&textModel, windowModel);
+        drawTextCentered(&textModel, &rectModel, windowModel);
     }
 }
 
@@ -103,7 +104,7 @@ void drawText(const TextModel * textModel, const WindowModel * windowModel)
     float y = textModel->position.y >= 0 ? textModel->position.y :
                                            windowModel->viewportHeight + textModel->position.y;
 
-    for (const auto& c : textModel->text)
+    for (const auto& c : textModel->getText())
     {
         auto& character = textData.characters[c];
 
@@ -136,8 +137,8 @@ void drawText(const TextModel * textModel, const WindowModel * windowModel)
 
 void drawTextCentered(TextModel * textModel, const RectangleModel * rectModel, const WindowModel * windowModel)
 {
-    // assert(textModel->size.x <= rectModel->size.x);
-    // assert(textModel->size.y <= rectModel->size.y);
+    assert(textModel->size.x <= rectModel->size.x);
+    assert(textModel->size.y <= rectModel->size.y);
     textModel->position.x = rectModel->position.x + (rectModel->size.x - textModel->size.x) / 2.0;
     textModel->position.y = rectModel->position.y + (rectModel->size.y - textModel->size.y) / 2.0;
     drawText(textModel, windowModel);
