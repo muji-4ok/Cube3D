@@ -201,7 +201,7 @@ SideColor ColorUtil::guessColor(const glm::vec3 & colorVec)
         else
             return 240.0f + 60.0f * (r - g) / (v - u);
     };
-    static std::unordered_map<SideColor, float> colorMap{
+    static std::map<SideColor, float> colorMap{
         { Yellow, getHue({ 1.0f, 1.0f, 0.0f }) },
         { White, getHue({ 1.0f, 1.0f, 1.0f }) },
         { Red, getHue({ 1.0f, 0.0f, 0.0f }) },
