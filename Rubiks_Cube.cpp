@@ -23,19 +23,33 @@ int main()
     constexpr int height = 600;
 
     {
-        OptimalSolverInitializer::instance();
+        // OptimalSolverInitializer::instance();
     }
 
     WindowModel windowModel(width, height);
     CubeModel interactiveCubeModel(&windowModel);
     CubeModel inputCubeModel(&windowModel);
     InstructionsBoxModel instructionsBoxModel;
-    SolveButtonModel solveButtonModel(
+    OptimalSolveButtonModel optimalSolveButtonModel(
         [&interactiveCubeModel, &instructionsBoxModel]() {
             if (interactiveCubeModel.rotationQueue.is_rotating())
                 return;
 
             OptimalSolver solver(&interactiveCubeModel);
+            auto solution = solver.generateSolution();
+
+            instructionsBoxModel.clearItems();
+
+            for (const auto&r : solution)
+                instructionsBoxModel.addItem(InstructionsSanitizer::toStringNotation(r));
+        }
+    );
+    FastSolveButtonModel fastSolveButtonModel(
+        [&interactiveCubeModel, &instructionsBoxModel]() {
+            if (interactiveCubeModel.rotationQueue.is_rotating())
+                return;
+
+            FastSolver solver(&interactiveCubeModel);
             auto solution = solver.generateSolution();
 
             instructionsBoxModel.clearItems();
@@ -88,9 +102,9 @@ int main()
     DoneButtonModel doneButtonModel;
     ReadButtonModel readButtonModel;
 
-    InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &solveButtonModel, &interactiveHelpBoxModel,
-                                    &interactiveNextButtonModel, &interactivePrevButtonModel, &instructionsBoxModel,
-                                    &webcamSwitchButtonModel);
+    InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &fastSolveButtonModel,
+                                    &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,
+                                    &interactivePrevButtonModel, &instructionsBoxModel, &webcamSwitchButtonModel);
     InputView inputView(&inputCubeModel, &webcamModel, &windowModel, &inputHelpBoxModel, &inputNextButtonModel,
                         &inputPrevButtonModel, &returnButtonModel, &doneButtonModel, &readButtonModel);
     View* curView = nullptr;

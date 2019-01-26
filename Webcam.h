@@ -10,6 +10,7 @@
 #include <utility>
 #include <tuple>
 #include <array>
+#include <map>
 
 
 struct Frame
@@ -18,6 +19,24 @@ struct Frame
     float y;
     float w;
     float h;
+};
+
+enum SideColor
+{
+    Yellow = 0,
+    White = 1,
+    Red = 2,
+    Orange = 3,
+    Blue = 4,
+    Green = 5
+};
+
+struct ColorUtil
+{
+    static char toChar(SideColor c);
+    static SideColor toEnum(char c);
+    static SideColor guessColor(const glm::vec3& colorVec);
+    static glm::vec3 normalizedColor(const glm::vec3& c);
 };
 
 struct WebcamModel
@@ -31,9 +50,15 @@ struct WebcamModel
     std::array<float, 4> horDelims;
     std::array<float, 4> vertDelims;
     std::array<std::array<Frame, 3>, 3> readRegions;
+    std::array<std::array<Frame, 3>, 3> drawRegions;
+    std::array<std::array<glm::vec3, 3>, 3> meanColors;
 
-    void setDelims(const WindowModel* windowModel);
-    void setRegions(const WindowModel* windowModel);
+    void resize(const WindowModel* windowModel);
+
+private:
+    void setDelims();
+    void setDrawRegions();
+    void setReadRegions();
     void setFrame(const WindowModel* windowModel);
 };
 
@@ -82,5 +107,13 @@ private:
 
 class WebcamController
 {
+public:
+    WebcamController(WebcamModel* wm) : webcamModel(wm) {}
 
+    void resizeToFit(const WindowModel* windowModel);
+    void readFrame();
+    void updateColors();
+
+private:
+    WebcamModel* webcamModel;
 };

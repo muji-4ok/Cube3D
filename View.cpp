@@ -247,11 +247,13 @@ void drawWebcam(const WebcamModel * webcamModel, const WindowModel * windowModel
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
         {
-            float x = webcamModel->readRegions[i][j].x;
-            float y = webcamModel->readRegions[i][j].y;
-            float w = webcamModel->readRegions[i][j].w;
-            float h = webcamModel->readRegions[i][j].h;
+            auto& x = webcamModel->drawRegions[i][j].x;
+            auto& y = webcamModel->drawRegions[i][j].y;
+            auto& w = webcamModel->drawRegions[i][j].w;
+            auto& h = webcamModel->drawRegions[i][j].h;
             RectangleModel rectModel(glm::vec2(x, y), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(w, h));
-            drawRect(&rectModel, windowModel);
+            auto color = std::string(1, ColorUtil::toChar(ColorUtil::guessColor(webcamModel->meanColors[i][j])));
+            TextModel textModel(color, { x, y }, { 1.0f, 0.0f, 1.0f }, 0.2f);
+            drawTextCentered(&textModel, &rectModel, windowModel);
         }
 }

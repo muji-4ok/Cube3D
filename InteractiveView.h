@@ -11,11 +11,11 @@
 class InteractiveView : public View
 {
 public:
-    InteractiveView(CubeModel* cm, WindowModel* wm, SolveButtonModel* sbm, InteractiveHelpBoxModel* hbm,
-                    InteractiveNextButtonModel* nbm, InteractivePrevButtonModel* pbm, InstructionsBoxModel* ibm,
-                    WebcamSwitchButtonModel* wsbm) :
-        cubeModel(cm), windowModel(wm), solveButtonModel(sbm), helpBoxModel(hbm), nextButtonModel(nbm),
-        prevButtonModel(pbm), instructionsBoxModel(ibm), webcamSwitchButtonModel(wsbm) {}
+    InteractiveView(CubeModel* cm, WindowModel* wm, FastSolveButtonModel* fsbm, OptimalSolveButtonModel* osbm,
+                    InteractiveHelpBoxModel* hbm, InteractiveNextButtonModel* nbm, InteractivePrevButtonModel* pbm,
+                    InstructionsBoxModel* ibm, WebcamSwitchButtonModel* wsbm) :
+        cubeModel(cm), windowModel(wm), fastSolveButtonModel(fsbm), optimalSolveButtonModel(osbm), helpBoxModel(hbm),
+        nextButtonModel(nbm), prevButtonModel(pbm), instructionsBoxModel(ibm), webcamSwitchButtonModel(wsbm) {}
 
     void draw() override;
     void mousePress(MouseDownEvent* e) override;
@@ -27,7 +27,8 @@ public:
 private:
     CubeModel* cubeModel;
     WindowModel* windowModel;
-    SolveButtonModel* solveButtonModel;
+    FastSolveButtonModel* fastSolveButtonModel;
+    OptimalSolveButtonModel* optimalSolveButtonModel;
     InteractiveHelpBoxModel* helpBoxModel;
     InteractiveNextButtonModel* nextButtonModel;
     InteractivePrevButtonModel* prevButtonModel;

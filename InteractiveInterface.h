@@ -3,11 +3,19 @@
 #include <cctype>
 
 
-struct SolveButtonModel : public ButtonModel
+struct FastSolveButtonModel : public ButtonModel
 {
-    SolveButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(0.0f, 0.0f), glm::vec2(0.2f, 0.1f), "Solve",
-                    0.4f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
+    FastSolveButtonModel(const std::function<void()>& callback) :
+        ButtonModel(glm::vec2(0.0f, 0.055f), glm::vec2(0.2f, 0.0475f), "Fast Solve",
+                    0.25f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
+                    glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
+};
+
+struct OptimalSolveButtonModel : public ButtonModel
+{
+    OptimalSolveButtonModel(const std::function<void()>& callback) :
+        ButtonModel(glm::vec2(0.0f, 0.0f), glm::vec2(0.2f, 0.0475f), "Optimal Solve",
+                    0.25f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
                     glm::vec3(1.0f, 1.0f, 1.0f), callback) {}
 };
 
