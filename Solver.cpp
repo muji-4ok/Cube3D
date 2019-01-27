@@ -10,22 +10,18 @@ std::string FastSolver::generateSolution() const
     char* c_cube = const_cast<char *>(cube_string.c_str());
     std::string sol;
 
-    try
-    {
-        sol = std::string(solution(
-            c_cube,
-            42,
-            1000,
-            0,
-            "cache"
-        ));
-    }
-    catch (const std::exception &e)
-    {
-        std::cout << "error\n";
-        std::cout << e.what() << '\n';
-        exit(0);
-    }
+    auto ret = solution(
+        c_cube,
+        42,
+        1000,
+        0,
+        "cache"
+    );
+
+    if (!ret)
+        return "";
+    else
+        sol = std::string();
 
     auto moves = splitWords(sol);
     std::string seq;

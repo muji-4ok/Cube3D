@@ -53,6 +53,8 @@ public:
     GLFWwindow *window;
     int viewportWidth;
     int viewportHeight;
+    int viewportX;
+    int viewportY;
     int screenWidth;
     int screenHeight;
     const int minScreenWidth;

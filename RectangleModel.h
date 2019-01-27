@@ -1,6 +1,7 @@
 #pragma once
 #include "Shader.h"
 #include "Buffers.h"
+#include "WindowModel.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -15,7 +16,7 @@ struct RectangleModel
     RectangleModel(const glm::vec2& pos, const glm::vec3& col, const glm::vec2& size) :
         position(pos), color(col), size(size) {};
 
-    RectangleModel NDCtoScreen(float width, float height) const;
+    RectangleModel NDCtoScreen(const WindowModel* windowModel) const;
 
     glm::vec2 position;
     glm::vec2 size;

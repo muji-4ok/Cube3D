@@ -91,7 +91,7 @@ int main()
     );
     WebcamModel webcamModel(&windowModel);
     WebcamSwitchButtonModel webcamSwitchButtonModel(
-        [&windowModel, &webcamModel]() {
+        [&windowModel]() {
             windowModel.appState = Input;
         }
     );
@@ -178,10 +178,42 @@ int main()
             }
         }
     );
-    ReturnButtonModel returnButtonModel;
-    DoneButtonModel doneButtonModel;
+    CancelButtonModel cancelButtonModel(
+        [&windowModel]() {
+            windowModel.appState = Interactive;
+        }
+    );
+    SubmitButtonModel submitButtonModel(
+        [&windowModel, &interactiveCubeModel, &inputCubeModel]() {
+            if (inputCubeModel.rotationQueue.is_rotating() || !inputCubeModel.is_valid())
+                return;
+
+            // Absolute fucking disgusting hack
+            FastSolver solver(&inputCubeModel);
+
+            if (!solver.generateSolution().size())
+                return;
+            // Absolute fucking disgusting hack
+
+            windowModel.appState = Interactive;
+
+            interactiveCubeModel.copy_colors(inputCubeModel);
+        }
+    );
+    InputResetButtonModel inputResetButtonModel(
+        [&inputCubeModel, &inputCubeIndex]() {
+            if (inputCubeModel.rotationQueue.is_rotating())
+                return;
+
+            inputCubeModel.full_reset();
+            inputCubeIndex() = 1;
+        }
+    );
     ReadButtonModel readButtonModel(
         [&webcamModel, &inputCubeModel, &inputCubeIndex]() {
+            if (inputCubeModel.rotationQueue.is_rotating())
+                return;
+
             WebcamController webcamController(&webcamModel);
             webcamController.setCubeFace(&inputCubeModel, inputCubeIndex());
         }
@@ -191,7 +223,8 @@ int main()
                                     &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,
                                     &interactivePrevButtonModel, &instructionsBoxModel, &webcamSwitchButtonModel);
     InputView inputView(&inputCubeModel, &webcamModel, &windowModel, &inputHelpBoxModel, &inputNextButtonModel,
-                        &inputPrevButtonModel, &returnButtonModel, &doneButtonModel, &readButtonModel);
+                        &inputPrevButtonModel, &cancelButtonModel, &submitButtonModel, &readButtonModel,
+                        &inputResetButtonModel);
     View* curView = nullptr;
 
     while (!windowModel.isClosed())

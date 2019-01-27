@@ -252,6 +252,8 @@ void WindowModel::setViewport(float x, float y, float width, float height)
 {
     viewportWidth = width;
     viewportHeight = height;
+    viewportX = x;
+    viewportY = y;
     glViewport(x, y, width, height);
     setOrthogonalProjection(width, height);
     setPerspectiveProjection(width, height);
@@ -261,7 +263,7 @@ glm::vec2 WindowModel::getMousePos() const
 {
     double x, y;
     glfwGetCursorPos(window, &x, &y);
-    y = viewportHeight - y;
+    y = screenHeight - y;
     return { static_cast<float>(x), static_cast<float>(y) };
 }
 

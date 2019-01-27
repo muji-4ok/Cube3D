@@ -12,10 +12,11 @@ class InputView : public View
 {
 public:
     InputView(CubeModel* cm, WebcamModel* webm, WindowModel* winm, InputHelpBoxModel* hbm,
-              InputNextButtonModel* nbm, InputPrevButtonModel* pbm, ReturnButtonModel* retbm,
-              DoneButtonModel* dbm, ReadButtonModel* readbm)
+              InputNextButtonModel* nbm, InputPrevButtonModel* pbm, CancelButtonModel* retbm,
+              SubmitButtonModel* dbm, ReadButtonModel* readbm, InputResetButtonModel* irbm)
         : cubeModel(cm), webcamModel(webm), windowModel(winm), helpBoxModel(hbm), nextButtonModel(nbm),
-        prevButtonModel(pbm), returnButtonModel(retbm), doneButtonModel(dbm), readButtonModel(readbm) {}
+        prevButtonModel(pbm), cancelButtonModel(retbm), submitButtonModel(dbm), readButtonModel(readbm),
+        resetButtonModel(irbm) {}
 
     void draw() override;
     void mousePress(MouseDownEvent* e) override;
@@ -31,8 +32,9 @@ private:
     InputHelpBoxModel* helpBoxModel;
     InputNextButtonModel* nextButtonModel;
     InputPrevButtonModel* prevButtonModel;
-    ReturnButtonModel* returnButtonModel;
-    DoneButtonModel* doneButtonModel;
+    InputResetButtonModel* resetButtonModel;
+    CancelButtonModel* cancelButtonModel;
+    SubmitButtonModel* submitButtonModel;
     ReadButtonModel* readButtonModel;
 };
 

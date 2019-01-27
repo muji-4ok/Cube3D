@@ -30,7 +30,7 @@ void drawCube(const CubeModel * cubeModel, const WindowModel* windowModel)
 
 void drawButton(ButtonModel * buttonModel, const WindowModel * windowModel)
 {
-    auto rectModelScreen = buttonModel->rectModel.NDCtoScreen(windowModel->viewportWidth, windowModel->viewportHeight);
+    auto rectModelScreen = buttonModel->rectModel.NDCtoScreen(windowModel);
     drawRect(&rectModelScreen, windowModel);
     drawTextCentered(&buttonModel->textModel, &rectModelScreen, windowModel);
 }
@@ -45,7 +45,7 @@ void drawTextBox(const TextBoxModel * textBoxModel, const WindowModel * windowMo
 
 void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowModel)
 {
-    auto rectModelScreen = itemBoxModel->rectModel.NDCtoScreen(windowModel->viewportWidth, windowModel->viewportHeight);
+    auto rectModelScreen = itemBoxModel->rectModel.NDCtoScreen(windowModel);
     drawRect(&rectModelScreen, windowModel);
     /*
     n - canFit

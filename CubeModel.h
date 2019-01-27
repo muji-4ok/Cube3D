@@ -18,6 +18,9 @@ struct CubeModel
     CubeModel(const WindowModel* wm);
 
     void reset_rotations();
+    void full_reset();
+    void copy_colors(const CubeModel& other);
+    bool is_valid() const;
 
     RotationQueue rotationQueue;
     HitModel hitModel;

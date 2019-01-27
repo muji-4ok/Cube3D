@@ -20,11 +20,11 @@ RectangleModelOpenGLData::RectangleModelOpenGLData()
     VAO::unbind();
 }
 
-RectangleModel RectangleModel::NDCtoScreen(float width, float height) const
+RectangleModel RectangleModel::NDCtoScreen(const WindowModel* windowModel) const
 {
     return {
-        glm::vec2(position.x * width, position.y * height),
+        glm::vec2(position.x * windowModel->viewportWidth, position.y * windowModel->viewportHeight),
         color,
-        glm::vec2(size.x * width, size.y * height)
+        glm::vec2(size.x * windowModel->viewportWidth, size.y * windowModel->viewportHeight)
     };
 }
