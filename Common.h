@@ -93,6 +93,17 @@ struct PermRotationHeader : public RotationHeader
     std::string get_name() override;
 };
 
+struct WholeRotationHeader : public RotationHeader
+{
+    WholeRotationHeader() {};
+    WholeRotationHeader(const glm::vec3& vec, float angle) : vec(vec), angle(angle) {};
+
+    glm::vec3 vec = glm::vec3(0.0f);
+    float angle = 0.0f;
+
+    std::string get_name() override;
+};
+
 struct SetHitRotationHeader : public RotationHeader
 {
     SetHitRotationHeader() {};

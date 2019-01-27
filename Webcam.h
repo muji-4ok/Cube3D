@@ -6,6 +6,8 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "WindowModel.h"
+#include "Cubelet.h"
+#include "CubeModel.h"
 #include <cmath>
 #include <utility>
 #include <tuple>
@@ -19,24 +21,6 @@ struct Frame
     float y;
     float w;
     float h;
-};
-
-enum SideColor
-{
-    Yellow = 0,
-    White = 1,
-    Red = 2,
-    Orange = 3,
-    Blue = 4,
-    Green = 5
-};
-
-struct ColorUtil
-{
-    static char toChar(SideColor c);
-    static SideColor toEnum(char c);
-    static SideColor guessColor(const glm::vec3& colorVec);
-    static glm::vec3 normalizedColor(const glm::vec3& c);
 };
 
 struct WebcamModel
@@ -113,6 +97,7 @@ public:
     void resizeToFit(const WindowModel* windowModel);
     void readFrame();
     void updateColors();
+    void setCubeFace(CubeModel* cubeModel, int index);
 
 private:
     WebcamModel* webcamModel;

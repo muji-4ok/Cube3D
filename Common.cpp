@@ -75,3 +75,8 @@ void Observable::notify()
     for (auto &o : observers)
         o->update();
 }
+
+std::string WholeRotationHeader::get_name()
+{
+    return "WholeRotationHeader";
+}

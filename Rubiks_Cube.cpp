@@ -96,11 +96,96 @@ int main()
         }
     );
     InputHelpBoxModel inputHelpBoxModel;
-    InputNextButtonModel inputNextButtonModel;
-    InputPrevButtonModel inputPrevButtonModel;
+    auto inputCubeIndex = []() -> int& {
+        static int index = 1;
+        return index;
+    };
+    InputNextButtonModel inputNextButtonModel(
+        [&inputCubeIndex, &inputCubeModel]() {
+            if (inputCubeModel.rotationQueue.is_rotating())
+                return;
+
+            auto& index = inputCubeIndex();
+            ScriptRotater rotater(&inputCubeModel);
+
+            switch (index)
+            {
+                case 0:
+                    rotater.rotate_all_script(X, true);
+                    index = 5;
+                    break;
+                case 1:
+                    rotater.rotate_all_script(Y, true);
+                    index = 3;
+                    break;
+                case 2:
+                    rotater.rotate_all_script(Z, true);
+                    index = 4;
+                    break;
+                case 3:
+                    rotater.rotate_all_script(Y, true);
+                    index = 0;
+                    break;
+                case 4:
+                    rotater.rotate_all_script(X, false);
+                    index = 1;
+                    break;
+                case 5:
+                    rotater.rotate_all_script(Z, true);
+                    index = 2;
+                    break;
+                default:
+                    assert(0);
+            }
+        }
+    );
+    InputPrevButtonModel inputPrevButtonModel(
+        [&inputCubeIndex, &inputCubeModel]() {
+            if (inputCubeModel.rotationQueue.is_rotating())
+                return;
+
+            auto& index = inputCubeIndex();
+            ScriptRotater rotater(&inputCubeModel);
+
+            switch (index)
+            {
+                case 0:
+                    rotater.rotate_all_script(Y, false);
+                    index = 3;
+                    break;
+                case 1:
+                    rotater.rotate_all_script(X, true);
+                    index = 4;
+                    break;
+                case 2:
+                    rotater.rotate_all_script(Z, false);
+                    index = 5;
+                    break;
+                case 3:
+                    rotater.rotate_all_script(Y, false);
+                    index = 1;
+                    break;
+                case 4:
+                    rotater.rotate_all_script(Z, false);
+                    index = 2;
+                    break;
+                case 5:
+                    rotater.rotate_all_script(X, false);
+                    index = 0;
+                    break;
+                default:
+                    assert(0);
+            }
+        }
+    );
     ReturnButtonModel returnButtonModel;
     DoneButtonModel doneButtonModel;
-    ReadButtonModel readButtonModel;
+    ReadButtonModel readButtonModel(
+        [&webcamModel, &inputCubeModel, &inputCubeIndex]() {
+            WebcamController webcamController(&webcamModel);
+            webcamController.setCubeFace(&inputCubeModel, inputCubeIndex());
+        }
+    );
 
     InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &fastSolveButtonModel,
                                     &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,

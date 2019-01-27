@@ -1,6 +1,145 @@
 #include "Cubelet.h"
 
 
+char ColorUtil::toChar(SideColor c)
+{
+    switch (c)
+    {
+        case Yellow:
+            return 'Y';
+        case White:
+            return 'W';
+        case Red:
+            return 'R';
+        case Orange:
+            return 'O';
+        case Blue:
+            return 'B';
+        case Green:
+            return 'G';
+        default:
+            assert(0);
+    }
+}
+
+SideColor ColorUtil::toEnum(char c)
+{
+    switch (c)
+    {
+        case 'Y':
+            return Yellow;
+        case 'W':
+            return White;
+        case 'R':
+            return Red;
+        case 'O':
+            return Orange;
+        case 'B':
+            return Blue;
+        case 'G':
+            return Green;
+        default:
+            assert(0);
+    }
+}
+
+glm::vec3 ColorUtil::toGlmVec(SideColor c)
+{
+    switch (c)
+    {
+        case Yellow:
+            return { 1.0f, 1.0f, 0.0f };
+        case White:
+            return { 1.0f, 1.0f, 1.0f };
+        case Red:
+            return { 1.0f, 0.0f, 0.0f };
+        case Orange:
+            return { 1.0f, 0.5f, 0.0f };
+        case Blue:
+            return { 0.0f, 0.0f, 1.0f };
+        case Green:
+            return { 0.0f, 1.0f, 0.0f };
+        case None:
+            return { 0.0f, 0.0f, 0.0f };
+        default:
+            assert(0);
+    }
+}
+
+std::vector<float> ColorUtil::toStdVec(SideColor c)
+{
+    switch (c)
+    {
+        case Yellow:
+            return { 1.0f, 1.0f, 0.0f };
+        case White:
+            return { 1.0f, 1.0f, 1.0f };
+        case Red:
+            return { 1.0f, 0.0f, 0.0f };
+        case Orange:
+            return { 1.0f, 0.5f, 0.0f };
+        case Blue:
+            return { 0.0f, 0.0f, 1.0f };
+        case Green:
+            return { 0.0f, 1.0f, 0.0f };
+        case None:
+            return { 0.0f, 0.0f, 0.0f };
+        default:
+            assert(0);
+    }
+}
+
+SideColor ColorUtil::guessColor(const glm::vec3 & colorVec)
+{
+    auto getHue = [](const glm::vec3& c) -> float {
+        const auto& r = c[0];
+        const auto& g = c[1];
+        const auto& b = c[2];
+        const auto& v = std::max({ r, g, b });
+        const auto& u = std::min({ r, g, b });
+
+        if (u == v)
+            return 180.0f;
+
+        if (v == r)
+            return 60.0f * (g - b) / (v - u);
+        else if (v == g)
+            return 120.0f + 60.0f * (b - r) / (v - u);
+        else
+            return 240.0f + 60.0f * (r - g) / (v - u);
+    };
+    static std::map<SideColor, float> colorMap{
+        { Yellow, getHue(ColorUtil::toGlmVec(Yellow)) },
+        { White, getHue(ColorUtil::toGlmVec(White)) },
+        { Red, getHue(ColorUtil::toGlmVec(Red)) },
+        { Orange, getHue(ColorUtil::toGlmVec(Orange)) },
+        { Blue, getHue(ColorUtil::toGlmVec(Blue)) },
+        { Green, getHue(ColorUtil::toGlmVec(Green)) },
+    };
+
+    auto colorHue = getHue(colorVec);
+    SideColor bestGuess = White;
+    float bestDiff = 1e6;
+
+    for (auto it = colorMap.begin(); it != colorMap.end(); ++it)
+    {
+        auto diff = std::abs(it->second - colorHue);
+
+        if (diff < bestDiff)
+        {
+            bestDiff = diff;
+            bestGuess = it->first;
+        }
+    }
+
+    return bestGuess;
+}
+
+glm::vec3 ColorUtil::normalizedColor(const glm::vec3 & c)
+{
+    return c / 255.0f;
+}
+
 Cubelet::Cubelet(int i, int j, int k) noexcept : i(i), j(j), k(k) 
 {
     reset_colors();
@@ -10,21 +149,13 @@ Cubelet::Cubelet(int i, int j, int k) noexcept : i(i), j(j), k(k)
 
 void Cubelet::reset_colors()
 {
-    static std::vector<float> y{ 1.0f, 1.0f, 0.0f };
-    static std::vector<float> w{ 1.0f, 1.0f, 1.0f };
-    static std::vector<float> r{ 1.0f, 0.0f, 0.0f };
-    static std::vector<float> o{ 1.0f, 0.5f, 0.0f };
-    static std::vector<float> b{ 0.0f, 0.0f, 1.0f };
-    static std::vector<float> g{ 0.0f, 1.0f, 0.0f };
-    static std::vector<float> n{ 0.0f, 0.0f, 0.0f };
-
     colors.clear();
-    append(colors, k == 0 ? y : n);
-    append(colors, k == 2 ? w : n);
-    append(colors, i == 0 ? r : n);
-    append(colors, i == 2 ? o : n);
-    append(colors, j == 0 ? b : n);
-    append(colors, j == 2 ? g : n);
+    append(colors, k == 0 ? ColorUtil::toStdVec(Yellow) : ColorUtil::toStdVec(None));
+    append(colors, k == 2 ? ColorUtil::toStdVec(White) : ColorUtil::toStdVec(None));
+    append(colors, i == 0 ? ColorUtil::toStdVec(Red) : ColorUtil::toStdVec(None));
+    append(colors, i == 2 ? ColorUtil::toStdVec(Orange) : ColorUtil::toStdVec(None));
+    append(colors, j == 0 ? ColorUtil::toStdVec(Blue) : ColorUtil::toStdVec(None));
+    append(colors, j == 2 ? ColorUtil::toStdVec(Green) : ColorUtil::toStdVec(None));
 }
 
 void Cubelet::reset_rotation()
@@ -40,7 +171,7 @@ void Cubelet::reset_translation()
     translation = glm::scale(translation, glm::vec3(1.0f / 3.0f));
 }
 
-void Cubelet::rotate(CubeletRotation rot)
+void Cubelet::rotate(RotationAxis rot)
 {
     switch (rot)
     {
@@ -60,6 +191,14 @@ void Cubelet::rotate(CubeletRotation rot)
             swap_3(colors, 3, 4);
             break;
     }
+}
+
+void Cubelet::setFaceColor(int index, SideColor c)
+{
+    auto colorVec = ColorUtil::toStdVec(c);
+    colors[index * 3] = colorVec[0];
+    colors[index * 3 + 1] = colorVec[1];
+    colors[index * 3 + 2] = colorVec[2];
 }
 
 template<typename T>

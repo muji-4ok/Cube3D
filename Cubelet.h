@@ -4,13 +4,36 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <utility>
+#include <algorithm>
+#include <map>
 
 
-enum CubeletRotation
+enum RotationAxis
 {
     X = 0,
     Y = 1,
     Z = 2
+};
+
+enum SideColor
+{
+    Yellow = 0,
+    White = 1,
+    Red = 2,
+    Orange = 3,
+    Blue = 4,
+    Green = 5,
+    None = 6
+};
+
+struct ColorUtil
+{
+    static char toChar(SideColor c);
+    static SideColor toEnum(char c);
+    static glm::vec3 toGlmVec(SideColor c);
+    static std::vector<float> toStdVec(SideColor c);
+    static SideColor guessColor(const glm::vec3& colorVec);
+    static glm::vec3 normalizedColor(const glm::vec3& c);
 };
 
 class Cubelet
@@ -23,7 +46,8 @@ public:
     void reset_rotation();
     void reset_translation();
 
-    void rotate(CubeletRotation rot);
+    void rotate(RotationAxis rot);
+    void setFaceColor(int index, SideColor c);
 
     std::vector<float> colors;
     glm::mat4 rotation;
@@ -32,8 +56,6 @@ public:
     int i;
     int j;
     int k;
-
-private:
 };
 
 template <typename T>

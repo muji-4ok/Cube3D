@@ -8,6 +8,9 @@ void InputView::draw()
     InputCubeController cubeController(cubeModel);
     cubeController.rotate();
     drawCube(cubeModel, windowModel);
+    drawButton(readButtonModel, windowModel);
+    drawButton(nextButtonModel, windowModel);
+    drawButton(prevButtonModel, windowModel);
 
     windowModel->setViewport(windowModel->screenWidth / 2, 0.0f, windowModel->screenWidth / 2,
                              windowModel->screenHeight);
@@ -22,11 +25,23 @@ void InputView::draw()
 void InputView::mousePress(MouseDownEvent * e)
 {
     //Buttons
+    ButtonController buttonController(readButtonModel, windowModel);
+    buttonController.onMousePress(e);
+    buttonController.setModel(nextButtonModel);
+    buttonController.onMousePress(e);
+    buttonController.setModel(prevButtonModel);
+    buttonController.onMousePress(e);
 }
 
 void InputView::mouseRelease(MouseUpEvent * e)
 {
     //Buttons
+    ButtonController buttonController(readButtonModel, windowModel);
+    buttonController.onMouseRelease(e);
+    buttonController.setModel(nextButtonModel);
+    buttonController.onMouseRelease(e);
+    buttonController.setModel(prevButtonModel);
+    buttonController.onMouseRelease(e);
 }
 
 void InputView::mouseMove(MouseMoveEvent * e)

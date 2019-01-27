@@ -140,95 +140,53 @@ void WebcamController::updateColors()
         }
 }
 
-char ColorUtil::toChar(SideColor c)
+void WebcamController::setCubeFace(CubeModel * cubeModel, int index)
 {
-    switch (c)
+    switch (index)
     {
-        case Yellow:
-            return 'Y';
-        case White:
-            return 'W';
-        case Red:
-            return 'R';
-        case Orange:
-            return 'O';
-        case Blue:
-            return 'B';
-        case Green:
-            return 'G';
+        case 0:
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                    cubeModel->cubelets[2 - i][j][0].setFaceColor(
+                        index, ColorUtil::guessColor(webcamModel->meanColors[i][j])
+                    );
+            break;
+        case 1:
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                    cubeModel->cubelets[i][j][2].setFaceColor(
+                        index, ColorUtil::guessColor(webcamModel->meanColors[i][j])
+                    );
+            break;
+        case 2:
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                    cubeModel->cubelets[0][2 - i][j].setFaceColor(
+                        index, ColorUtil::guessColor(webcamModel->meanColors[i][j])
+                    );
+            break;
+        case 3:
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                    cubeModel->cubelets[2][j][2 - i].setFaceColor(
+                        index, ColorUtil::guessColor(webcamModel->meanColors[i][j])
+                    );
+            break;
+        case 4:
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                    cubeModel->cubelets[i][0][j].setFaceColor(
+                        index, ColorUtil::guessColor(webcamModel->meanColors[i][j])
+                    );
+            break;
+        case 5:
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                    cubeModel->cubelets[2 - i][2][j].setFaceColor(
+                        index, ColorUtil::guessColor(webcamModel->meanColors[i][j])
+                    );
+            break;
         default:
             assert(0);
     }
-}
-
-SideColor ColorUtil::toEnum(char c)
-{
-    switch (c)
-    {
-        case 'Y':
-            return Yellow;
-        case 'W':
-            return White;
-        case 'R':
-            return Red;
-        case 'O':
-            return Orange;
-        case 'B':
-            return Blue;
-        case 'G':
-            return Green;
-        default:
-            assert(0);
-    }
-}
-
-SideColor ColorUtil::guessColor(const glm::vec3 & colorVec)
-{
-    auto getHue = [](const glm::vec3& c) -> float {
-        const auto& r = c[0];
-        const auto& g = c[1];
-        const auto& b = c[2];
-        const auto& v = std::max({ r, g, b });
-        const auto& u = std::min({ r, g, b });
-
-        if (u == v)
-            return 180.0f;
-
-        if (v == r)
-            return 60.0f * (g - b) / (v - u);
-        else if (v == g)
-            return 120.0f + 60.0f * (b - r) / (v - u);
-        else
-            return 240.0f + 60.0f * (r - g) / (v - u);
-    };
-    static std::map<SideColor, float> colorMap{
-        { Yellow, getHue({ 1.0f, 1.0f, 0.0f }) },
-        { White, getHue({ 1.0f, 1.0f, 1.0f }) },
-        { Red, getHue({ 1.0f, 0.0f, 0.0f }) },
-        { Orange, getHue({ 1.0f, 0.5f, 0.0f }) },
-        { Blue, getHue({ 0.0f, 0.0f, 1.0f }) },
-        { Green, getHue({ 0.0f, 1.0f, 0.0f }) },
-    };
-
-    auto colorHue = getHue(colorVec);
-    SideColor bestGuess = White;
-    float bestDiff = 1e6;
-
-    for (auto it = colorMap.begin(); it != colorMap.end(); ++it)
-    {
-        auto diff = std::abs(it->second - colorHue);
-
-        if (diff < bestDiff)
-        {
-            bestDiff = diff;
-            bestGuess = it->first;
-        }
-    }
-
-    return bestGuess;
-}
-
-glm::vec3 ColorUtil::normalizedColor(const glm::vec3 & c)
-{
-    return c / 255.0f;
 }

@@ -13,6 +13,7 @@ void Rotater::process_queue()
         auto set_hit_ptr = dynamic_cast<SetHitRotationHeader*>(rot_header);
         auto set_hit_pos_ptr = dynamic_cast<SetHitPosRotationHeader*>(rot_header);
         auto set_hit_dir_ptr = dynamic_cast<SetHitDirRotationHeader*>(rot_header);
+        auto whole_rotation_ptr = dynamic_cast<WholeRotationHeader*>(rot_header);
 
         if (temp_ptr)
             process_temp(temp_ptr);
@@ -24,6 +25,8 @@ void Rotater::process_queue()
             process_hit_pos(set_hit_pos_ptr);
         else if (set_hit_dir_ptr)
             process_hit_dir(set_hit_dir_ptr);
+        else if (whole_rotation_ptr)
+            process_whole_rotation(whole_rotation_ptr);
         else if (reset_ptr)
             ;
         else
@@ -131,7 +134,7 @@ std::array<Cubelet*, 8> Rotater::get_rotating_cubelets() const
     return out;
 }
 
-CubeletRotation Rotater::get_cubelet_rotation(int rot_index) const
+RotationAxis Rotater::get_cubelet_rotation(int rot_index) const
 {
     switch (rot_index)
     {
@@ -203,6 +206,18 @@ void Rotater::process_hit_pos(const SetHitPosRotationHeader* header)
 void Rotater::process_hit_dir(const SetHitDirRotationHeader* header)
 {
     cubeModel->hitModel.set_dir(header->hit);
+}
+
+void Rotater::process_whole_rotation(const WholeRotationHeader * header)
+{
+    constexpr float epsilon = 1e-3;
+
+    if (std::abs(header->angle) > epsilon)
+    {
+        auto immediate_rotation = glm::rotate(glm::mat4(1.0f), header->angle, header->vec);
+        cubeModel->rotation_view *= immediate_rotation;
+        cubeModel->view *= immediate_rotation;
+    }
 }
 
 HitHeader ScriptRotater::get_hit_header(char r) const
@@ -442,6 +457,37 @@ void ScriptRotater::rotate_script(char r)
     cubeModel->rotationQueue.push(new PermRotationHeader(hit, turns));
 }
 
+void ScriptRotater::rotate_all_script(RotationAxis axis, bool clockwise)
+{
+    glm::vec3 rotationVector;
+    float angle = glm::radians(90.0f);
+
+    if (clockwise)
+        angle = -angle;
+
+    switch (axis)
+    {
+        case X:
+            rotationVector = { 1.0f, 0.0f, 0.0f };
+            break;
+        case Y:
+            rotationVector = { 0.0f, 1.0f, 0.0f };
+            break;
+        case Z:
+            rotationVector = { 0.0f, 0.0f, 1.0f };
+            break;
+        default:
+            assert(0);
+    }
+
+    float rotations = 60.0f;
+    float delta = angle / rotations;
+    float epsilon = 1e-5;
+
+    for (auto a = 0.0f; std::abs(a - angle) > epsilon; a += delta)
+        cubeModel->rotationQueue.push(new WholeRotationHeader(rotationVector, delta));
+}
+
 void InteractiveRotater::rotate_all_interactive(const glm::vec2 &mouse_diff)
 {
     auto normal_mouse_pos = glm::normalize(glm::vec3(glm::inverse(cubeModel->view) *
@@ -453,14 +499,7 @@ void InteractiveRotater::rotate_all_interactive(const glm::vec2 &mouse_diff)
     auto angle = std::acos(glm::dot(normal_mouse_pos, normal_last_mouse_pos));
     angle += glm::length(mouse_diff);
 
-    constexpr float epsilon = 1e-3;
-
-    if (std::abs(angle) > epsilon)
-    {
-        auto immediate_rotation = glm::rotate(glm::mat4(1.0f), angle, camera_rot_vec);
-        cubeModel->rotation_view *= immediate_rotation;
-        cubeModel->view *= immediate_rotation;
-    }
+    cubeModel->rotationQueue.push(new WholeRotationHeader(camera_rot_vec, angle));
 }
 
 void InteractiveRotater::rotate_interactive(const glm::vec2& mouse_diff)

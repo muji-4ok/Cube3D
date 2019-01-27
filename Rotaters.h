@@ -54,10 +54,11 @@ private:
     void process_hit(const SetHitRotationHeader* header);
     void process_hit_pos(const SetHitPosRotationHeader* header);
     void process_hit_dir(const SetHitDirRotationHeader* header);
+    void process_whole_rotation(const WholeRotationHeader* header);
 
     bool needs_rotation(int i, int j, int k) const;
     std::array<Cubelet*, 8> get_rotating_cubelets() const;
-    CubeletRotation get_cubelet_rotation(int rot_index) const;
+    RotationAxis get_cubelet_rotation(int rot_index) const;
 
 };
 
@@ -67,9 +68,7 @@ public:
     ScriptRotater() {}
     ScriptRotater(CubeModel* cm) : Rotater(cm) {}
     void rotate_script(char r);
-    /*
-    void rotate_all_script();
-    */
+    void rotate_all_script(RotationAxis axis, bool clockwise);
     
 private:
     HitHeader get_hit_header(char r) const;
