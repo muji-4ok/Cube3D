@@ -66,7 +66,7 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
         auto rectModel = it->second;
         rectModel.position.x = x;
         rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
-        
+
         drawRect(&rectModel, windowModel);
         drawTextCentered(&textModel, &rectModel, windowModel);
 
@@ -79,7 +79,7 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
         auto rectModel = itemBoxModel->itemRect;
         rectModel.position.x = x;
         rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
-        
+
         drawRect(&rectModel, windowModel);
         drawTextCentered(&textModel, &rectModel, windowModel);
     }
