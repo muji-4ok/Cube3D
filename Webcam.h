@@ -2,6 +2,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/videoio.hpp>
 #include "Buffers.h"
 #include "Texture.h"
 #include "Shader.h"
@@ -27,6 +28,7 @@ struct WebcamModel
 {
     WebcamModel(const WindowModel* windowModel);
 
+    cv::VideoCapture videoCapture;
     cv::Mat mat;
     Frame frame;
     const float lineW = 5.0f;

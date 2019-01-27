@@ -2,11 +2,8 @@
 #include <iostream>
 
 
-WebcamModel::WebcamModel(const WindowModel* windowModel)
+WebcamModel::WebcamModel(const WindowModel* windowModel) : videoCapture(0)
 {
-    std::string filename(R"(D:\Egor\random a\MnXhY0aVZbI.jpg)");
-    mat = cv::imread(filename, cv::IMREAD_COLOR);
-    cv::flip(mat, mat, 0);
 }
 
 void WebcamModel::resize(const WindowModel * windowModel)
@@ -125,6 +122,8 @@ void WebcamController::resizeToFit(const WindowModel * windowModel)
 
 void WebcamController::readFrame()
 {
+    webcamModel->videoCapture >> webcamModel->mat;
+    cv::flip(webcamModel->mat, webcamModel->mat, 0);
 }
 
 void WebcamController::updateColors()

@@ -10,6 +10,7 @@ extern "C" {
 
 #include <string>
 #include <sstream>
+#include <iterator>
 
 
 struct Solver
