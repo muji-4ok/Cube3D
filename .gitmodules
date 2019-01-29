@@ -1,0 +1,6 @@
+[submodule "lib/OptimalCubeSolver"]
+	path = lib/OptimalCubeSolver
+	url = git@github.com:muji-4ok/OptimalCubeSolver.git
+[submodule "lib/FastKociemba"]
+	path = lib/FastKociemba
+	url = git@github.com:muji-4ok/kociemba.git
