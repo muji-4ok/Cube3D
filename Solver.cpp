@@ -21,7 +21,7 @@ std::string FastSolver::generateSolution() const
     if (!ret)
         return "";
     else
-        sol = std::string();
+        sol = std::string(ret);
 
     auto moves = splitWords(sol);
     std::string seq;
