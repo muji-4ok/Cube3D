@@ -91,102 +91,48 @@ std::vector<float> ColorUtil::toStdVec(SideColor c)
 
 SideColor ColorUtil::guessColor(const glm::vec3 & colorVec)
 {
-    const auto& r = colorVec[0];
-    const auto& g = colorVec[1];
-    const auto& b = colorVec[2];
-    const auto& v = std::max({ r, g, b });
-    const auto& u = std::min({ r, g, b });
-    float h;
-    float s;
+    auto getHue = [](const glm::vec3& c) -> float {
+        const auto& r = c[0];
+        const auto& g = c[1];
+        const auto& b = c[2];
+        const auto& v = std::max({ r, g, b });
+        const auto& u = std::min({ r, g, b });
 
-    if (u == v)
-        h = 180.0f;
+        if (u == v)
+            return 180.0f;
 
-    if (v == r)
-        h = 60.0f * (g - b) / (v - u);
-    else if (v == g)
-        h = 120.0f + 60.0f * (b - r) / (v - u);
-    else
-        h = 240.0f + 60.0f * (r - g) / (v - u);
+        if (v == r)
+            return 60.0f * (g - b) / (v - u);
+        else if (v == g)
+            return 120.0f + 60.0f * (b - r) / (v - u);
+        else
+            return 240.0f + 60.0f * (r - g) / (v - u);
+    };
+    static std::map<SideColor, float> colorMap{
+        { Yellow, getHue(ColorUtil::toGlmVec(Yellow)) },
+        { White, getHue(ColorUtil::toGlmVec(White)) },
+        { Red, getHue(ColorUtil::toGlmVec(Red)) },
+        { Orange, getHue(ColorUtil::toGlmVec(Orange)) },
+        { Blue, getHue(ColorUtil::toGlmVec(Blue)) },
+        { Green, getHue(ColorUtil::toGlmVec(Green)) },
+    };
 
-    if (v != 0)
-        s = (v - u) / v;
-    else
-        s = 0.0f;
+    auto colorHue = getHue(colorVec);
+    SideColor bestGuess = White;
+    float bestDiff = 1e6;
 
-    if (b / r > 2.0f && b / g > 2.0f)
-        return Blue;
-    else if (g / r > 2.0f)
-        return Green;
-    else if (h > 150.0f || h < 6.0f)
-        return Red;
-    else if (h < 20.0f && s < 150.0f)
-        return White;
-    else if (h < 20.0f)
-        return Orange;
-    else if (h < 50.0f)
-        return Yellow;
-    else
-        return White;
-    /*
-if blue / red > 2 and blue / green > 2:
-    return 'blue'
-elif green / red > 2:
-    return 'green'
+    for (auto it = colorMap.begin(); it != colorMap.end(); ++it)
+    {
+        auto diff = std::abs(it->second - colorHue);
 
-if hue > 150 :
-    return 'red'
-elif hue < 20 and s < 150:
-    return 'white'
-elif hue < 20:
-    return 'orange'
-elif hue < 50:
-    return 'yellow'
-else:
-    return 'white'
-     */
-    //auto getHue = [](const glm::vec3& c) -> float {
-        //const auto& r = c[0];
-        //const auto& g = c[1];
-        //const auto& b = c[2];
-        //const auto& v = std::max({ r, g, b });
-        //const auto& u = std::min({ r, g, b });
+        if (diff < bestDiff)
+        {
+            bestDiff = diff;
+            bestGuess = it->first;
+        }
+    }
 
-        //if (u == v)
-            //return 180.0f;
-
-        //if (v == r)
-            //return 60.0f * (g - b) / (v - u);
-        //else if (v == g)
-            //return 120.0f + 60.0f * (b - r) / (v - u);
-        //else
-            //return 240.0f + 60.0f * (r - g) / (v - u);
-    //};
-    //static std::map<SideColor, float> colorMap{
-        //{ Yellow, getHue(ColorUtil::toGlmVec(Yellow)) },
-        //{ White, getHue(ColorUtil::toGlmVec(White)) },
-        //{ Red, getHue(ColorUtil::toGlmVec(Red)) },
-        //{ Orange, getHue(ColorUtil::toGlmVec(Orange)) },
-        //{ Blue, getHue(ColorUtil::toGlmVec(Blue)) },
-        //{ Green, getHue(ColorUtil::toGlmVec(Green)) },
-    //};
-
-    //auto colorHue = getHue(colorVec);
-    //SideColor bestGuess = White;
-    //float bestDiff = 1e6;
-
-    //for (auto it = colorMap.begin(); it != colorMap.end(); ++it)
-    //{
-        //auto diff = std::abs(it->second - colorHue);
-
-        //if (diff < bestDiff)
-        //{
-            //bestDiff = diff;
-            //bestGuess = it->first;
-        //}
-    //}
-
-    //return bestGuess;
+    return bestGuess;
 }
 
 glm::vec3 ColorUtil::normalizedColor(const glm::vec3 & c)

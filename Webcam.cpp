@@ -4,6 +4,16 @@
 
 WebcamModel::WebcamModel(const WindowModel* windowModel) : videoCapture(0)
 {
+    if (videoCapture.isOpened())
+    {
+        hasWebcam = true;
+    }
+    else
+    {
+        hasWebcam = false;
+        mat = cv::imread(exampleImagePath, cv::IMREAD_COLOR);
+        cv::flip(mat, mat, 0);
+    }
 }
 
 void WebcamModel::resize(const WindowModel * windowModel)
@@ -122,8 +132,11 @@ void WebcamController::resizeToFit(const WindowModel * windowModel)
 
 void WebcamController::readFrame()
 {
-    webcamModel->videoCapture >> webcamModel->mat;
-    cv::flip(webcamModel->mat, webcamModel->mat, 0);
+    if (webcamModel->hasWebcam)
+    {
+        webcamModel->videoCapture >> webcamModel->mat;
+        cv::flip(webcamModel->mat, webcamModel->mat, 0);
+    }
 }
 
 void WebcamController::updateColors()

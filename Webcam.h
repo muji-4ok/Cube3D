@@ -39,6 +39,10 @@ struct WebcamModel
     std::array<std::array<Frame, 3>, 3> drawRegions;
     std::array<std::array<glm::vec3, 3>, 3> meanColors;
 
+    bool hasWebcam;
+
+    const std::string exampleImagePath = R"(example.jpg)";
+
     void resize(const WindowModel* windowModel);
 
 private:
