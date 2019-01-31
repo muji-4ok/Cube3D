@@ -71,23 +71,16 @@ private:
     CVImageModelOpenGLData();
     ~CVImageModelOpenGLData() {}
 
-#ifdef NDEBUG
-  #ifdef _WIN32
+#ifdef _WIN32
     const std::string vertex_path
         = R"(shaders\cvImageVertex.glsl)";
     const std::string fragment_path
         = R"(shaders\cvImageFragment.glsl)";
-  #else
+#else
     const std::string vertex_path
         = R"(shaders/cvImageVertex.glsl)";
     const std::string fragment_path
         = R"(shaders/cvImageFragment.glsl)";
-  #endif
-#else
-     const std::string vertex_path
-         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\cvImageVertex.glsl)";
-     const std::string fragment_path
-         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\cvImageFragment.glsl)";
 #endif
 };
 

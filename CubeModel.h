@@ -163,23 +163,16 @@ private:
     CubeModelOpenGLData();
     ~CubeModelOpenGLData() {}
 
-#ifdef NDEBUG
-  #ifdef _WIN32
+#ifdef _WIN32
     const std::string vertex_path
         = R"(shaders\standardVertex.glsl)";
     const std::string fragment_path
         = R"(shaders\standardFragment.glsl)";
-  #else
+#else
     const std::string vertex_path
         = R"(shaders/standardVertex.glsl)";
     const std::string fragment_path
         = R"(shaders/standardFragment.glsl)";
-  #endif
-#else
-     const std::string vertex_path
-         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardVertex.glsl)";
-     const std::string fragment_path
-         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\standardFragment.glsl)";
 #endif
 
 };

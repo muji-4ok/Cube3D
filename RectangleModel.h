@@ -45,23 +45,16 @@ private:
     RectangleModelOpenGLData();
     ~RectangleModelOpenGLData() {}
 
-#ifdef NDEBUG
-  #ifdef _WIN32
+#ifdef _WIN32
     const std::string vertex_path
         = R"(shaders\rectVertex.glsl)";
     const std::string fragment_path
         = R"(shaders\rectFragment.glsl)";
-  #else
+#else
     const std::string vertex_path
         = R"(shaders/rectVertex.glsl)";
     const std::string fragment_path
         = R"(shaders/rectFragment.glsl)";
-  #endif
-#else
-     const std::string vertex_path
-         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\rectVertex.glsl)";
-     const std::string fragment_path
-         = R"(D:\Egor\projects\cpp\Graphics_Experiments\Rubiks_Cube\shaders\rectFragment.glsl)";
 #endif
 
 };
