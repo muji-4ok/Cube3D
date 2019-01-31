@@ -14,6 +14,8 @@ WebcamModel::WebcamModel(const WindowModel* windowModel) : videoCapture(0)
         mat = cv::imread(exampleImagePath, cv::IMREAD_COLOR);
         cv::flip(mat, mat, 0);
     }
+
+    resize(windowModel);
 }
 
 void WebcamModel::resize(const WindowModel * windowModel)
