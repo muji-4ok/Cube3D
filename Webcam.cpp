@@ -138,15 +138,6 @@ void WebcamController::readFrame()
     {
         webcamModel->videoCapture >> webcamModel->mat;
         cv::flip(webcamModel->mat, webcamModel->mat, 0);
-
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
-            {
-                auto& frame = webcamModel->readRegions[i][j];
-                cv::Rect rect(frame.x, frame.y, frame.w, frame.h);
-                cv::Mat region(webcamModel->mat, rect);
-                region.setTo(cv::Scalar(0, 0, 255));
-            }
     }
 }
 
