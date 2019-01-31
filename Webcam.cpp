@@ -28,8 +28,8 @@ void WebcamModel::resize(const WindowModel * windowModel)
 
 void WebcamModel::setDelims()
 {
-    delim = (std::min(frame.w, frame.h) - 4 * lineW) / 5;
-    std::vector<float> delims{ delim, delim * 2, delim * 3, delim * 4};
+    delim = (std::min(frame.w, frame.h) - 4 * lineW) / 3;
+    std::vector<float> delims{ 0, delim, delim * 2, delim * 3 };
 
     float vertPadding = frame.w > frame.h ? (frame.w - frame.h) / 2 : 0;
     float horPadding = frame.h > frame.w ? (frame.h - frame.w) / 2 : 0;
@@ -53,8 +53,8 @@ void WebcamModel::setDrawRegions()
 void WebcamModel::setReadRegions()
 {
     float lineW = mat.cols / frame.w * this->lineW;
-    float delim = (std::min(mat.cols, mat.rows) - 4 * lineW) / 5;
-    std::vector<float> delims{ delim, delim * 2, delim * 3, delim * 4};
+    float delim = (std::min(mat.cols, mat.rows) - 4 * lineW) / 3;
+    std::vector<float> delims{ 0, delim, delim * 2, delim * 3};
     float vertPadding = mat.cols > mat.rows ? (mat.cols - mat.rows) / 2 : 0;
     float horPadding = mat.rows > mat.cols ? (mat.rows - mat.cols) / 2 : 0;
 
@@ -138,23 +138,6 @@ void WebcamController::readFrame()
     {
         webcamModel->videoCapture >> webcamModel->mat;
         cv::flip(webcamModel->mat, webcamModel->mat, 0);
-        return;
-
-        cv::Mat labImage;
-        cv::cvtColor(webcamModel->mat, labImage, cv::COLOR_BGR2Lab);
-
-        std::vector<cv::Mat> labPlanes;
-        cv::split(labImage, labPlanes);
-
-        cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
-        clahe->setClipLimit(4);
-        cv::Mat dst;
-        clahe->apply(labPlanes[0], dst);
-
-        dst.copyTo(labPlanes[0]);
-        cv::merge(labPlanes, labImage);
-
-        cv::cvtColor(labImage, webcamModel->mat, cv::COLOR_Lab2BGR);
     }
 }
 
