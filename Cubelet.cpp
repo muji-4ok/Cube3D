@@ -89,41 +89,53 @@ std::vector<float> ColorUtil::toStdVec(SideColor c)
     }
 }
 
+float ColorUtil::getHue(const glm::vec3& c)
+{
+    const auto& r = c[0];
+    const auto& g = c[1];
+    const auto& b = c[2];
+    const auto& v = std::max({ r, g, b });
+    const auto& u = std::min({ r, g, b });
+
+    if (v - u < 0.1)
+        return 180.0f;
+
+    float out;
+
+    if (v == r)
+        out = 60.0f * (g - b) / (v - u);
+    else if (v == g)
+        out = 120.0f + 60.0f * (b - r) / (v - u);
+    else
+        out = 240.0f + 60.0f * (r - g) / (v - u);
+
+    if (out < 0)
+        out += 360.0f;
+
+    return out;
+}
+
 SideColor ColorUtil::guessColor(const glm::vec3 & colorVec)
 {
-    auto getHue = [](const glm::vec3& c) -> float {
-        const auto& r = c[0];
-        const auto& g = c[1];
-        const auto& b = c[2];
-        const auto& v = std::max({ r, g, b });
-        const auto& u = std::min({ r, g, b });
-
-        if (u == v)
-            return 180.0f;
-
-        if (v == r)
-            return 60.0f * (g - b) / (v - u);
-        else if (v == g)
-            return 120.0f + 60.0f * (b - r) / (v - u);
-        else
-            return 240.0f + 60.0f * (r - g) / (v - u);
-    };
     static std::map<SideColor, float> colorMap{
-        { Yellow, getHue(ColorUtil::toGlmVec(Yellow)) },
-        { White, getHue(ColorUtil::toGlmVec(White)) },
-        { Red, getHue(ColorUtil::toGlmVec(Red)) },
-        { Orange, getHue(ColorUtil::toGlmVec(Orange)) },
-        { Blue, getHue(ColorUtil::toGlmVec(Blue)) },
-        { Green, getHue(ColorUtil::toGlmVec(Green)) },
+        { Yellow, ColorUtil::getHue(ColorUtil::toGlmVec(Yellow)) },
+        { White, ColorUtil::getHue(ColorUtil::toGlmVec(White)) },
+        { Red, ColorUtil::getHue(ColorUtil::toGlmVec(Red)) },
+        { Orange, ColorUtil::getHue(ColorUtil::toGlmVec(Orange)) },
+        { Blue, ColorUtil::getHue(ColorUtil::toGlmVec(Blue)) },
+        { Green, ColorUtil::getHue(ColorUtil::toGlmVec(Green)) },
     };
 
-    auto colorHue = getHue(colorVec);
+    auto colorHue = ColorUtil::getHue(ColorUtil::normalizedColor(colorVec));
     SideColor bestGuess = White;
     float bestDiff = 1e6;
 
     for (auto it = colorMap.begin(); it != colorMap.end(); ++it)
     {
         auto diff = std::abs(it->second - colorHue);
+
+        if (it->first == Red)
+            diff = std::min(diff, std::abs(360.0f - colorHue));
 
         if (diff < bestDiff)
         {

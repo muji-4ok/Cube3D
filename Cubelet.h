@@ -34,6 +34,7 @@ struct ColorUtil
     static std::vector<float> toStdVec(SideColor c);
     static SideColor guessColor(const glm::vec3& colorVec);
     static glm::vec3 normalizedColor(const glm::vec3& c);
+    static float getHue(const glm::vec3& c);
 };
 
 class Cubelet

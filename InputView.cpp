@@ -15,6 +15,7 @@ void InputView::draw()
 
     windowModel->setViewport(windowModel->screenWidth / 2, 0.0f, windowModel->screenWidth / 2,
                              windowModel->screenHeight);
+    //windowModel->setViewport(0.0f, 0.0f, windowModel->screenWidth, windowModel->screenHeight);
     WebcamController webcamController(webcamModel);
     webcamController.readFrame();
     webcamController.resizeToFit(windowModel);
