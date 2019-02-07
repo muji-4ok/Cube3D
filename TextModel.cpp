@@ -79,19 +79,28 @@ void TextModel::setText(const std::string & text)
     this->text = text;
     auto& textData = TextModelOpenGLData::instance();
 
-    float w = 0.0;
+    std::vector<float> linesW{ 0.0f };
     float max_h = 0.0f;
+
+    lines = 1;
 
     for (const auto& c : text)
     {
+        if (c == '\n')
+        {
+            ++lines;
+            linesW.push_back(0.0f);
+            continue;
+        }
+
         auto& character = textData.characters[c];
 
         float h = character.size.y * scale;
         max_h = std::max(max_h, h);
 
-        w += (character.advance >> 6) * scale;
+        linesW.back() += (character.advance >> 6) * scale;
     }
 
-    size.x = w;
-    size.y = max_h;
+    size.x = *std::max_element(linesW.begin(), linesW.end());
+    size.y = max_h * lines + lineDelim * (lines - 1);
 }

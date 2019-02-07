@@ -27,6 +27,8 @@ struct TextModel
     glm::vec2 size;
     glm::vec3 color;
     float scale;
+    float lineDelim = 5.0f;
+    int lines;
 
     const std::string& getText() const;
     void setText(const std::string& text);

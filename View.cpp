@@ -35,12 +35,11 @@ void drawButton(ButtonModel * buttonModel, const WindowModel * windowModel)
     drawTextCentered(&buttonModel->textModel, &rectModelScreen, windowModel);
 }
 
-void drawTextBox(const TextBoxModel * textBoxModel, const WindowModel * windowModel)
+void drawTextBox(TextBoxModel * textBoxModel, const WindowModel * windowModel)
 {
-    drawRect(&textBoxModel->rectModel, windowModel);
-
-    for (const auto& line : textBoxModel->textLines)
-        drawText(&line, windowModel);
+    auto rectModelScreen = textBoxModel->rectModel.NDCtoScreen(windowModel);
+    drawRect(&rectModelScreen, windowModel);
+    drawTextCentered(&textBoxModel->textModel, &rectModelScreen, windowModel);
 }
 
 void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowModel)
@@ -99,12 +98,8 @@ void drawText(const TextModel * textModel, const WindowModel * windowModel)
     textData.textVAO.bind();
     textData.textVBO.bind();
 
-    float x = textModel->position.x >= 0 ? textModel->position.x :
-                                           windowModel->viewportWidth + textModel->position.x;
-    float y = textModel->position.y >= 0 ? textModel->position.y :
-                                           windowModel->viewportHeight + textModel->position.y;
-    float origX = x;
-    float origY = y;
+    float yOffset = 0.0f;
+    float lineHeight = 0.0f;
 
     for (const auto& c : textModel->getText())
     {
@@ -112,13 +107,40 @@ void drawText(const TextModel * textModel, const WindowModel * windowModel)
 
         if (c == '\n')
         {
-            y -= character.size.y;
+            yOffset += lineHeight + textModel->lineDelim;
+            lineHeight = 0.0f;
+            continue;
+        }
+
+        lineHeight = std::max(lineHeight, character.size.y * textModel->scale);
+    }
+
+    float x = textModel->position.x >= 0 ? textModel->position.x :
+                                           windowModel->viewportWidth + textModel->position.x;
+    float y = textModel->position.y >= 0 ? textModel->position.y :
+                                           windowModel->viewportHeight + textModel->position.y;
+    y += yOffset;
+
+    float origX = x;
+    float origY = y;
+
+    lineHeight = 0.0f;
+
+    for (const auto& c : textModel->getText())
+    {
+        auto& character = textData.characters[c];
+
+        if (c == '\n')
+        {
+            y -= lineHeight + textModel->lineDelim;
             x = origX;
+            lineHeight = 0.0f;
             continue;
         }
 
         float x_pos = x + character.bearing.x * textModel->scale;
         float y_pos = y - (character.size.y - character.bearing.y) * textModel->scale;
+        lineHeight = std::max(lineHeight, character.size.y * textModel->scale);
 
         float w = character.size.x * textModel->scale;
         float h = character.size.y * textModel->scale;
@@ -262,10 +284,6 @@ void drawWebcam(const WebcamModel * webcamModel, const WindowModel * windowModel
             auto& h = webcamModel->drawRegions[i][j].h;
             RectangleModel rectModel(glm::vec2(x, y), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(w, h));
             auto color = std::string(1, ColorUtil::toChar(ColorUtil::guessColor(webcamModel->meanColors[i][j])));
-            //color += " " + std::to_string((int)webcamModel->meanColors[i][j][0]);
-            //color += " " + std::to_string((int)webcamModel->meanColors[i][j][1]);
-            //color += " " + std::to_string((int)webcamModel->meanColors[i][j][2]);
-            //color += "\n" + std::to_string(ColorUtil::getHue(ColorUtil::normalizedColor(webcamModel->meanColors[i][j])));
             TextModel textModel(color, { x, y }, { 1.0f, 0.0f, 1.0f }, 0.2f);
             drawTextCentered(&textModel, &rectModel, windowModel);
         }

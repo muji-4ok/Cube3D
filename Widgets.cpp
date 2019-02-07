@@ -38,12 +38,6 @@ bool ButtonController::isInside(const glm::vec2& mouse_pos) const
         rectModel.position.y <= mouse_pos.y && mouse_pos.y <= rectModel.position.y + rectModel.size.y;
 }
 
-void TextBoxModel::addTextLine(const glm::vec2 & textPos, const std::string & text, float textScale,
-                               const glm::vec3 & textColor)
-{
-    textLines.emplace_back(text, textPos, textColor, textScale);
-}
-
 void ItemBoxModel::addItem(const std::string & text)
 {
     auto copyRect = itemRect;

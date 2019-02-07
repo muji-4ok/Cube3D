@@ -21,11 +21,9 @@ struct OptimalSolveButtonModel : public ButtonModel
 
 struct InteractiveHelpBoxModel : public TextBoxModel
 {
-    InteractiveHelpBoxModel() : TextBoxModel(glm::vec2(0.0f, -50.0f), glm::vec2(100.0f, 50.0f),
-                                             glm::vec3(0.18f, 0.43f, 0.41f))
-    {
-        addTextLine(glm::vec2(0.0f, -30.0f), "This is a help box", 0.125f, glm::vec3(1.0f, 1.0f, 1.0f));
-    }
+    InteractiveHelpBoxModel() : TextBoxModel(glm::vec2(0.0f, -0.1f), glm::vec2(0.2f, 0.1f),
+                                             glm::vec3(0.18f, 0.43f, 0.41f), glm::vec3(1.0f, 1.0f, 1.0f),
+                                             "VI\nVILL\nVIN", 0.2f) {}
 };
 
 struct InteractiveNextButtonModel : public ButtonModel

@@ -33,16 +33,14 @@ struct ButtonModel
 
 struct TextBoxModel
 {
-    TextBoxModel(const glm::vec2& rectPos, const glm::vec2& rectSize, const glm::vec3& bgColor)
-        : rectModel(rectPos, bgColor, rectSize)
+    TextBoxModel(const glm::vec2& rectPos, const glm::vec2& rectSize, const glm::vec3& bgColor,
+                 const glm::vec3& textColor, const std::string& text, float textScale)
+        : rectModel(rectPos, bgColor, rectSize), textModel(text, {}, textColor, textScale)
     {
     }
 
-    void addTextLine(const glm::vec2& textPos, const std::string& text, float textScale,
-                     const glm::vec3& textColor);
-
     RectangleModel rectModel;
-    std::vector<TextModel> textLines;
+    TextModel textModel;
 };
 
 struct ItemBoxModel
