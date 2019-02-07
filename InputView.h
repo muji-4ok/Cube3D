@@ -37,4 +37,3 @@ private:
     SubmitButtonModel* submitButtonModel;
     ReadButtonModel* readButtonModel;
 };
-

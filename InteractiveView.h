@@ -35,3 +35,25 @@ private:
     InstructionsBoxModel* instructionsBoxModel;
     WebcamSwitchButtonModel* webcamSwitchButtonModel;
 };
+
+class InteractiveResetPopUpView : public View
+{
+public:
+    InteractiveResetPopUpView(InteractiveView* iv, WindowModel* wm, InteractiveResetPopUpTextBoxModel* tbm,
+                        InteractiveResetPopUpYesButtonModel* ybm, InteractiveResetPopUpNoButtonModel* nbm)
+        : interactiveView(iv), windowModel(wm), textBoxModel(tbm), yesButtonModel(ybm), noButtonModel(nbm) {}
+
+    void draw() override;
+    void mousePress(MouseDownEvent* e) override;
+    void mouseRelease(MouseUpEvent* e) override;
+    void mouseMove(MouseMoveEvent* e) override;
+    void keyPress(KeyPressedEvent* e) override;
+    void windowResize(DimensionsChangeEvent* e) override;
+
+private:
+    InteractiveView* interactiveView;
+    WindowModel* windowModel;
+    InteractiveResetPopUpTextBoxModel* textBoxModel;
+    InteractiveResetPopUpYesButtonModel* yesButtonModel;
+    InteractiveResetPopUpNoButtonModel* noButtonModel;
+};

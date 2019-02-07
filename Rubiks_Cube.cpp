@@ -31,7 +31,7 @@ int main()
     CubeModel inputCubeModel(&windowModel);
     InstructionsBoxModel instructionsBoxModel;
     OptimalSolveButtonModel optimalSolveButtonModel(
-        [&interactiveCubeModel, &instructionsBoxModel]() {
+        [&interactiveCubeModel, &instructionsBoxModel, &windowModel]() {
             if (interactiveCubeModel.rotationQueue.is_rotating())
                 return;
 
@@ -218,6 +218,21 @@ int main()
             webcamController.setCubeFace(&inputCubeModel, inputCubeIndex());
         }
     );
+    InteractiveResetPopUpTextBoxModel interactiveResetPopUpTextBoxModel;
+    InteractiveResetPopUpYesButtonModel interactiveResetPopUpYesButtonModel(
+        [&windowModel, &interactiveCubeModel, &instructionsBoxModel]() {
+            windowModel.appState = Interactive;
+
+            InteractiveRotater rotater(&interactiveCubeModel);
+            rotater.finish_interactive_rotation();
+            instructionsBoxModel.clearItems();
+        }
+    );
+    InteractiveResetPopUpNoButtonModel interactiveResetPopUpNoButtonModel(
+        [&windowModel]() {
+            windowModel.appState = Interactive;
+        }
+    );
 
     InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &fastSolveButtonModel,
                                     &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,
@@ -225,6 +240,8 @@ int main()
     InputView inputView(&inputCubeModel, &webcamModel, &windowModel, &inputHelpBoxModel, &inputNextButtonModel,
                         &inputPrevButtonModel, &cancelButtonModel, &submitButtonModel, &readButtonModel,
                         &inputResetButtonModel);
+    InteractiveResetPopUpView interactiveResetPopUpView(&interactiveView, &windowModel, &interactiveResetPopUpTextBoxModel,
+                                                        &interactiveResetPopUpYesButtonModel, &interactiveResetPopUpNoButtonModel);
     View* curView = nullptr;
 
     while (!windowModel.isClosed())
@@ -233,6 +250,8 @@ int main()
             curView = &interactiveView;
         else if (windowModel.appState == Input)
             curView = &inputView;
+        else if (windowModel.appState == InteractiveResetPopUp)
+            curView = &interactiveResetPopUpView;
 
         while (!windowModel.eventQueueEmpty())
         {

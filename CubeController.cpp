@@ -7,16 +7,10 @@ void InteractiveCubeController::m_down(const MouseDownEvent * e)
         rotater.set_interactive_pos(e->mouse_pos);
 }
 
-void InteractiveCubeController::m_up(const MouseUpEvent * e)
+bool InteractiveCubeController::m_up(const MouseUpEvent * e)
 {
-    if (e->left_pressed && cubeModel->hitModel.has_position && cubeModel->hitModel.has_dir
-        && !cubeModel->rotationQueue.is_rotating())
-    {
-        bool moved = rotater.finish_interactive_rotation();
-
-        if (moved)
-            instructionsBoxModel->clearItems();
-    }
+    return e->left_pressed && cubeModel->hitModel.has_position && cubeModel->hitModel.has_dir
+        && !cubeModel->rotationQueue.is_rotating();
 }
 
 void InteractiveCubeController::m_move(const MouseMoveEvent * e)

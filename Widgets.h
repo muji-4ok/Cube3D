@@ -61,6 +61,7 @@ struct ItemBoxModel
     void addItemFront(const std::string& text);
     virtual std::string popItem();
     virtual void clearItems();
+    virtual bool isEmpty();
 
     RectangleModel rectModel;
     std::deque<std::pair<TextModel, RectangleModel>> items;

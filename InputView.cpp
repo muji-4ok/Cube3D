@@ -4,6 +4,7 @@
 void InputView::draw()
 {
     windowModel->setViewport(0.0f, 0.0f, windowModel->screenWidth / 2, windowModel->screenHeight);
+    glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     InputCubeController cubeController(cubeModel);
     cubeController.rotate();

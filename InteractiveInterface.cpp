@@ -31,6 +31,11 @@ void InstructionsBoxModel::clearItems()
     rotationsQueue.clear();
 }
 
+bool InstructionsBoxModel::isEmpty()
+{
+    return Base::isEmpty() && !rotationsQueue.size();
+}
+
 char InstructionsSanitizer::toCharNotation(const std::string & in)
 {
     if (in.size() == 1)

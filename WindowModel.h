@@ -16,7 +16,9 @@
 enum State
 {
     Interactive = 0,
-    Input = 1
+    Input = 1,
+    InteractiveResetPopUp = 2,
+    InteractiveWaitPopUp = 3
 };
 
 class WindowModel

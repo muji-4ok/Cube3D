@@ -570,7 +570,7 @@ void InteractiveRotater::set_interactive_dir(const glm::vec2& mouse_diff)
     cubeModel->rotationQueue.push(new SetHitDirRotationHeader(hit));
 }
 
-bool InteractiveRotater::finish_interactive_rotation()
+void InteractiveRotater::finish_interactive_rotation()
 {
     auto angle = cubeModel->rotationQueue.get_angle();
     auto hit = cubeModel->hitModel.get_header();
@@ -603,6 +603,42 @@ bool InteractiveRotater::finish_interactive_rotation()
     generate_temp_rotations(angle, final_angle, start_speed, acceleration, last_vec);
     cubeModel->rotationQueue.push(new PermRotationHeader(hit, turns));
     cubeModel->rotationQueue.push(new ResetRotationHeader());
+}
+
+void InteractiveRotater::finish_interactive_rotation_to_zero()
+{
+    auto angle = cubeModel->rotationQueue.get_angle();
+    auto hit = cubeModel->hitModel.get_header();
+    auto last_angle = cubeModel->rotationQueue.get_last_rotation().angle;
+    auto last_vec = cubeModel->rotationQueue.get_last_rotation().vec;
+
+    auto deg_angle = glm::degrees(angle);
+    auto rot_index = get_rot_index(hit.index, hit.dir);
+
+    std::cout << glm::degrees(last_angle) << '\n';
+
+    auto final_angle = 0.0f;
+    auto rotation_dir = final_angle - angle;
+
+    auto start_speed = std::copysign(glm::radians(1.0f) > std::abs(last_angle) ?
+                                     glm::radians(1.0f) : last_angle, rotation_dir);
+    auto acceleration = std::copysign(glm::radians(0.8f), rotation_dir);
+
+    generate_temp_rotations(angle, final_angle, start_speed, acceleration, last_vec);
+    cubeModel->rotationQueue.push(new PermRotationHeader(hit, 0));
+    cubeModel->rotationQueue.push(new ResetRotationHeader());
+}
+
+bool InteractiveRotater::is_going_to_rotate_finish_interactive()
+{
+    auto angle = cubeModel->rotationQueue.get_angle();
+    auto deg_angle = glm::degrees(angle);
+    auto last_angle = cubeModel->rotationQueue.get_last_rotation().angle;
+
+    auto turns = static_cast<int>(std::round(deg_angle / 90.0f));
+
+    if (turns == 0 && std::abs(glm::degrees(last_angle)) > 2.0f)
+        turns = angle > 0 ? 1 : -1;
 
     return (turns != 0);
 }

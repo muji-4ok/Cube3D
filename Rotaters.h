@@ -92,7 +92,9 @@ public:
     void rotate_interactive(const glm::vec2& mouse_diff);
     void set_interactive_dir(const glm::vec2& mouse_diff);
     void set_interactive_pos(const glm::vec2& mouse_pos);
-    bool finish_interactive_rotation();
+    void finish_interactive_rotation();
+    void finish_interactive_rotation_to_zero();
+    bool is_going_to_rotate_finish_interactive();
 
     void rotate_all_interactive(const glm::vec2 &mouse_diff);
 

@@ -71,3 +71,8 @@ void ItemBoxModel::clearItems()
 {
     items.clear();
 }
+
+bool ItemBoxModel::isEmpty()
+{
+    return !items.size();
+}

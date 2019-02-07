@@ -31,7 +31,7 @@ public:
     }
 
     void m_down(const MouseDownEvent* e);
-    void m_up(const MouseUpEvent* e);
+    bool m_up(const MouseUpEvent* e);
     void m_move(const MouseMoveEvent* e);
     void k_pressed(const KeyPressedEvent* e);
 

@@ -4,7 +4,6 @@
 
 struct InputHelpBoxModel
 {
-
 };
 
 struct InputNextButtonModel : public ButtonModel
