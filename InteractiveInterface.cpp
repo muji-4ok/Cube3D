@@ -3,7 +3,6 @@
 
 std::string InstructionsBoxModel::restoreItem()
 {
-    std::lock_guard guard(mutex);
     std::string res;
 
     if (rotationsQueue.size())

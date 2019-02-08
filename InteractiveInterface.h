@@ -67,16 +67,16 @@ struct InteractiveHelpBoxModel : public TextBoxModel
 struct InteractiveNextButtonModel : public ButtonModel
 {
     InteractiveNextButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(0.22f, 0.055f), glm::vec2(0.2f, 0.0475f), "Next",
-                    1.0f, glm::vec3(0.0f, 1.0f, 0.0f),
+        ButtonModel(glm::vec2(0.05f, 0.04f), glm::vec2(0.15f, 0.07f), "Next",
+                    0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
 
 struct InteractivePrevButtonModel : public ButtonModel
 {
     InteractivePrevButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(0.22f, 0.0f), glm::vec2(0.2f, 0.0475f), "Prev",
-                    1.0f, glm::vec3(0.0f, 1.0f, 0.0f),
+        ButtonModel(glm::vec2(-0.2f, 0.04f), glm::vec2(0.15f, 0.07f), "Prev",
+                    0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
 
@@ -85,9 +85,9 @@ struct InstructionsBoxModel : public ItemBoxModel
     typedef ItemBoxModel Base;
 
     InstructionsBoxModel() :
-        ItemBoxModel(glm::vec2(0.44f, 0.0f), glm::vec2(0.54f, 0.1f), glm::vec3(0.0f, 0.0f, 0.32f),
-                     glm::vec2(50.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.5f, 0.0f), 1.0f,
-                     glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 18.0f)
+        ItemBoxModel(glm::vec2(0.22f, 0.03f), glm::vec2(0.56f, 0.1f), glm::vec3(0.0f, 0.0f, 0.32f),
+                     glm::vec2(0.75f, 0.75f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.5f, 0.0f), 0.75f,
+                     glm::vec3(0.0f, 0.0f, 0.0f), 0.01f, 0.01f)
     {
     }
 

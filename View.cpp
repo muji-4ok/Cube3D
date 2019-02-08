@@ -50,19 +50,23 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
     n - canFit
     n * itemRect.size.x + (n - 1) * itemHorSpace + 2 * horPadding <= rectModel.size.x
     */
-    int canFit = (rectModelScreen.size.x - 2 * itemBoxModel->getHorPadding() + itemBoxModel->getItemHorSpace())
-               / (itemBoxModel->getItemRect().size.x + itemBoxModel->getItemHorSpace());
+    auto horPadding = itemBoxModel->getHorPadding() * rectModelScreen.size.x;
+    auto horSpace = itemBoxModel->getItemHorSpace() * rectModelScreen.size.x;
+    int canFit = (rectModelScreen.size.x - 2 * horPadding + horSpace)
+               / (itemBoxModel->getItemRect().size.x * rectModelScreen.size.y + horSpace);
 
     if (itemBoxModel->getItems().size() > canFit)
         --canFit;
 
-    float x = rectModelScreen.position.x + itemBoxModel->getHorPadding();
+    float x = rectModelScreen.position.x + horPadding;
     int i = 0;
 
     for (auto it = itemBoxModel->getItems().begin(); it != itemBoxModel->getItems().end() && i < canFit; ++it, ++i)
     {
         auto textModel = it->first;
         auto rectModel = it->second;
+        rectModel.size.x *= rectModelScreen.size.y;
+        rectModel.size.y *= rectModelScreen.size.y;
 
         if (i == 0)
             rectModel.color = itemBoxModel->getIBgColorActive();
@@ -73,13 +77,15 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
         drawRect(&rectModel, windowModel);
         drawTextCentered(&textModel, &rectModel, windowModel);
 
-        x += itemBoxModel->getItemRect().size.x + itemBoxModel->getItemHorSpace();
+        x += rectModel.size.x + horSpace;
     }
 
     if (itemBoxModel->getItems().size() > canFit)
     {
         auto textModel = itemBoxModel->getPlaceHolderItemText();
         auto rectModel = itemBoxModel->getItemRect();
+        rectModel.size.x *= rectModelScreen.size.y;
+        rectModel.size.y *= rectModelScreen.size.y;
         rectModel.position.x = x;
         rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
 
