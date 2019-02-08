@@ -3,6 +3,7 @@
 
 void InputView::draw()
 {
+    windowModel->setMinSize(1200, 600);
     windowModel->setViewport(0.0f, 0.0f, windowModel->screenWidth / 2, windowModel->screenHeight);
     glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -80,4 +81,6 @@ void InputView::keyPress(KeyPressedEvent * e)
 
 void InputView::windowResize(DimensionsChangeEvent * e)
 {
+    if (!windowModel->isFullScreen())
+        windowModel->setAspectRation(2, 1);
 }

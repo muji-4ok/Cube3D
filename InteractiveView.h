@@ -13,10 +13,11 @@ class InteractiveView : public View
 public:
     InteractiveView(CubeModel* cm, WindowModel* wm, FastSolveButtonModel* fsbm, OptimalSolveButtonModel* osbm,
                     InteractiveHelpBoxModel* hbm, InteractiveNextButtonModel* nbm, InteractivePrevButtonModel* pbm,
-                    InstructionsBoxModel* ibm, WebcamSwitchButtonModel* wsbm, std::function<void()>* yesFunc) :
+                    InstructionsBoxModel* ibm, WebcamSwitchButtonModel* wsbm, std::function<void()>* yesFunc,
+                    ShuffleButtonModel* sbm) :
         cubeModel(cm), windowModel(wm), fastSolveButtonModel(fsbm), optimalSolveButtonModel(osbm), helpBoxModel(hbm),
         nextButtonModel(nbm), prevButtonModel(pbm), instructionsBoxModel(ibm), webcamSwitchButtonModel(wsbm),
-        yesFunc(yesFunc) {}
+        yesFunc(yesFunc), shuffleButtonModel(sbm) {}
 
     void draw() override;
     void mousePress(MouseDownEvent* e) override;
@@ -30,6 +31,7 @@ private:
     WindowModel* windowModel;
     FastSolveButtonModel* fastSolveButtonModel;
     OptimalSolveButtonModel* optimalSolveButtonModel;
+    ShuffleButtonModel* shuffleButtonModel;
     InteractiveHelpBoxModel* helpBoxModel;
     InteractiveNextButtonModel* nextButtonModel;
     InteractivePrevButtonModel* prevButtonModel;

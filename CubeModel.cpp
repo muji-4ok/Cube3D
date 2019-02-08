@@ -1,9 +1,9 @@
 #include "CubeModel.h"
 
 
-CubeModel::CubeModel(const WindowModel* wm) : windowModel(wm)
+CubeModel::CubeModel(const WindowModel* wm, glm::vec3 translation_vec) : windowModel(wm)
 {
-    translation_view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+    translation_view = glm::translate(glm::mat4(1.0f), translation_vec);
     view = translation_view;
     rotation_view = glm::mat4(1.0f);
 

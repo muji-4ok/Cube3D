@@ -29,13 +29,8 @@ int main()
 
     WindowModel windowModel(width, height);
     CubeModel interactiveCubeModel(&windowModel);
-    CubeModel inputCubeModel(&windowModel);
+    CubeModel inputCubeModel(&windowModel, { 0.0f, 0.0f, -3.0f });
     InstructionsBoxModel instructionsBoxModel;
-    ShuffleButtonModel shuffleButtonModel(
-        [&interactiveCubeModel]() {
-
-        }
-    );
     OptimalSolveButtonModel optimalSolveButtonModel(
         [&interactiveCubeModel, &instructionsBoxModel, &windowModel]() {
             if (interactiveCubeModel.rotationQueue.is_rotating())
@@ -235,6 +230,28 @@ int main()
     );
     InteractiveResetPopUpTextBoxModel interactiveResetPopUpTextBoxModel;
     std::function<void()> yesFunc;
+    ShuffleButtonModel shuffleButtonModel(
+        [&windowModel, &interactiveCubeModel, &yesFunc, &instructionsBoxModel]() {
+            if (interactiveCubeModel.rotationQueue.is_rotating())
+                return;
+
+            if (!instructionsBoxModel.isEmpty())
+            {
+                windowModel.appState = InteractiveResetPopUp;
+                // Hack
+                auto f = [&interactiveCubeModel]() {
+                    InteractiveCubeController cubeController(&interactiveCubeModel);
+                    cubeController.shuffle();
+                };
+                yesFunc = std::move(f);
+            }
+            else
+            {
+                InteractiveCubeController cubeController(&interactiveCubeModel);
+                cubeController.shuffle();
+            }
+        }
+    );
     InteractiveResetPopUpYesButtonModel interactiveResetPopUpYesButtonModel(
         [&windowModel, &interactiveCubeModel, &instructionsBoxModel, &yesFunc]() {
             windowModel.appState = Interactive;
@@ -251,7 +268,8 @@ int main()
 
     InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &fastSolveButtonModel,
                                     &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,
-                                    &interactivePrevButtonModel, &instructionsBoxModel, &webcamSwitchButtonModel, &yesFunc);
+                                    &interactivePrevButtonModel, &instructionsBoxModel, &webcamSwitchButtonModel, &yesFunc,
+                                    &shuffleButtonModel);
     InputView inputView(&inputCubeModel, &webcamModel, &windowModel, &inputHelpBoxModel, &inputNextButtonModel,
                         &inputPrevButtonModel, &cancelButtonModel, &submitButtonModel, &readButtonModel,
                         &inputResetButtonModel);

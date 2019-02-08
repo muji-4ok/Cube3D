@@ -3,10 +3,11 @@
 
 void InteractiveView::draw()
 {
+    windowModel->setMinSize(800, 600);
     windowModel->setViewport(0.0f, 0.0f, windowModel->screenWidth, windowModel->screenHeight);
     glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    InteractiveCubeController cubeController(cubeModel, instructionsBoxModel);
+    InteractiveCubeController cubeController(cubeModel);
     cubeController.rotate();
     drawCube(cubeModel, windowModel);
     drawButton(fastSolveButtonModel, windowModel);
@@ -14,6 +15,7 @@ void InteractiveView::draw()
     drawButton(nextButtonModel, windowModel);
     drawButton(prevButtonModel, windowModel);
     drawButton(webcamSwitchButtonModel, windowModel);
+    drawButton(shuffleButtonModel, windowModel);
     drawTextBox(helpBoxModel, windowModel);
     drawItemBox(instructionsBoxModel, windowModel);
     windowModel->updateFPS();
@@ -21,7 +23,7 @@ void InteractiveView::draw()
 
 void InteractiveView::mousePress(MouseDownEvent * e)
 {
-    InteractiveCubeController cubeController(cubeModel, instructionsBoxModel);
+    InteractiveCubeController cubeController(cubeModel);
     MouseDownEvent normalized(*e);
     normalized.mouse_pos = windowModel->toNDC(e->mouse_pos);
     cubeController.m_down(&normalized);
@@ -36,11 +38,13 @@ void InteractiveView::mousePress(MouseDownEvent * e)
     buttonController.onMousePress(e);
     buttonController.setModel(webcamSwitchButtonModel);
     buttonController.onMousePress(e);
+    buttonController.setModel(shuffleButtonModel);
+    buttonController.onMousePress(e);
 }
 
 void InteractiveView::mouseRelease(MouseUpEvent * e)
 {
-    InteractiveCubeController cubeController(cubeModel, instructionsBoxModel);
+    InteractiveCubeController cubeController(cubeModel);
     MouseUpEvent normalized(*e);
     normalized.mouse_pos = windowModel->toNDC(e->mouse_pos);
 
@@ -79,11 +83,13 @@ void InteractiveView::mouseRelease(MouseUpEvent * e)
     buttonController.onMouseRelease(e);
     buttonController.setModel(webcamSwitchButtonModel);
     buttonController.onMouseRelease(e);
+    buttonController.setModel(shuffleButtonModel);
+    buttonController.onMouseRelease(e);
 }
 
 void InteractiveView::mouseMove(MouseMoveEvent * e)
 {
-    InteractiveCubeController cubeController(cubeModel, instructionsBoxModel);
+    InteractiveCubeController cubeController(cubeModel);
     MouseMoveEvent normalized(*e);
     normalized.mouse_pos = windowModel->diffToNDC(e->mouse_pos);
     cubeController.m_move(&normalized);
@@ -91,8 +97,45 @@ void InteractiveView::mouseMove(MouseMoveEvent * e)
 
 void InteractiveView::keyPress(KeyPressedEvent * e)
 {
-    InteractiveCubeController cubeController(cubeModel, instructionsBoxModel);
-    cubeController.k_pressed(e);
+    InteractiveCubeController cubeController(cubeModel);
+    auto kPressedRes = cubeController.k_pressed(e);
+
+    if (!instructionsBoxModel->isEmpty())
+    {
+        if (kPressedRes == 1)
+        {
+            windowModel->appState = InteractiveResetPopUp;
+            // Hack
+            auto f = [this]() {
+                InteractiveCubeController cubeController(this->cubeModel);
+                cubeController.shuffle();
+            };
+            *yesFunc = std::move(f);
+        }
+        else if (kPressedRes == 2)
+        {
+            windowModel->appState = InteractiveResetPopUp;
+            auto e_cp = *e;
+            // Hack
+            auto f = [this, e_cp]() {
+                InteractiveCubeController cubeController(this->cubeModel);
+                cubeController.rotate_script(e_cp);
+            };
+            *yesFunc = std::move(f);
+        }
+    }
+    else
+    {
+        if (kPressedRes == 1)
+        {
+            cubeController.shuffle();
+        }
+        else if (kPressedRes == 2)
+        {
+            auto e_cp = *e;
+            cubeController.rotate_script(e_cp);
+        }
+    }
 
     if (e->key == static_cast<char>(GLFW_KEY_ESCAPE))
         windowModel->closeWindow();

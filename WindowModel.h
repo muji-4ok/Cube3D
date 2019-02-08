@@ -37,8 +37,11 @@ public:
     void pollEvents();
     void updateFPS();
     bool isClosed() const;
+    bool isFullScreen() const;
     void setTitle(const std::string &title);
     void setViewport(float x, float y, float width, float height);
+    void setAspectRation(int num, int den);
+    void setMinSize(int width, int height);
 
     glm::vec2 getMousePos() const;
     glm::vec2 toNDC(const glm::vec2& mousePos) const;
@@ -60,8 +63,8 @@ public:
     int viewportY;
     int screenWidth;
     int screenHeight;
-    const int minScreenWidth;
-    const int minScreenHeight;
+    int minScreenWidth;
+    int minScreenHeight;
     std::atomic<State> appState = Interactive;
 
 private:

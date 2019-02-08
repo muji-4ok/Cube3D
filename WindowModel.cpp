@@ -218,6 +218,13 @@ bool WindowModel::isClosed() const
     return glfwWindowShouldClose(window);
 }
 
+bool WindowModel::isFullScreen() const
+{
+    auto videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    return videoMode->width == screenWidth &&
+        std::abs(videoMode->height - screenHeight) <= videoMode->height * 0.08f;
+}
+
 void WindowModel::getMouseMoveEvents()
 {
     auto mousePos = getMousePos();
@@ -257,6 +264,18 @@ void WindowModel::setViewport(float x, float y, float width, float height)
     glViewport(x, y, width, height);
     setOrthogonalProjection(width, height);
     setPerspectiveProjection(width, height);
+}
+
+void WindowModel::setAspectRation(int num, int den)
+{
+    glfwSetWindowAspectRatio(window, num, den);
+}
+
+void WindowModel::setMinSize(int width, int height)
+{
+    minScreenWidth = width;
+    minScreenHeight = height;
+    glfwSetWindowSizeLimits(window, width, height, GLFW_DONT_CARE, GLFW_DONT_CARE);
 }
 
 glm::vec2 WindowModel::getMousePos() const

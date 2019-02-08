@@ -292,7 +292,7 @@ void drawWebcam(const WebcamModel * webcamModel, const WindowModel * windowModel
             auto& h = webcamModel->drawRegions[i][j].h;
             RectangleModel rectModel(glm::vec2(x, y), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(w, h));
             auto color = std::string(1, ColorUtil::toChar(ColorUtil::guessColor(webcamModel->meanColors[i][j])));
-            TextModel textModel(color, { x, y }, { 1.0f, 0.0f, 1.0f }, 0.2f);
+            TextModel textModel(color, { x, y }, { 1.0f, 0.0f, 1.0f }, 1.0f);
             drawTextCentered(&textModel, &rectModel, windowModel);
         }
 }

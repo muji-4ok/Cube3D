@@ -25,20 +25,18 @@ protected:
 class InteractiveCubeController : public CubeController
 {
 public:
-    InteractiveCubeController(CubeModel* cm, InstructionsBoxModel* ibm) : CubeController(cm), rotater(cm),
-        instructionsBoxModel(ibm)
-    {
-    }
+    InteractiveCubeController(CubeModel* cm) : CubeController(cm), rotater(cm) {}
 
     void m_down(const MouseDownEvent* e);
     bool m_up(const MouseUpEvent* e);
     void m_move(const MouseMoveEvent* e);
-    void k_pressed(const KeyPressedEvent* e);
+    int k_pressed(const KeyPressedEvent* e);
 
+    void rotate_script(const KeyPressedEvent e);
+    void shuffle();
     void rotate();
 
 private:
-    InstructionsBoxModel* instructionsBoxModel;
     HybridRotater rotater;
 
 };

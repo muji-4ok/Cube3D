@@ -15,7 +15,7 @@ bool InteractiveCubeController::m_up(const MouseUpEvent * e)
 
 void InteractiveCubeController::m_move(const MouseMoveEvent * e)
 {
-    if (e->right_pressed)
+    if (e->right_pressed && !cubeModel->rotationQueue.is_rotating())
         rotater.rotate_all_interactive(e->mouse_pos);
 
     if (e->left_pressed && cubeModel->hitModel.has_position && !cubeModel->rotationQueue.is_rotating())
@@ -27,29 +27,35 @@ void InteractiveCubeController::m_move(const MouseMoveEvent * e)
     }
 }
 
-void InteractiveCubeController::k_pressed(const KeyPressedEvent * e)
+int InteractiveCubeController::k_pressed(const KeyPressedEvent * e)
 {
     if (cubeModel->rotationQueue.is_rotating())
-        return;
+        return 0;
 
     static std::vector<char> possible{ 'U', 'u', 'D', 'd', 'R', 'r', 'L', 'l', 'F', 'f', 'B', 'b' };
 
     if (e->key == 'S' || e->key == 's')
-    {
-        instructionsBoxModel->clearItems();
-
-        static std::mt19937 gen(std::time(0));
-        static std::uniform_int_distribution<int> dist(0, possible.size() - 1);
-
-        for (int i = 0; i < 30; ++i)
-            rotater.rotate_script(possible[dist(gen)]);
-    }
+        return 1;
     else if (std::find(possible.begin(), possible.end(), e->key) != possible.end())
-    {
-        instructionsBoxModel->clearItems();
+        return 2;
 
-        rotater.rotate_script(e->key);
-    }
+    return 0;
+}
+
+void InteractiveCubeController::rotate_script(const KeyPressedEvent e)
+{
+    rotater.rotate_script(e.key);
+}
+
+void InteractiveCubeController::shuffle()
+{
+    static std::vector<char> possible{ 'U', 'u', 'D', 'd', 'R', 'r', 'L', 'l', 'F', 'f', 'B', 'b' };
+
+    static std::mt19937 gen(std::time(0));
+    static std::uniform_int_distribution<int> dist(0, possible.size() - 1);
+
+    for (int i = 0; i < 30; ++i)
+        rotater.rotate_script(possible[dist(gen)]);
 }
 
 void InteractiveCubeController::rotate()
