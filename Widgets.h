@@ -14,6 +14,29 @@
 #include "Events.h"
 
 
+/*
+* Inherit from this class to create a new button
+*
+* --rectPos defines position of the button, relative to viewport. It's a 2D vector with values from -1.0f to 1.0f.
+* When value is positive, then actual position will be mapped from bottom-left -> top-right. Vise versa if negative.
+*
+* --rectSize defines size of the button, relative to viewport. It's a 2D with values from 0.0f to 1.0f.
+* (Should be {0.15f, 0.07f} if you want the button to look the same as the others.
+*
+* --text will be shown on the screen. It can contain newlines as well.
+*
+* --textScale is a positive float. All characters will be scaled according to it.
+* (Should be 0.5f if you want the button to look the same as the others).
+*
+* --bgColorNormal is the color of the button when it's not pressed.
+*
+* --bgColorPressed is the color of the button when it's pressed.
+*
+* --textColor is the color of the text.
+*
+* --callback is the function that is called when the button is successfuly pressed. (The button if released when
+* inside the rectangle of the button)
+*/
 struct ButtonModel
 {
     ButtonModel(const glm::vec2& rectPos, const glm::vec2& rectSize, const std::string& text,

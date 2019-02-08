@@ -13,6 +13,9 @@ extern "C" {
 #include <iterator>
 
 
+/*
+* Inherit from this class to create a new cube solver.
+*/
 struct Solver
 {
     Solver(const CubeModel* cm) : cubeModel(cm) {}

@@ -24,8 +24,12 @@ int main()
     constexpr int height = 600;
 
     {
-        // OptimalSolverInitializer::instance();
+        OptimalSolverInitializer::instance();
     }
+
+    /*
+    * All models are created here. Views are constructed with pointers to displayed models.
+    */
 
     WindowModel windowModel(width, height);
     CubeModel interactiveCubeModel(&windowModel);
@@ -198,12 +202,10 @@ int main()
             if (inputCubeModel.rotationQueue.is_rotating() || !inputCubeModel.is_valid())
                 return;
 
-            // Absolute fucking disgusting hack
             FastSolver solver(&inputCubeModel);
 
             if (!solver.generateSolution().size())
                 return;
-            // Absolute fucking disgusting hack
 
             windowModel.appState = Interactive;
 
@@ -238,7 +240,6 @@ int main()
             if (!instructionsBoxModel.isEmpty())
             {
                 windowModel.appState = InteractiveResetPopUp;
-                // Hack
                 auto f = [&interactiveCubeModel]() {
                     InteractiveCubeController cubeController(&interactiveCubeModel);
                     cubeController.shuffle();
@@ -266,6 +267,9 @@ int main()
     );
     InteractiveWaitPopUpTextBoxModel interactiveWaitPopUpTextBoxModel;
 
+    /*
+    * Add the pointer to your created button here.
+    */
     InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &fastSolveButtonModel,
                                     &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,
                                     &interactivePrevButtonModel, &instructionsBoxModel, &webcamSwitchButtonModel, &yesFunc,

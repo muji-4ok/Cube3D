@@ -32,6 +32,10 @@ struct InteractiveResetPopUpNoButtonModel : public ButtonModel
                     glm::vec3(1.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
 
+/*
+* By convention, all widgets that appear on the first screen (Interactive) are located here.
+*/
+
 struct ShuffleButtonModel : public ButtonModel
 {
     ShuffleButtonModel(const std::function<void()>& callback) :
@@ -67,7 +71,7 @@ struct InteractiveHelpBoxModel : public TextBoxModel
 struct InteractiveNextButtonModel : public ButtonModel
 {
     InteractiveNextButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(0.05f, 0.04f), glm::vec2(0.15f, 0.07f), "Next",
+        ButtonModel(glm::vec2(-0.2f, 0.04f), glm::vec2(0.15f, 0.07f), "Next",
                     0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
@@ -75,7 +79,7 @@ struct InteractiveNextButtonModel : public ButtonModel
 struct InteractivePrevButtonModel : public ButtonModel
 {
     InteractivePrevButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(-0.2f, 0.04f), glm::vec2(0.15f, 0.07f), "Prev",
+        ButtonModel(glm::vec2(0.05f, 0.04f), glm::vec2(0.15f, 0.07f), "Prev",
                     0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };

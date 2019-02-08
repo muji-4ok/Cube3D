@@ -12,12 +12,20 @@ void InteractiveView::draw()
     drawCube(cubeModel, windowModel);
     drawButton(fastSolveButtonModel, windowModel);
     drawButton(optimalSolveButtonModel, windowModel);
-    drawButton(nextButtonModel, windowModel);
-    drawButton(prevButtonModel, windowModel);
+    /*
+    * Add the draw call here.
+    */
+
+    if (!instructionsBoxModel->isEmpty())
+    {
+        drawButton(nextButtonModel, windowModel);
+        drawButton(prevButtonModel, windowModel);
+        drawItemBox(instructionsBoxModel, windowModel);
+    }
+
     drawButton(webcamSwitchButtonModel, windowModel);
     drawButton(shuffleButtonModel, windowModel);
     drawTextBox(helpBoxModel, windowModel);
-    drawItemBox(instructionsBoxModel, windowModel);
     windowModel->updateFPS();
 }
 
@@ -32,10 +40,19 @@ void InteractiveView::mousePress(MouseDownEvent * e)
     buttonController.onMousePress(e);
     buttonController.setModel(optimalSolveButtonModel);
     buttonController.onMousePress(e);
-    buttonController.setModel(nextButtonModel);
-    buttonController.onMousePress(e);
-    buttonController.setModel(prevButtonModel);
-    buttonController.onMousePress(e);
+
+    /*
+    * Call handlers.
+    */
+
+    if (!instructionsBoxModel->isEmpty())
+    {
+        buttonController.setModel(nextButtonModel);
+        buttonController.onMousePress(e);
+        buttonController.setModel(prevButtonModel);
+        buttonController.onMousePress(e);
+    }
+
     buttonController.setModel(webcamSwitchButtonModel);
     buttonController.onMousePress(e);
     buttonController.setModel(shuffleButtonModel);
@@ -59,7 +76,6 @@ void InteractiveView::mouseRelease(MouseUpEvent * e)
             else
             {
                 windowModel->appState = InteractiveResetPopUp;
-                // Hack
                 auto angle = this->cubeModel->rotationQueue.get_angle();
                 auto hitHeader = this->cubeModel->hitModel.get_header();
                 auto lastRotation = this->cubeModel->rotationQueue.get_last_rotation();
@@ -77,10 +93,19 @@ void InteractiveView::mouseRelease(MouseUpEvent * e)
     buttonController.onMouseRelease(e);
     buttonController.setModel(optimalSolveButtonModel);
     buttonController.onMouseRelease(e);
-    buttonController.setModel(nextButtonModel);
-    buttonController.onMouseRelease(e);
-    buttonController.setModel(prevButtonModel);
-    buttonController.onMouseRelease(e);
+
+    /*
+    * Call handlers.
+    */
+
+    if (!instructionsBoxModel->isEmpty())
+    {
+        buttonController.setModel(nextButtonModel);
+        buttonController.onMouseRelease(e);
+        buttonController.setModel(prevButtonModel);
+        buttonController.onMouseRelease(e);
+    }
+
     buttonController.setModel(webcamSwitchButtonModel);
     buttonController.onMouseRelease(e);
     buttonController.setModel(shuffleButtonModel);
@@ -116,7 +141,6 @@ void InteractiveView::keyPress(KeyPressedEvent * e)
         {
             windowModel->appState = InteractiveResetPopUp;
             auto e_cp = *e;
-            // Hack
             auto f = [this, e_cp]() {
                 InteractiveCubeController cubeController(this->cubeModel);
                 cubeController.rotate_script(e_cp);
