@@ -63,6 +63,10 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
     {
         auto textModel = it->first;
         auto rectModel = it->second;
+
+        if (i == 0)
+            rectModel.color = itemBoxModel->iBgColorActive;
+
         rectModel.position.x = x;
         rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
 

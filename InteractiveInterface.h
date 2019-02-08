@@ -70,7 +70,7 @@ struct InstructionsBoxModel : public ItemBoxModel
 
     InstructionsBoxModel() :
         ItemBoxModel(glm::vec2(0.44f, 0.0f), glm::vec2(0.54f, 0.1f), glm::vec3(0.0f, 0.0f, 0.32f),
-                     glm::vec2(50.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.4f,
+                     glm::vec2(50.0f, 50.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.5f, 0.0f), 0.4f,
                      glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 18.0f)
     {
     }

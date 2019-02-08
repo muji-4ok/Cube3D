@@ -48,10 +48,10 @@ struct ItemBoxModel
     // iRectSize, horPadding, itemHorSpace - in pixels
     // everything else - in NDC
     ItemBoxModel(const glm::vec2& rectPos, const glm::vec2& rectSize, const glm::vec3& bgColor,
-                 const glm::vec2& iRectSize, const glm::vec3& iBgColor, float iTextScale, const glm::vec3& iTextColor,
-                 float horPadding, float itemHorSpace)
-        : rectModel(rectPos, bgColor, rectSize), itemRect({}, iBgColor, iRectSize),
-        itemText("", {}, iTextColor, iTextScale),
+                 const glm::vec2& iRectSize, const glm::vec3& iBgColorPassive, const glm::vec3& iBgColorActive,
+                 float iTextScale, const glm::vec3& iTextColor, float horPadding, float itemHorSpace)
+        : rectModel(rectPos, bgColor, rectSize), itemRect({}, iBgColorPassive, iRectSize),
+        iBgColorActive(iBgColorActive), itemText("", {}, iTextColor, iTextScale),
         placeHolderItemText("...", {}, iTextColor, iTextScale),
         horPadding(horPadding), itemHorSpace(itemHorSpace)
     {
@@ -70,6 +70,7 @@ struct ItemBoxModel
     TextModel placeHolderItemText;
     float horPadding;
     float itemHorSpace;
+    glm::vec3 iBgColorActive;
 };
 
 class ButtonController
