@@ -4,4 +4,4 @@
 ## Building
 * Compile OptimalCubeSolver as C code
 * Compile FastKociemba as C++ code
-* Also needed libraries: GLFW, GLAD, OpenCV, FreeType
+* Also needed libraries: GLFW, GLAD, GLM, OpenCV, FreeType
