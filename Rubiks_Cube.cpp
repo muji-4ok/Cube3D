@@ -234,12 +234,11 @@ int main()
         }
     );
     InteractiveResetPopUpTextBoxModel interactiveResetPopUpTextBoxModel;
+    std::function<void()> yesFunc;
     InteractiveResetPopUpYesButtonModel interactiveResetPopUpYesButtonModel(
-        [&windowModel, &interactiveCubeModel, &instructionsBoxModel]() {
+        [&windowModel, &interactiveCubeModel, &instructionsBoxModel, &yesFunc]() {
             windowModel.appState = Interactive;
-
-            InteractiveRotater rotater(&interactiveCubeModel);
-            rotater.finish_interactive_rotation();
+            yesFunc();
             instructionsBoxModel.clearItems();
         }
     );
@@ -252,7 +251,7 @@ int main()
 
     InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &fastSolveButtonModel,
                                     &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,
-                                    &interactivePrevButtonModel, &instructionsBoxModel, &webcamSwitchButtonModel);
+                                    &interactivePrevButtonModel, &instructionsBoxModel, &webcamSwitchButtonModel, &yesFunc);
     InputView inputView(&inputCubeModel, &webcamModel, &windowModel, &inputHelpBoxModel, &inputNextButtonModel,
                         &inputPrevButtonModel, &cancelButtonModel, &submitButtonModel, &readButtonModel,
                         &inputResetButtonModel);

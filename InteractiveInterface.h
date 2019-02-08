@@ -8,7 +8,7 @@ struct InteractiveWaitPopUpTextBoxModel : public TextBoxModel
     InteractiveWaitPopUpTextBoxModel() :
         TextBoxModel(glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.32f),
                      glm::vec3(1.0f, 1.0f, 1.0f),
-                     "Optimal solution calculation\nwill take some time.\nPlease wait.", 0.5f) {}
+                     "Optimal solution calculation\nwill take some time.\nPlease wait...", 0.5f) {}
 };
 
 struct InteractiveResetPopUpTextBoxModel : public TextBoxModel

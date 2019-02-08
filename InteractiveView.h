@@ -13,9 +13,10 @@ class InteractiveView : public View
 public:
     InteractiveView(CubeModel* cm, WindowModel* wm, FastSolveButtonModel* fsbm, OptimalSolveButtonModel* osbm,
                     InteractiveHelpBoxModel* hbm, InteractiveNextButtonModel* nbm, InteractivePrevButtonModel* pbm,
-                    InstructionsBoxModel* ibm, WebcamSwitchButtonModel* wsbm) :
+                    InstructionsBoxModel* ibm, WebcamSwitchButtonModel* wsbm, std::function<void()>* yesFunc) :
         cubeModel(cm), windowModel(wm), fastSolveButtonModel(fsbm), optimalSolveButtonModel(osbm), helpBoxModel(hbm),
-        nextButtonModel(nbm), prevButtonModel(pbm), instructionsBoxModel(ibm), webcamSwitchButtonModel(wsbm) {}
+        nextButtonModel(nbm), prevButtonModel(pbm), instructionsBoxModel(ibm), webcamSwitchButtonModel(wsbm),
+        yesFunc(yesFunc) {}
 
     void draw() override;
     void mousePress(MouseDownEvent* e) override;
@@ -34,6 +35,7 @@ private:
     InteractivePrevButtonModel* prevButtonModel;
     InstructionsBoxModel* instructionsBoxModel;
     WebcamSwitchButtonModel* webcamSwitchButtonModel;
+    std::function<void()>* yesFunc;
 };
 
 class InteractiveResetPopUpView : public View

@@ -54,8 +54,17 @@ void InteractiveView::mouseRelease(MouseUpEvent * e)
             }
             else
             {
-                rotater.finish_interactive_rotation_to_zero();
                 windowModel->appState = InteractiveResetPopUp;
+                // Hack
+                auto angle = this->cubeModel->rotationQueue.get_angle();
+                auto hitHeader = this->cubeModel->hitModel.get_header();
+                auto lastRotation = this->cubeModel->rotationQueue.get_last_rotation();
+                auto f = [this, angle, hitHeader, lastRotation]() {
+                    InteractiveRotater rotater(this->cubeModel);
+                    rotater.finish_interactive_rotation_snap(angle, hitHeader, lastRotation);
+                };
+                rotater.finish_interactive_rotation_to_zero();
+                *yesFunc = std::move(f);
             }
         else
             rotater.finish_interactive_rotation_to_zero();

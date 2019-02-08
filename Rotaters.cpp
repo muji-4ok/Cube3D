@@ -651,6 +651,40 @@ void InteractiveRotater::set_interactive_pos(const glm::vec2& mouse_pos)
         cubeModel->rotationQueue.push(new SetHitPosRotationHeader(hit_header));
 }
 
+void InteractiveRotater::finish_interactive_rotation_snap(float angle, HitHeader hit,
+                                                          TempRotationHeader lastRotation)
+{
+    auto last_angle = lastRotation.angle;
+    auto last_vec = lastRotation.vec;
+
+    auto deg_angle = glm::degrees(angle);
+    auto rot_index = get_rot_index(hit.index, hit.dir);
+
+    auto turns = static_cast<int>(std::round(deg_angle / 90.0f));
+
+    std::cout << glm::degrees(last_angle) << '\n';
+
+    if (turns == 0 && std::abs(glm::degrees(last_angle)) > 2.0f)
+        turns = angle > 0 ? 1 : -1;
+
+    auto final_angle = glm::radians(90.0f * turns);
+    auto rotation_dir = final_angle - angle;
+
+    turns = (turns > 0 ? 1 : -1) * (std::abs(turns) % 4);
+
+    if (rot_index == 4 || rot_index == 5)
+        turns = -turns;
+
+    turns = (turns + 4) % 4;
+    auto start_speed = std::copysign(glm::radians(1.0f) > std::abs(last_angle) ?
+                                      glm::radians(1.0f) : last_angle, rotation_dir);
+    auto acceleration = std::copysign(glm::radians(0.8f), rotation_dir);
+
+    generate_temp_rotations(angle, final_angle, start_speed, acceleration, last_vec);
+    cubeModel->rotationQueue.push(new PermRotationHeader(hit, turns));
+    cubeModel->rotationQueue.push(new ResetRotationHeader());
+}
+
 bool CubeMouseHitter::get_hit_position(const glm::vec2& mouse_pos, HitHeader& hit) const
 {
     auto world_ray = get_eye_ray(mouse_pos);
