@@ -57,3 +57,22 @@ private:
     InteractiveResetPopUpYesButtonModel* yesButtonModel;
     InteractiveResetPopUpNoButtonModel* noButtonModel;
 };
+
+class InteractiveWaitPopUpView : public View
+{
+public:
+    InteractiveWaitPopUpView(InteractiveView* iv, WindowModel* wm, InteractiveWaitPopUpTextBoxModel* tbm)
+        : interactiveView(iv), windowModel(wm), textBoxModel(tbm) {}
+
+    void draw() override;
+    void mousePress(MouseDownEvent* e) override;
+    void mouseRelease(MouseUpEvent* e) override;
+    void mouseMove(MouseMoveEvent* e) override;
+    void keyPress(KeyPressedEvent* e) override;
+    void windowResize(DimensionsChangeEvent* e) override;
+
+private:
+    InteractiveView* interactiveView;
+    WindowModel* windowModel;
+    InteractiveWaitPopUpTextBoxModel* textBoxModel;
+};

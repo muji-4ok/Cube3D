@@ -44,28 +44,28 @@ void drawTextBox(TextBoxModel * textBoxModel, const WindowModel * windowModel)
 
 void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowModel)
 {
-    auto rectModelScreen = itemBoxModel->rectModel.NDCtoScreen(windowModel);
+    auto rectModelScreen = itemBoxModel->getRectModel().NDCtoScreen(windowModel);
     drawRect(&rectModelScreen, windowModel);
     /*
     n - canFit
     n * itemRect.size.x + (n - 1) * itemHorSpace + 2 * horPadding <= rectModel.size.x
     */
-    int canFit = (rectModelScreen.size.x - 2 * itemBoxModel->horPadding + itemBoxModel->itemHorSpace)
-               / (itemBoxModel->itemRect.size.x + itemBoxModel->itemHorSpace);
+    int canFit = (rectModelScreen.size.x - 2 * itemBoxModel->getHorPadding() + itemBoxModel->getItemHorSpace())
+               / (itemBoxModel->getItemRect().size.x + itemBoxModel->getItemHorSpace());
 
-    if (itemBoxModel->items.size() > canFit)
+    if (itemBoxModel->getItems().size() > canFit)
         --canFit;
 
-    float x = rectModelScreen.position.x + itemBoxModel->horPadding;
+    float x = rectModelScreen.position.x + itemBoxModel->getHorPadding();
     int i = 0;
 
-    for (auto it = itemBoxModel->items.begin(); it != itemBoxModel->items.end() && i < canFit; ++it, ++i)
+    for (auto it = itemBoxModel->getItems().begin(); it != itemBoxModel->getItems().end() && i < canFit; ++it, ++i)
     {
         auto textModel = it->first;
         auto rectModel = it->second;
 
         if (i == 0)
-            rectModel.color = itemBoxModel->iBgColorActive;
+            rectModel.color = itemBoxModel->getIBgColorActive();
 
         rectModel.position.x = x;
         rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
@@ -73,13 +73,13 @@ void drawItemBox(const ItemBoxModel * itemBoxModel, const WindowModel * windowMo
         drawRect(&rectModel, windowModel);
         drawTextCentered(&textModel, &rectModel, windowModel);
 
-        x += itemBoxModel->itemRect.size.x + itemBoxModel->itemHorSpace;
+        x += itemBoxModel->getItemRect().size.x + itemBoxModel->getItemHorSpace();
     }
 
-    if (itemBoxModel->items.size() > canFit)
+    if (itemBoxModel->getItems().size() > canFit)
     {
-        auto textModel = itemBoxModel->placeHolderItemText;
-        auto rectModel = itemBoxModel->itemRect;
+        auto textModel = itemBoxModel->getPlaceHolderItemText();
+        auto rectModel = itemBoxModel->getItemRect();
         rectModel.position.x = x;
         rectModel.position.y = rectModelScreen.position.y + (rectModelScreen.size.y - rectModel.size.y) / 2;
 
@@ -172,8 +172,8 @@ void drawText(const TextModel * textModel, const WindowModel * windowModel)
 
 void drawTextCentered(TextModel * textModel, const RectangleModel * rectModel, const WindowModel * windowModel)
 {
-    assert(textModel->size.x <= rectModel->size.x);
-    assert(textModel->size.y <= rectModel->size.y);
+    // assert(textModel->size.x <= rectModel->size.x);
+    // assert(textModel->size.y <= rectModel->size.y);
     textModel->position.x = rectModel->position.x + (rectModel->size.x - textModel->size.x) / 2.0;
     textModel->position.y = rectModel->position.y + (rectModel->size.y - textModel->size.y) / 2.0;
     drawText(textModel, windowModel);
@@ -190,10 +190,8 @@ void drawRect(const RectangleModel * rectModel, const WindowModel * windowModel)
     rectangleData.rectVAO.bind();
     rectangleData.rectVBO.bind();
 
-    float x = rectModel->position.x >= 0 ? rectModel->position.x :
-                                           windowModel->viewportWidth + rectModel->position.x;
-    float y = rectModel->position.y >= 0 ? rectModel->position.y :
-                                           windowModel->viewportHeight + rectModel->position.y;
+    float x = rectModel->position.x;
+    float y = rectModel->position.y;
     float w = rectModel->size.x;
     float h = rectModel->size.y;
 

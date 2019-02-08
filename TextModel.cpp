@@ -13,7 +13,7 @@ TextModelOpenGLData::TextModelOpenGLData()
     if (FT_New_Face(lib, font_path.c_str(), 0, &face))
         std::cerr << "Failed to load font " << font_path << '\n';
 
-    FT_Set_Pixel_Sizes(face, 0, 100);
+    FT_Set_Pixel_Sizes(face, 0, 50);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 

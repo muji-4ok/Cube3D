@@ -11,6 +11,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <atomic>
 
 
 enum State
@@ -61,7 +62,7 @@ public:
     int screenHeight;
     const int minScreenWidth;
     const int minScreenHeight;
-    State appState = Interactive;
+    std::atomic<State> appState = Interactive;
 
 private:
     std::deque<std::unique_ptr<Event>> eventQueue;

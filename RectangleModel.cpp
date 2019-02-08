@@ -23,7 +23,8 @@ RectangleModelOpenGLData::RectangleModelOpenGLData()
 RectangleModel RectangleModel::NDCtoScreen(const WindowModel* windowModel) const
 {
     return {
-        glm::vec2(position.x * windowModel->viewportWidth, position.y * windowModel->viewportHeight),
+        glm::vec2((position.x < 0 ? position.x + 1.0f : position.x) * windowModel->viewportWidth,
+                  (position.y < 0 ? position.y + 1.0f : position.y) * windowModel->viewportHeight),
         color,
         glm::vec2(size.x * windowModel->viewportWidth, size.y * windowModel->viewportHeight)
     };

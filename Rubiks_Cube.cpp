@@ -15,6 +15,7 @@
 #include "Solver.h"
 #include "Webcam.h"
 #include <cctype>
+#include <thread>
 
 
 int main()
@@ -30,18 +31,32 @@ int main()
     CubeModel interactiveCubeModel(&windowModel);
     CubeModel inputCubeModel(&windowModel);
     InstructionsBoxModel instructionsBoxModel;
+    ShuffleButtonModel shuffleButtonModel(
+        [&interactiveCubeModel]() {
+
+        }
+    );
     OptimalSolveButtonModel optimalSolveButtonModel(
         [&interactiveCubeModel, &instructionsBoxModel, &windowModel]() {
             if (interactiveCubeModel.rotationQueue.is_rotating())
                 return;
 
-            OptimalSolver solver(&interactiveCubeModel);
-            auto solution = solver.generateSolution();
+            windowModel.appState = InteractiveWaitPopUp;
 
-            instructionsBoxModel.clearItems();
+            auto asyncFunc = [&windowModel, &interactiveCubeModel, &instructionsBoxModel]() {
+                OptimalSolver solver(&interactiveCubeModel);
+                auto solution = solver.generateSolution();
 
-            for (const auto&r : solution)
-                instructionsBoxModel.addItem(InstructionsSanitizer::toStringNotation(r));
+                instructionsBoxModel.clearItems();
+
+                for (const auto&r : solution)
+                    instructionsBoxModel.addItem(InstructionsSanitizer::toStringNotation(r));
+
+                windowModel.appState = Interactive;
+            };
+
+            std::thread solverThread(asyncFunc);
+            solverThread.detach();
         }
     );
     FastSolveButtonModel fastSolveButtonModel(
@@ -233,6 +248,7 @@ int main()
             windowModel.appState = Interactive;
         }
     );
+    InteractiveWaitPopUpTextBoxModel interactiveWaitPopUpTextBoxModel;
 
     InteractiveView interactiveView(&interactiveCubeModel, &windowModel, &fastSolveButtonModel,
                                     &optimalSolveButtonModel, &interactiveHelpBoxModel, &interactiveNextButtonModel,
@@ -242,6 +258,7 @@ int main()
                         &inputResetButtonModel);
     InteractiveResetPopUpView interactiveResetPopUpView(&interactiveView, &windowModel, &interactiveResetPopUpTextBoxModel,
                                                         &interactiveResetPopUpYesButtonModel, &interactiveResetPopUpNoButtonModel);
+    InteractiveWaitPopUpView interactiveWaitPopUpView(&interactiveView, &windowModel, &interactiveWaitPopUpTextBoxModel);
     View* curView = nullptr;
 
     while (!windowModel.isClosed())
@@ -252,6 +269,8 @@ int main()
             curView = &inputView;
         else if (windowModel.appState == InteractiveResetPopUp)
             curView = &interactiveResetPopUpView;
+        else if (windowModel.appState == InteractiveWaitPopUp)
+            curView = &interactiveWaitPopUpView;
 
         while (!windowModel.eventQueueEmpty())
         {

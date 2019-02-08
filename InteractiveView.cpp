@@ -139,3 +139,40 @@ void InteractiveResetPopUpView::keyPress(KeyPressedEvent * e)
 void InteractiveResetPopUpView::windowResize(DimensionsChangeEvent * e)
 {
 }
+
+void InteractiveWaitPopUpView::draw()
+{
+    interactiveView->draw();
+
+    windowModel->setViewport(windowModel->screenWidth * 0.25f, windowModel->screenHeight * 0.32f,
+                             windowModel->screenWidth * 0.5f, windowModel->screenHeight * 0.35f);
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(windowModel->screenWidth * 0.25f, windowModel->screenHeight * 0.32f,
+              windowModel->screenWidth * 0.5f, windowModel->screenHeight * 0.35f);
+    glClearColor(0.0f, 0.0f, 0.32f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    drawTextBox(textBoxModel, windowModel);
+    glDisable(GL_SCISSOR_TEST);
+}
+
+void InteractiveWaitPopUpView::mousePress(MouseDownEvent * e)
+{
+}
+
+void InteractiveWaitPopUpView::mouseRelease(MouseUpEvent * e)
+{
+}
+
+void InteractiveWaitPopUpView::mouseMove(MouseMoveEvent * e)
+{
+}
+
+void InteractiveWaitPopUpView::keyPress(KeyPressedEvent * e)
+{
+    if (e->key == static_cast<char>(GLFW_KEY_ESCAPE))
+        windowModel->closeWindow();
+}
+
+void InteractiveWaitPopUpView::windowResize(DimensionsChangeEvent * e)
+{
+}

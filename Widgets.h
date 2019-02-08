@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 #include <functional>
+#include <mutex>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "TextModel.h"
@@ -63,6 +64,36 @@ struct ItemBoxModel
     virtual void clearItems();
     virtual bool isEmpty();
 
+    const RectangleModel& getRectModel() const
+    {
+        return rectModel;
+    }
+    const std::deque<std::pair<TextModel, RectangleModel>>& getItems() const
+    {
+        return items;
+    }
+    const RectangleModel& getItemRect() const
+    {
+        return itemRect;
+    }
+    const float& getHorPadding() const
+    {
+        return horPadding;
+    }
+    const float& getItemHorSpace() const
+    {
+        return itemHorSpace;
+    }
+    const glm::vec3& getIBgColorActive() const
+    {
+        return iBgColorActive;
+    }
+    const TextModel& getPlaceHolderItemText() const
+    {
+        return placeHolderItemText;
+    }
+
+private:
     RectangleModel rectModel;
     std::deque<std::pair<TextModel, RectangleModel>> items;
     RectangleModel itemRect;
@@ -71,6 +102,9 @@ struct ItemBoxModel
     float horPadding;
     float itemHorSpace;
     glm::vec3 iBgColorActive;
+
+protected:
+    std::mutex mutex;
 };
 
 class ButtonController
