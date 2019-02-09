@@ -36,7 +36,7 @@ Shader::Shader(GLenum shaderType, std::string filename) : shaderType(shaderType)
     if (!success)
     {
         glGetShaderInfoLog(ID, 512, nullptr, infoLog);
-        std::cout << "Error compiling shader " << filename << "\n" << infoLog << "\n";
+        std::cerr << "Error compiling shader " << filename << "\n" << infoLog << "\n";
     }
 }
 
@@ -68,7 +68,7 @@ unsigned int Shader::getID() const
 
 Shader::~Shader()
 {
-    std::cerr << "Deleted shader with ID: " << ID << '\n';
+    // std::cerr << "Deleted shader with ID: " << ID << '\n';
     glDeleteShader(ID);
 }
 
@@ -86,7 +86,7 @@ ShaderProgram::ShaderProgram(const Shader &vertexShader, const Shader &fragmentS
 
     if (!success) {
         glGetProgramInfoLog(ID, 512, nullptr, infoLog);
-        std::cout << "Error linking program\n" << infoLog << std::endl;
+        std::cerr << "Error linking program\n" << infoLog << std::endl;
     }
 }
 
@@ -171,7 +171,7 @@ int ShaderProgram::getUniformLocation(const std::string &name)
 
 ShaderProgram::~ShaderProgram()
 {
-    std::cerr << "Deleted shader program with ID: " << ID << '\n';
+    // std::cerr << "Deleted shader program with ID: " << ID << '\n';
     ShaderProgram::disable();
     glDeleteProgram(ID);
 }

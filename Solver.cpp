@@ -5,7 +5,7 @@ std::string FastSolver::generateSolution() const
 {
     auto cube_string = toString();
 
-    std::cout << "cubeString: " << cube_string << '\n';
+    // std::cerr << "cubeString: " << cube_string << '\n';
 
     char* c_cube = const_cast<char *>(cube_string.c_str());
     std::string sol;

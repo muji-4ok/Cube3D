@@ -3,7 +3,7 @@
 
 void InteractiveView::draw()
 {
-    windowModel->setMinSize(800, 600);
+    windowModel->setMinSize(100, 100);
     windowModel->setViewport(0.0f, 0.0f, windowModel->screenWidth, windowModel->screenHeight);
     glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

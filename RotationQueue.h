@@ -15,6 +15,7 @@ public:
     RotationHeader* pop();
     void push(RotationHeader* rh);
     void reset_angle();
+    void reset_last_rotation();
 
     bool is_rotating() const;
 

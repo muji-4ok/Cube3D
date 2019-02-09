@@ -69,7 +69,7 @@ void WindowModel::key_callback(int key, int scancode, int action, int mods)
                 k = GLFW_KEY_ESCAPE;
                 break;
             default:
-                std::cout << "Unknown key\n";
+                // std::cerr << "Unknown key\n";
                 return;
         }
 
@@ -184,6 +184,14 @@ void WindowModel::pollEvents()
 {
     glfwPollEvents();
     getMouseMoveEvents();
+
+    if (eventQueue.size() > 1)
+    {
+        auto lol = 123;
+    }
+
+    // if (eventQueue.size() > 0)
+        // std::cerr << "[POLL EVENTS]: size = " << eventQueue.size() << '\n';
 }
 
 void WindowModel::updateFPS()
