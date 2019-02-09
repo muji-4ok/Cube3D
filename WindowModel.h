@@ -65,7 +65,7 @@ public:
     int screenHeight;
     int minScreenWidth;
     int minScreenHeight;
-    std::atomic<State> appState = Interactive;
+    std::atomic<State> appState = {Interactive};
 
 private:
     std::deque<std::unique_ptr<Event>> eventQueue;

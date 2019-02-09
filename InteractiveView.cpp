@@ -75,7 +75,7 @@ void InteractiveView::mouseRelease(MouseUpEvent * e)
             }
             else
             {
-                windowModel->appState = InteractiveResetPopUp;
+                windowModel->appState = std::move(InteractiveResetPopUp);
                 auto angle = this->cubeModel->rotationQueue.get_angle();
                 auto hitHeader = this->cubeModel->hitModel.get_header();
                 auto lastRotation = this->cubeModel->rotationQueue.get_last_rotation();
@@ -129,7 +129,7 @@ void InteractiveView::keyPress(KeyPressedEvent * e)
     {
         if (kPressedRes == 1)
         {
-            windowModel->appState = InteractiveResetPopUp;
+            windowModel->appState = std::move(InteractiveResetPopUp);
             // Hack
             auto f = [this]() {
                 InteractiveCubeController cubeController(this->cubeModel);
@@ -139,7 +139,7 @@ void InteractiveView::keyPress(KeyPressedEvent * e)
         }
         else if (kPressedRes == 2)
         {
-            windowModel->appState = InteractiveResetPopUp;
+            windowModel->appState = std::move(InteractiveResetPopUp);
             auto e_cp = *e;
             auto f = [this, e_cp]() {
                 InteractiveCubeController cubeController(this->cubeModel);

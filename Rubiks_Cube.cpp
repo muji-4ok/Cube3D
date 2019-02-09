@@ -40,7 +40,7 @@ int main()
             if (interactiveCubeModel.rotationQueue.is_rotating())
                 return;
 
-            windowModel.appState = InteractiveWaitPopUp;
+            windowModel.appState = std::move(InteractiveWaitPopUp);
 
             auto asyncFunc = [&windowModel, &interactiveCubeModel, &instructionsBoxModel]() {
                 OptimalSolver solver(&interactiveCubeModel);
@@ -51,7 +51,7 @@ int main()
                 for (const auto&r : solution)
                     instructionsBoxModel.addItem(InstructionsSanitizer::toStringNotation(r));
 
-                windowModel.appState = Interactive;
+                windowModel.appState = std::move(Interactive);
             };
 
             std::thread solverThread(asyncFunc);
@@ -106,7 +106,7 @@ int main()
     WebcamModel webcamModel(&windowModel);
     WebcamSwitchButtonModel webcamSwitchButtonModel(
         [&windowModel]() {
-            windowModel.appState = Input;
+            windowModel.appState = std::move(Input);
         }
     );
     InputHelpBoxModel inputHelpBoxModel;
@@ -194,7 +194,7 @@ int main()
     );
     CancelButtonModel cancelButtonModel(
         [&windowModel]() {
-            windowModel.appState = Interactive;
+            windowModel.appState = std::move(Interactive);
         }
     );
     SubmitButtonModel submitButtonModel(
@@ -207,7 +207,7 @@ int main()
             if (!solver.generateSolution().size())
                 return;
 
-            windowModel.appState = Interactive;
+            windowModel.appState = std::move(Interactive);
 
             interactiveCubeModel.copy_colors(inputCubeModel);
         }
@@ -239,7 +239,7 @@ int main()
 
             if (!instructionsBoxModel.isEmpty())
             {
-                windowModel.appState = InteractiveResetPopUp;
+                windowModel.appState = std::move(InteractiveResetPopUp);
                 auto f = [&interactiveCubeModel]() {
                     InteractiveCubeController cubeController(&interactiveCubeModel);
                     cubeController.shuffle();
@@ -255,14 +255,14 @@ int main()
     );
     InteractiveResetPopUpYesButtonModel interactiveResetPopUpYesButtonModel(
         [&windowModel, &interactiveCubeModel, &instructionsBoxModel, &yesFunc]() {
-            windowModel.appState = Interactive;
+            windowModel.appState = std::move(Interactive);
             yesFunc();
             instructionsBoxModel.clearItems();
         }
     );
     InteractiveResetPopUpNoButtonModel interactiveResetPopUpNoButtonModel(
         [&windowModel]() {
-            windowModel.appState = Interactive;
+            windowModel.appState = std::move(Interactive);
         }
     );
     InteractiveWaitPopUpTextBoxModel interactiveWaitPopUpTextBoxModel;
@@ -321,6 +321,6 @@ int main()
         windowModel.swapBuffers();
         windowModel.pollEvents();
     }
-    
+
     return 0;
 }

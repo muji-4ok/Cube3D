@@ -40,7 +40,7 @@ bool ButtonController::isInside(const glm::vec2& mouse_pos) const
 
 void ItemBoxModel::addItem(const std::string & text)
 {
-    std::lock_guard guard(mutex);
+    std::lock_guard<std::mutex> guard(mutex);
     auto copyRect = itemRect;
     auto copyText = itemText;
     copyText.setText(text);
@@ -49,7 +49,7 @@ void ItemBoxModel::addItem(const std::string & text)
 
 void ItemBoxModel::addItemFront(const std::string & text)
 {
-    std::lock_guard guard(mutex);
+    std::lock_guard<std::mutex> guard(mutex);
     auto copyRect = itemRect;
     auto copyText = itemText;
     copyText.setText(text);
@@ -58,7 +58,7 @@ void ItemBoxModel::addItemFront(const std::string & text)
 
 std::string ItemBoxModel::popItem()
 {
-    std::lock_guard guard(mutex);
+    std::lock_guard<std::mutex> guard(mutex);
     std::string text;
 
     if (items.size())
@@ -72,12 +72,12 @@ std::string ItemBoxModel::popItem()
 
 void ItemBoxModel::clearItems()
 {
-    std::lock_guard guard(mutex);
+    std::lock_guard<std::mutex> guard(mutex);
     items.clear();
 }
 
 bool ItemBoxModel::isEmpty()
 {
-    std::lock_guard guard(mutex);
+    std::lock_guard<std::mutex> guard(mutex);
     return !items.size();
 }
