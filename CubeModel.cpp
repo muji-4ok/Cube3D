@@ -13,6 +13,12 @@ CubeModel::CubeModel(const WindowModel* wm, glm::vec3 translation_vec) : windowM
                 cubelets[i][j][k] = Cubelet(i, j, k);
 }
 
+void CubeModel::reset_view_rotation()
+{
+    rotation_view = glm::mat4(1.0f);
+    view = translation_view;
+}
+
 void CubeModel::reset_rotations()
 {
     for (int i = 0; i < 3; ++i)
