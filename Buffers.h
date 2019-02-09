@@ -99,7 +99,7 @@ inline BufferObject<T>& BufferObject<T>::operator=(BufferObject<T>&& bo)
 template<typename T>
 inline BufferObject<T>::~BufferObject()
 {
-    std::cout << "BufferObject destroyed, ID = " << ID << '\n';
+    // std::cerr << "BufferObject destroyed, ID = " << ID << '\n';
     glDeleteBuffers(1, &ID);
 }
 

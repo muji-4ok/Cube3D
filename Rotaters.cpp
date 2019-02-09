@@ -410,6 +410,9 @@ void Rotater::generate_temp_rotations(float start_angle, float end_angle, float 
     auto angle = start_angle;
     auto speed = start_speed;
 
+    // std::cerr << "[New temp]: generate ; vec: x = " << vec.x << " ; y = " << vec.y <<
+        // " ; z = " << vec.z << '\n';
+
     while (std::abs(end_angle - angle) > std::abs(speed))
     {
         cubeModel->rotationQueue.push(new TempRotationHeader(vec, speed));
@@ -537,6 +540,9 @@ void InteractiveRotater::rotate_interactive(const glm::vec2& mouse_diff)
     if (needs_fixing)
         dot = -dot;
 
+    // std::cerr << "[New temp]: rotate_interactive ; vec: x = " << rotation_vec.x <<
+        // " ; y = " << rotation_vec.y << " ; z = " << rotation_vec.z << '\n';
+
     cubeModel->rotationQueue.push(new TempRotationHeader(rotation_vec, dot));
 }
 
@@ -582,7 +588,7 @@ void InteractiveRotater::finish_interactive_rotation()
 
     auto turns = static_cast<int>(std::round(deg_angle / 90.0f));
 
-    std::cout << glm::degrees(last_angle) << '\n';
+    // std::cerr << glm::degrees(last_angle) << '\n';
 
     if (turns == 0 && std::abs(glm::degrees(last_angle)) > 2.0f)
         turns = angle > 0 ? 1 : -1;
@@ -610,12 +616,11 @@ void InteractiveRotater::finish_interactive_rotation_to_zero()
     auto angle = cubeModel->rotationQueue.get_angle();
     auto hit = cubeModel->hitModel.get_header();
     auto last_angle = cubeModel->rotationQueue.get_last_rotation().angle;
-    auto last_vec = cubeModel->rotationQueue.get_last_rotation().vec;
 
     auto deg_angle = glm::degrees(angle);
     auto rot_index = get_rot_index(hit.index, hit.dir);
 
-    std::cout << glm::degrees(last_angle) << '\n';
+    // std::cerr << glm::degrees(last_angle) << '\n';
 
     auto final_angle = 0.0f;
     auto rotation_dir = final_angle - angle;
@@ -624,7 +629,7 @@ void InteractiveRotater::finish_interactive_rotation_to_zero()
                                      glm::radians(1.0f) : last_angle, rotation_dir);
     auto acceleration = std::copysign(glm::radians(0.8f), rotation_dir);
 
-    generate_temp_rotations(angle, final_angle, start_speed, acceleration, last_vec);
+    generate_temp_rotations(angle, final_angle, start_speed, acceleration, get_rot_vec(hit.index, hit.dir));
     cubeModel->rotationQueue.push(new PermRotationHeader(hit, 0));
     cubeModel->rotationQueue.push(new ResetRotationHeader());
 }
@@ -662,7 +667,7 @@ void InteractiveRotater::finish_interactive_rotation_snap(float angle, HitHeader
 
     auto turns = static_cast<int>(std::round(deg_angle / 90.0f));
 
-    std::cout << glm::degrees(last_angle) << '\n';
+    // std::cerr << glm::degrees(last_angle) << '\n';
 
     if (turns == 0 && std::abs(glm::degrees(last_angle)) > 2.0f)
         turns = angle > 0 ? 1 : -1;

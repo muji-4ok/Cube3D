@@ -31,6 +31,12 @@ void RotationQueue::reset_angle()
     angle = 0.0f;
 }
 
+void RotationQueue::reset_last_rotation()
+{
+    last_rotation.angle = 0.0f;
+    last_rotation.vec = glm::vec3(0.0f, 0.0f, 0.0f);
+}
+
 float RotationQueue::get_angle() const
 {
     return angle;

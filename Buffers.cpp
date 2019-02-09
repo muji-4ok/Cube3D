@@ -51,7 +51,7 @@ VAO & VAO::operator=(VAO && vao)
 
 VAO::~VAO()
 {
-    std::cout << "VAO destroyed, ID = " << ID << '\n';
+    // std::cerr << "VAO destroyed, ID = " << ID << '\n';
     glDeleteVertexArrays(1, &ID);
 }
 
