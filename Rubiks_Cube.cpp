@@ -24,7 +24,7 @@ int main()
     constexpr int height = 600;
 
     {
-        OptimalSolverInitializer::instance();
+        // OptimalSolverInitializer::instance();
     }
 
     /*

@@ -11,7 +11,7 @@ void InteractiveView::draw()
     cubeController.rotate();
     drawCube(cubeModel, windowModel);
     drawButton(fastSolveButtonModel, windowModel);
-    drawButton(optimalSolveButtonModel, windowModel);
+    // drawButton(optimalSolveButtonModel, windowModel);
     /*
     * Add the draw call here.
     */
@@ -38,8 +38,8 @@ void InteractiveView::mousePress(MouseDownEvent * e)
 
     ButtonController buttonController(fastSolveButtonModel, windowModel);
     buttonController.onMousePress(e);
-    buttonController.setModel(optimalSolveButtonModel);
-    buttonController.onMousePress(e);
+    // buttonController.setModel(optimalSolveButtonModel);
+    // buttonController.onMousePress(e);
 
     /*
     * Call handlers.
@@ -91,8 +91,8 @@ void InteractiveView::mouseRelease(MouseUpEvent * e)
 
     ButtonController buttonController(fastSolveButtonModel, windowModel);
     buttonController.onMouseRelease(e);
-    buttonController.setModel(optimalSolveButtonModel);
-    buttonController.onMouseRelease(e);
+    // buttonController.setModel(optimalSolveButtonModel);
+    // buttonController.onMouseRelease(e);
 
     /*
     * Call handlers.
