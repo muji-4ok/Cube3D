@@ -17,6 +17,7 @@ struct CubeModel
 {
     CubeModel(const WindowModel* wm, glm::vec3 translation_vec = glm::vec3(0.0f, 0.0f, -3.0f));
 
+    void reset_view_rotation();
     void reset_rotations();
     void full_reset();
     void copy_colors(const CubeModel& other);

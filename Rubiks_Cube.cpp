@@ -40,6 +40,7 @@ int main()
             if (interactiveCubeModel.rotationQueue.is_rotating())
                 return;
 
+            interactiveCubeModel.reset_view_rotation();
             windowModel.appState = std::move(InteractiveWaitPopUp);
 
             auto asyncFunc = [&windowModel, &interactiveCubeModel, &instructionsBoxModel]() {
@@ -63,6 +64,7 @@ int main()
             if (interactiveCubeModel.rotationQueue.is_rotating())
                 return;
 
+            interactiveCubeModel.reset_view_rotation();
             FastSolver solver(&interactiveCubeModel);
             auto solution = solver.generateSolution();
 
