@@ -9,7 +9,7 @@ struct InputHelpBoxModel
 struct InputNextButtonModel : public ButtonModel
 {
     InputNextButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(-0.22f, 0.3f), glm::vec2(0.2f, 0.07f), "Next",
+        ButtonModel(glm::vec2(-0.22f, 0.33f), glm::vec2(0.2f, 0.07f), "Next",
                     0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
@@ -17,7 +17,7 @@ struct InputNextButtonModel : public ButtonModel
 struct InputPrevButtonModel : public ButtonModel
 {
     InputPrevButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(-0.22f, 0.38f), glm::vec2(0.2f, 0.07f), "Prev",
+        ButtonModel(glm::vec2(-0.22f, 0.42f), glm::vec2(0.2f, 0.07f), "Prev",
                     0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
@@ -41,7 +41,7 @@ struct SubmitButtonModel : public ButtonModel
 struct ReadButtonModel : public ButtonModel
 {
     ReadButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(-0.22f, 0.56f), glm::vec2(0.2f, 0.07f), "Read",
+        ButtonModel(glm::vec2(-0.22f, 0.6f), glm::vec2(0.2f, 0.07f), "Read",
                     0.5f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
                     glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
@@ -49,7 +49,7 @@ struct ReadButtonModel : public ButtonModel
 struct InputResetButtonModel : public ButtonModel
 {
     InputResetButtonModel(const std::function<void()>& callback) :
-        ButtonModel(glm::vec2(-0.22f, 0.47f), glm::vec2(0.2f, 0.07f), "Reset",
+        ButtonModel(glm::vec2(-0.22f, 0.51f), glm::vec2(0.2f, 0.07f), "Reset",
                     0.5f, glm::vec3(0.0f, 1.0f, 0.0f),
                     glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), callback) {}
 };
