@@ -11,3 +11,8 @@
 2) Create a new solver class in Solver.h/Solver.cpp subclassed accordingly. Useful functions in ColorUtil in Cubelet.h.
 3) Construct all objects in Rubick_Cube.cpp.
 4) Add pointer to button model and call needed functions in InteractiveView class.
+
+## Showcase
+
+![screenshot](screenshot.png)
+
