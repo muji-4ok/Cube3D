@@ -2,9 +2,9 @@
 #include "CubeModel.h"
 #include "Rotaters.h"
 #include "InteractiveInterface.h"
-#include "search.h"
 
 extern "C" {
+#include "search.h"
 #include "cubedefs.h"
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <glad/glad.h>
-#include <glfw/glfw3.h>
+#include <glfw3.h>
 #include "Shader.h"
 #include "Buffers.h"
 #include "Common.h"
