@@ -4,7 +4,7 @@
 # Building
 Just use cmake. Should hopefully work.
 
-## Showcase
+# Showcase
 
 ![screenshot](screenshot.png)
 
